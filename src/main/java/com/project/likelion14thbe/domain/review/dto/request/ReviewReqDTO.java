@@ -5,9 +5,9 @@ import lombok.Setter;
 
 public class ReviewReqDTO {
 
-    public record Test1DTO (
-            Long id,
-            String content
+    public record ReviewCreateReq (
+            String content,
+            Double rating
     ) {
     }
 
