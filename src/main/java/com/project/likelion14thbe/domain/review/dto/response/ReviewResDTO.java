@@ -126,4 +126,51 @@ public class ReviewResDTO {
             LocalDateTime deletedAt
     ) {
     }
+
+    @Schema(description = "내 리뷰 조회 — 개별 리뷰 아이템")
+    public record MyReviewItemDTO(
+            @Schema(description = "리뷰 ID", example = "1")
+            Long reviewId,
+
+            @Schema(description = "상품 ID", example = "5")
+            Long productId,
+
+            @Schema(description = "상품명", example = "사과")
+            String productName,
+
+            @Schema(description = "별점", example = "4.5")
+            Double rating,
+
+            @Schema(description = "리뷰 내용", example = "nice!")
+            String content,
+
+            @Schema(description = "생성 일시", example = "2026-04-29T13:15:00")
+            LocalDateTime createdAt,
+
+            @Schema(description = "수정 일시", example = "2026-04-29T13:15:00")
+            LocalDateTime updatedAt
+    ) {
+    }
+
+    @Schema(description = "내 리뷰 조회 응답 DTO (페이징 포함)")
+    public record MyReviewListResDTO(
+            @Schema(description = "전체 리뷰 개수", example = "7")
+            Long totalElements,
+
+            @Schema(description = "전체 페이지 수", example = "1")
+            Integer totalPages,
+
+            @Schema(description = "현재 페이지 번호 (0부터 시작)", example = "0")
+            Integer currentPage,
+
+            @Schema(description = "페이지당 개수", example = "10")
+            Integer size,
+
+            @Schema(description = "마지막 페이지 여부", example = "true")
+            Boolean isLast,
+
+            @Schema(description = "내가 작성한 리뷰 목록")
+            List<MyReviewItemDTO> reviewList
+    ) {
+    }
 }
