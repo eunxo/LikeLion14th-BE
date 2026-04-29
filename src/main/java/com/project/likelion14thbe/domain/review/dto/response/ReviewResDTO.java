@@ -135,7 +135,7 @@ public class ReviewResDTO {
             @Schema(description = "상품 ID", example = "5")
             Long productId,
 
-            @Schema(description = "상품명", example = "사과")
+            @Schema(description = "상품명", example = "기본 티셔츠")
             String productName,
 
             @Schema(description = "별점", example = "4.5")
