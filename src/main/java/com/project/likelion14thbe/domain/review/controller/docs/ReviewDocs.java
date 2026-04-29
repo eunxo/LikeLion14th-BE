@@ -100,4 +100,19 @@ public interface ReviewDocs {
             @Parameter(description = "상품 아이디", example = "5") Long productId,
             @Parameter(description = "리뷰 아이디", example = "123") Long reviewId
     );
+
+    @Operation(
+            summary = "내 리뷰 조회",
+            description = "현재 로그인한 회원이 작성한 모든 리뷰를 페이징 조회한다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "내 리뷰 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ReviewResDTO.MyReviewListResDTO.class))),
+            @ApiResponse(responseCode = "400", description = "잘못된 페이지 파라미터", content = @Content),
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content)
+    })
+    ResponseEntity<ReviewResDTO.MyReviewListResDTO> getMyReviews(
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
+            @Parameter(description = "페이지당 개수", example = "10") Integer size
+    );
 }

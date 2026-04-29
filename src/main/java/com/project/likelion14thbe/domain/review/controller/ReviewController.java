@@ -105,4 +105,22 @@ public class ReviewController implements ReviewDocs {
         );
         return ResponseEntity.ok(body);
     }
+
+    @Override
+    @GetMapping("/members/me/reviews")
+    public ResponseEntity<ReviewResDTO.MyReviewListResDTO> getMyReviews(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        List<ReviewResDTO.MyReviewItemDTO> reviewList = List.of(
+                new ReviewResDTO.MyReviewItemDTO(
+                        1L, 5L, "사과", 4.5, "nice!",
+                        LocalDateTime.now(), LocalDateTime.now()
+                )
+        );
+        ReviewResDTO.MyReviewListResDTO body = new ReviewResDTO.MyReviewListResDTO(
+                7L, 1, page, size, true, reviewList
+        );
+        return ResponseEntity.ok(body);
+    }
 }
