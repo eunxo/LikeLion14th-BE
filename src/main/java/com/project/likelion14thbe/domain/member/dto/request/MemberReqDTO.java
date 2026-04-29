@@ -7,4 +7,15 @@ public class MemberReqDTO {
             String password
     ) {
     }
+
+    public record UserLoginReq(
+            String email,
+            String password
+    ) {
+    }
+
+    public record UserLoginKakaoReq(
+            String kakaoAccessToken
+    ) {
+    }
 }
