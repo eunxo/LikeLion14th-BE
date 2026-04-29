@@ -2,7 +2,6 @@ package com.project.likelion14thbe.domain.product.controller;
 
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
-import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
