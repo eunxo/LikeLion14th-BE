@@ -13,12 +13,10 @@ public class MemberReqDTO {
             @NotBlank(message = "이메일은 필수입니다.")
             @Email(message = "올바른 이메일 형식이 아닙니다.")
             String email,
-
             @Schema(description = "비밀번호 (최소 8자)", example = "passw0rd!!")
             @NotBlank(message = "비밀번호는 필수입니다.")
             @Size(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
             String password,
-
             @Schema(description = "닉네임 (2~20자)", example = "bro")
             @NotBlank(message = "닉네임은 필수입니다.")
             @Size(min = 2, max = 20, message = "닉네임은 2자 이상 20자 이하여야 합니다.")
@@ -32,7 +30,6 @@ public class MemberReqDTO {
             @NotBlank(message = "이메일은 필수입니다.")
             @Email(message = "올바른 이메일 형식이 아닙니다.")
             String email,
-
             @Schema(description = "비밀번호", example = "passw0rd!!")
             @NotBlank(message = "비밀번호는 필수입니다.")
             String password
@@ -53,7 +50,6 @@ public class MemberReqDTO {
             @Schema(description = "현재 비밀번호", example = "passw0rd!!")
             @NotBlank(message = "현재 비밀번호는 필수입니다.")
             String currentPassword,
-
             @Schema(description = "새 비밀번호 (최소 8자)", example = "newPassw0rd!!")
             @NotBlank(message = "새 비밀번호는 필수입니다.")
             @Size(min = 8, message = "새 비밀번호는 8자 이상이어야 합니다.")

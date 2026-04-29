@@ -15,7 +15,6 @@ public class ReviewReqDTO {
             @DecimalMin(value = "0.5", message = "별점은 0.5 이상이어야 합니다.")
             @DecimalMax(value = "5.0", message = "별점은 5.0 이하여야 합니다.")
             Double rating,
-
             @Schema(description = "리뷰 내용", example = "이 제품 정말 좋아요")
             @NotBlank(message = "리뷰 내용은 필수입니다.")
             String content
@@ -28,7 +27,6 @@ public class ReviewReqDTO {
             @DecimalMin(value = "0.5", message = "별점은 0.5 이상이어야 합니다.")
             @DecimalMax(value = "5.0", message = "별점은 5.0 이하여야 합니다.")
             Double rating,
-
             @Schema(description = "리뷰 내용 (선택)", example = "다시 먹어봤는데 더 맛있네요!")
             String content
     ) {
