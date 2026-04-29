@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Member", description = "회원 API — 회원가입, 로그인(일반/카카오), 비밀번호 수정")
+@Tag(name = "Member", description = "회원 API — 회원가입, 로그인(일반/카카오), 내 정보 조회, 비밀번호 수정")
 public interface MemberDocs {
 
     @Operation(
@@ -62,4 +62,17 @@ public interface MemberDocs {
             @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content)
     })
     ResponseEntity<MemberResDTO.UpdatePasswordResDTO> updatePassword(MemberReqDTO.UpdatePasswordReqDTO request);
+
+    @Operation(
+            summary = "내 정보 조회",
+            description = "현재 로그인한 회원의 정보를 조회한다."
+    )
+    @SecurityRequirement(name = "JWT TOKEN")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "내 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = MemberResDTO.MyInfoResDTO.class))),
+            @ApiResponse(responseCode = "401", description = "인증 토큰 없음 또는 만료", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음 (탈퇴 등)", content = @Content)
+    })
+    ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo();
 }

@@ -57,4 +57,17 @@ public class MemberResDTO {
             LocalDateTime updatedAt
     ) {
     }
+
+    @Schema(description = "내 정보 조회 응답 DTO")
+    public record MyInfoResDTO(
+            @Schema(description = "회원 ID", example = "1")
+            Long memberId,
+            @Schema(description = "이메일", example = "user@example.com")
+            String email,
+            @Schema(description = "닉네임", example = "bro")
+            String nickname,
+            @Schema(description = "가입 일시", example = "2026-04-29T10:00:00")
+            LocalDateTime createdAt
+    ) {
+    }
 }

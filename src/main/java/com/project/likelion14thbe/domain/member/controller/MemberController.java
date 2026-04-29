@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,6 +70,18 @@ public class MemberController implements MemberDocs {
     ) {
         MemberResDTO.UpdatePasswordResDTO body = new MemberResDTO.UpdatePasswordResDTO(
                 1L,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(body);
+    }
+
+    @Override
+    @GetMapping("/members/me")
+    public ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo() {
+        MemberResDTO.MyInfoResDTO body = new MemberResDTO.MyInfoResDTO(
+                1L,
+                "user@example.com",
+                "bro",
                 LocalDateTime.now()
         );
         return ResponseEntity.ok(body);
