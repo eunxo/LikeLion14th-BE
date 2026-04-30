@@ -1,20 +1,31 @@
 package com.project.likelion14thbe.domain.member.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 public class MemberReqDTO {
 
-    public record Test1DTO (
-            Long id,
-            String content
-    ) {
+    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    public static class SignupReq {
+        private String name;
+        private String email;
+        private String password;
     }
 
-    @Getter
-    @Setter
-    public class Test2DTO {
-        private Long id;
-        private String content;
+    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    public static class LoginReq {
+        private String email;
+        private String password;
+    }
+
+    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    public static class KakaoLoginReq {
+        private String kakaoAccessToken;
+    }
+
+    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    public static class UpdateReq {
+        private String name;
+        private String email;
+        private String profileImage;
     }
 }
