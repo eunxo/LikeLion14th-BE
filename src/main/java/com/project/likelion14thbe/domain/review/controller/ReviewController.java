@@ -32,7 +32,7 @@ public class ReviewController implements ReviewDocs {
         ReviewResDTO.CreateReviewResDTO body = new ReviewResDTO.CreateReviewResDTO(
                 123L,
                 productId,
-                "bro",
+                "홍길동",
                 request.rating(),
                 request.content(),
                 LocalDateTime.now()
@@ -49,7 +49,7 @@ public class ReviewController implements ReviewDocs {
         ReviewResDTO.ReviewDetailResDTO body = new ReviewResDTO.ReviewDetailResDTO(
                 reviewId,
                 productId,
-                "bro",
+                "홍길동",
                 4.5,
                 "nice!",
                 LocalDateTime.now(),
@@ -67,8 +67,8 @@ public class ReviewController implements ReviewDocs {
             @RequestParam(defaultValue = "latest") String sort
     ) {
         List<ReviewResDTO.ReviewItemDTO> reviewList = List.of(
-                new ReviewResDTO.ReviewItemDTO(1L, "bro", 4.5, "nice!", LocalDateTime.now()),
-                new ReviewResDTO.ReviewItemDTO(2L, "bro", 5.0, "이 제품 정말 좋아요", LocalDateTime.now())
+                new ReviewResDTO.ReviewItemDTO(1L, "홍길동", 4.5, "nice!", LocalDateTime.now()),
+                new ReviewResDTO.ReviewItemDTO(2L, "홍길동", 5.0, "이 제품 정말 좋아요", LocalDateTime.now())
         );
         ReviewResDTO.ReviewListResDTO body = new ReviewResDTO.ReviewListResDTO(
                 productId, 123L, 13, page, size, false, reviewList
@@ -85,7 +85,7 @@ public class ReviewController implements ReviewDocs {
     ) {
         ReviewResDTO.UpdateReviewResDTO body = new ReviewResDTO.UpdateReviewResDTO(
                 reviewId,
-                "bro",
+                "홍길동",
                 request.rating() != null ? request.rating() : 5.0,
                 request.content() != null ? request.content() : "다시 먹어봤는데 더 맛있네요!",
                 LocalDateTime.now()

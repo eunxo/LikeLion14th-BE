@@ -13,7 +13,7 @@ public class ReviewResDTO {
             Long reviewId,
             @Schema(description = "상품 ID", example = "5")
             Long productId,
-            @Schema(description = "작성자 닉네임", example = "bro")
+            @Schema(description = "작성자 이름", example = "홍길동")
             String writerNickname,
             @Schema(description = "별점", example = "4.5")
             Double rating,
@@ -30,7 +30,7 @@ public class ReviewResDTO {
             Long reviewId,
             @Schema(description = "상품 ID", example = "5")
             Long productId,
-            @Schema(description = "작성자 닉네임", example = "bro")
+            @Schema(description = "작성자 이름", example = "홍길동")
             String writerNickname,
             @Schema(description = "별점", example = "4.5")
             Double rating,
@@ -47,7 +47,7 @@ public class ReviewResDTO {
     public record ReviewItemDTO(
             @Schema(description = "리뷰 ID", example = "1")
             Long reviewId,
-            @Schema(description = "작성자 닉네임", example = "bro")
+            @Schema(description = "작성자 이름", example = "홍길동")
             String writerNickname,
             @Schema(description = "별점", example = "4.5")
             Double rating,
@@ -81,7 +81,7 @@ public class ReviewResDTO {
     public record UpdateReviewResDTO(
             @Schema(description = "리뷰 ID", example = "123")
             Long reviewId,
-            @Schema(description = "작성자 닉네임", example = "bro")
+            @Schema(description = "작성자 이름", example = "홍길동")
             String writerNickname,
             @Schema(description = "별점", example = "5.0")
             Double rating,
