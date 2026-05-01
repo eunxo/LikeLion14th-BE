@@ -18,30 +18,33 @@ public interface OrderDocs {
 
     @Operation(
             summary = "주문 생성",
-            description = "현재 로그인한 회원이 특정 상품을 주문한다."
+            description = "현재 로그인한 회원이 특정 상품을 주문한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "주문 생성 성공",
                     content = @Content(schema = @Schema(implementation = OrderResDTO.CreateOrderResDTO.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 수량 또는 입력 형식 오류", content = @Content),
             @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content),
-            @ApiResponse(responseCode = "404", description = "상품이 존재하지 않음", content = @Content)
+            @ApiResponse(responseCode = "404", description = "회원 또는 상품이 존재하지 않음", content = @Content)
     })
     ResponseEntity<OrderResDTO.CreateOrderResDTO> createOrder(
+            @Parameter(description = "주문자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             OrderReqDTO.CreateOrderReqDTO request
     );
 
     @Operation(
             summary = "내 주문 목록 조회",
-            description = "현재 로그인한 회원의 모든 주문을 페이징 조회한다."
+            description = "현재 로그인한 회원의 모든 주문을 페이징 조회한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 주문 목록 조회 성공",
                     content = @Content(schema = @Schema(implementation = OrderResDTO.MyOrderListResDTO.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 페이지 파라미터", content = @Content),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content)
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원이 존재하지 않음", content = @Content)
     })
     ResponseEntity<OrderResDTO.MyOrderListResDTO> getMyOrders(
+            @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size
     );
