@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.member.controller.docs.MemberDocs;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
+import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController implements MemberDocs {
 
     private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
 
     @Override
     @PostMapping("/members")
@@ -62,13 +65,9 @@ public class MemberController implements MemberDocs {
 
     @Override
     @GetMapping("/members/me")
-    public ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo() {
-        MemberResDTO.MyInfoResDTO body = new MemberResDTO.MyInfoResDTO(
-                1L,
-                "user@example.com",
-                "홍길동",
-                LocalDateTime.now()
-        );
-        return ResponseEntity.ok(body);
+    public ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo(
+            @RequestParam Long memberId
+    ) {
+        return ResponseEntity.ok(memberQueryService.getMyInfo(memberId));
     }
 }

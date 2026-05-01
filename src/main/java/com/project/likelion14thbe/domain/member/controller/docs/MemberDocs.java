@@ -3,6 +3,7 @@ package com.project.likelion14thbe.domain.member.controller.docs;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -53,7 +54,7 @@ public interface MemberDocs {
 
     @Operation(
             summary = "내 정보 조회",
-            description = "현재 로그인한 회원의 정보를 조회한다."
+            description = "현재 로그인한 회원의 정보를 조회한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
     )
     @SecurityRequirement(name = "JWT TOKEN")
     @ApiResponses({
@@ -62,5 +63,7 @@ public interface MemberDocs {
             @ApiResponse(responseCode = "401", description = "인증 토큰 없음 또는 만료", content = @Content),
             @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음 (탈퇴 등)", content = @Content)
     })
-    ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo();
+    ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo(
+            @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId
+    );
 }
