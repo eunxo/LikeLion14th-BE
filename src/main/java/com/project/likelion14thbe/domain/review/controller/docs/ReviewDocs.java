@@ -18,18 +18,19 @@ public interface ReviewDocs {
 
     @Operation(
             summary = "리뷰 생성",
-            description = "특정 상품에 대해 새로운 리뷰를 생성한다. 동일 상품에 1인 1회 작성 제한."
+            description = "특정 상품에 대해 새로운 리뷰를 생성한다. 동일 상품에 1인 1회 작성 제한. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "리뷰 생성 성공",
                     content = @Content(schema = @Schema(implementation = ReviewResDTO.CreateReviewResDTO.class))),
             @ApiResponse(responseCode = "400", description = "별점 범위 초과 또는 리뷰 내용 누락", content = @Content),
             @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content),
-            @ApiResponse(responseCode = "404", description = "상품이 존재하지 않음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 또는 상품이 존재하지 않음", content = @Content),
             @ApiResponse(responseCode = "409", description = "이미 해당 상품에 리뷰를 작성함", content = @Content)
     })
     ResponseEntity<ReviewResDTO.CreateReviewResDTO> createReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
+            @Parameter(description = "작성자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             ReviewReqDTO.CreateReviewReqDTO request
     );
 
@@ -103,15 +104,17 @@ public interface ReviewDocs {
 
     @Operation(
             summary = "내 리뷰 조회",
-            description = "현재 로그인한 회원이 작성한 모든 리뷰를 페이징 조회한다."
+            description = "현재 로그인한 회원이 작성한 모든 리뷰를 페이징 조회한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 리뷰 조회 성공",
                     content = @Content(schema = @Schema(implementation = ReviewResDTO.MyReviewListResDTO.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 페이지 파라미터", content = @Content),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content)
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원이 존재하지 않음", content = @Content)
     })
     ResponseEntity<ReviewResDTO.MyReviewListResDTO> getMyReviews(
+            @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size
     );
