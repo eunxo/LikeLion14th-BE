@@ -34,4 +34,19 @@ public class MemberConverter {
                 member.getCreatedAt()
         );
     }
+
+    public static MemberResDTO.LoginResDTO toLoginResDTO(
+            Member member,
+            String accessToken,
+            String refreshToken,
+            Long expiresIn
+    ) {
+        return new MemberResDTO.LoginResDTO(
+                member.getId(),
+                member.getName(),
+                accessToken,
+                refreshToken,
+                expiresIn
+        );
+    }
 }

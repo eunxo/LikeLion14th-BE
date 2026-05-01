@@ -6,4 +6,6 @@ import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 public interface MemberCommandService {
 
     MemberResDTO.SignUpResDTO signUp(MemberReqDTO.SignUpReqDTO request);
+
+    MemberResDTO.LoginResDTO login(MemberReqDTO.LoginReqDTO request);
 }
