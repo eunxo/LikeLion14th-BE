@@ -41,14 +41,7 @@ public class MemberController implements MemberDocs {
     public ResponseEntity<MemberResDTO.LoginResDTO> login(
             @Valid @RequestBody MemberReqDTO.LoginReqDTO request
     ) {
-        MemberResDTO.LoginResDTO body = new MemberResDTO.LoginResDTO(
-                1L,
-                "홍길동",
-                "eyJhbGciOiJIUzI1NiJ9.dummy.access",
-                "eyJhbGciOiJIUzI1NiJ9.dummy.refresh",
-                3600L
-        );
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(memberCommandService.login(request));
     }
 
     @Override

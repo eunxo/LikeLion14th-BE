@@ -29,7 +29,7 @@ public interface MemberDocs {
 
     @Operation(
             summary = "일반 로그인",
-            description = "이메일·비밀번호로 로그인 후 JWT Access/Refresh 토큰을 발급한다."
+            description = "이메일·비밀번호로 로그인 후 JWT Access/Refresh 토큰을 발급한다. (현재 토큰 3개 필드는 dummy 상수 — 실제 발급은 jjwt 도입 시 service 내부에서 교체 예정)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공",
