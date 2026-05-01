@@ -1,4 +1,8 @@
 package com.project.likelion14thbe.domain.order.service.query;
 
+import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
+
 public interface OrderQueryService {
+
+    OrderResDTO.MyOrderListResDTO getMyOrders(Long memberId, Integer page, Integer size);
 }
