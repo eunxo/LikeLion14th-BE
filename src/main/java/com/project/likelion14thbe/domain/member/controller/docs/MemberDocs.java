@@ -11,18 +11,18 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Member", description = "회원 API — 회원가입, 로그인(일반/카카오), 내 정보 조회, 비밀번호 수정")
+@Tag(name = "Member", description = "회원 API — 회원가입, 로그인, 내 정보 조회, 비밀번호 수정")
 public interface MemberDocs {
 
     @Operation(
             summary = "회원가입",
-            description = "이메일·비밀번호·닉네임으로 신규 회원을 등록한다. 이메일·닉네임 중복 시 409."
+            description = "이메일·비밀번호·이름으로 신규 회원을 등록한다. 이메일 중복 시 409."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공",
                     content = @Content(schema = @Schema(implementation = MemberResDTO.SignUpResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "입력 형식 오류 (이메일/비밀번호/닉네임)", content = @Content),
-            @ApiResponse(responseCode = "409", description = "이미 가입된 이메일 또는 닉네임", content = @Content)
+            @ApiResponse(responseCode = "400", description = "입력 형식 오류 (이메일/비밀번호/이름)", content = @Content),
+            @ApiResponse(responseCode = "409", description = "이미 가입된 이메일", content = @Content)
     })
     ResponseEntity<MemberResDTO.SignUpResDTO> signUp(MemberReqDTO.SignUpReqDTO request);
 
@@ -37,18 +37,6 @@ public interface MemberDocs {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원", content = @Content)
     })
     ResponseEntity<MemberResDTO.LoginResDTO> login(MemberReqDTO.LoginReqDTO request);
-
-    @Operation(
-            summary = "카카오 로그인",
-            description = "프론트에서 받은 카카오 OAuth Access Token을 검증하고 자체 JWT 토큰을 발급한다. 첫 로그인 시 자동 회원가입."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "카카오 로그인 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.KakaoLoginResDTO.class))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 카카오 토큰", content = @Content),
-            @ApiResponse(responseCode = "502", description = "카카오 인증 서버 통신 실패", content = @Content)
-    })
-    ResponseEntity<MemberResDTO.KakaoLoginResDTO> kakaoLogin(MemberReqDTO.KakaoLoginReqDTO request);
 
     @Operation(
             summary = "비밀번호 수정",
