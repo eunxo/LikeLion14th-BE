@@ -17,10 +17,10 @@ public class MemberReqDTO {
             @NotBlank(message = "비밀번호는 필수입니다.")
             @Size(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
             String password,
-            @Schema(description = "닉네임 (2~20자)", example = "bro")
-            @NotBlank(message = "닉네임은 필수입니다.")
-            @Size(min = 2, max = 20, message = "닉네임은 2자 이상 20자 이하여야 합니다.")
-            String nickname
+            @Schema(description = "이름 (2~50자)", example = "홍길동")
+            @NotBlank(message = "이름은 필수입니다.")
+            @Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하여야 합니다.")
+            String name
     ) {
     }
 
@@ -33,15 +33,6 @@ public class MemberReqDTO {
             @Schema(description = "비밀번호", example = "passw0rd!!")
             @NotBlank(message = "비밀번호는 필수입니다.")
             String password
-    ) {
-    }
-
-    @Schema(description = "카카오 로그인 요청 DTO")
-    public record KakaoLoginReqDTO(
-            @Schema(description = "카카오 OAuth Access Token (프론트에서 발급받아 전달)",
-                    example = "kakao_access_token_value")
-            @NotBlank(message = "카카오 액세스 토큰은 필수입니다.")
-            String accessToken
     ) {
     }
 
