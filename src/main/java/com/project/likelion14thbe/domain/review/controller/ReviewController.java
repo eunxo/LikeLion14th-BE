@@ -2,6 +2,8 @@ package com.project.likelion14thbe.domain.review.controller;
 
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
+import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
+import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -10,38 +12,42 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "리뷰 API", description = "리뷰 생성, 조회, 수정, 삭제 기능을 제공합니다.")
 @RequestMapping("/api/v1")
 public class ReviewController {
+
+    private final ReviewCommandService reviewCommandService;
+    private final ReviewQueryService reviewQueryService;
 
     // 1. 리뷰 생성 (POST)
     @PostMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 생성", description = "특정 상품에 대한 리뷰를 작성합니다.")
     public ResponseEntity<String> createReview(
             @PathVariable Long productId,
-            @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq
+            @RequestParam Long userId, // 경로가 아닌 파라미터로 처리 (필요에 따라 수정 가능)
+            @RequestBody ReviewReqDTO.ReviewCreateReq req
     ) {
-        return ResponseEntity.ok("리뷰 생성 완료");
+        reviewCommandService.createReview(productId, userId, req);
+        return ResponseEntity.status(HttpStatus.CREATED).body("리뷰 생성 완료");
     }
 
     // 2. 리뷰 단일 조회 (GET)
     @GetMapping("/products/{productId}/reviews/{reviewId}")
     @Operation(summary = "리뷰 단일 조회", description = "리뷰 ID를 통해 상세 내용을 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공",
-                    content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailRes.class)))
-    })
     public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReview(
             @PathVariable Long productId,
             @PathVariable Long reviewId
     ) {
-        return ResponseEntity.ok(ReviewResDTO.ReviewDetailRes.builder().build());
+        return ResponseEntity.ok(reviewQueryService.getReview(reviewId));
     }
 
     // 3. 리뷰 수정 (PUT) - 명세서의 PUT /api/v1/products/{productId}/reviews/{reviewId} 반영
@@ -67,16 +73,10 @@ public class ReviewController {
 
     // 5. 리뷰 목록 조회 (GET) - 명세서의 page/size 쿼리 파라미터 반영
     @GetMapping("/products/{productId}/reviews")
-    @Operation(summary = "리뷰 목록 조회", description = "해당 상품에 달린 리뷰들을 페이징하여 목록으로 조회합니다.")
-    @Parameters({
-            @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
-            @Parameter(name = "size", description = "한 페이지당 노출 개수", example = "10")
-    })
-    public ResponseEntity<List<ReviewResDTO.ReviewDetailRes>> getReviewList(
-            @PathVariable Long productId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
+    @Operation(summary = "리뷰 목록 조회", description = "해당 상품에 달린 리뷰 목록을 조회합니다.")
+    public ResponseEntity<ReviewResDTO.ReviewListRes> getReviewList(
+            @PathVariable Long productId
     ) {
-        return ResponseEntity.ok(List.of(ReviewResDTO.ReviewDetailRes.builder().build()));
+        return ResponseEntity.ok(reviewQueryService.getReviewsByProduct(productId));
     }
 }
