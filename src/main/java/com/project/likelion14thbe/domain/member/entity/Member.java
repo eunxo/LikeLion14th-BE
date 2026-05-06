@@ -1,6 +1,7 @@
 package com.project.likelion14thbe.domain.member.entity;
 
 import com.project.likelion14thbe.domain.order.entity.Order;
+import com.project.likelion14thbe.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,4 +40,7 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Review> reviews = new ArrayList<>();
 }

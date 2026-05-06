@@ -1,13 +1,34 @@
 package com.project.likelion14thbe.domain.review.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.project.likelion14thbe.domain.member.entity.BaseEntity;
+import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.product.entity.Product;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-public class Review {
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "review")
+public class Review extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "score", nullable = false)
+    private Double score;
+
+    @Column(name = "content", columnDefinition = "TEXT")
+    private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 }

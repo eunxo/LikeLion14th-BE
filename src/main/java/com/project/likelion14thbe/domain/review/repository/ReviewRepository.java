@@ -1,7 +1,7 @@
 package com.project.likelion14thbe.domain.review.repository;
 
-import org.springframework.stereotype.Repository;
+import com.project.likelion14thbe.domain.review.entity.Review;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public interface ReviewRepository {
+public interface ReviewRepository extends JpaRepository<Review, Long> {
 }

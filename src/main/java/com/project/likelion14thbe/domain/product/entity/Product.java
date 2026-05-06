@@ -3,6 +3,7 @@ package com.project.likelion14thbe.domain.product.entity;
 import com.project.likelion14thbe.domain.member.entity.BaseEntity;
 import com.project.likelion14thbe.domain.order.entity.OrderItem;
 
+import com.project.likelion14thbe.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +41,9 @@ public class Product extends BaseEntity {
 
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    private List<Review> reviews = new ArrayList<>();
 
     // 재고 차감 비즈니스 로직
     public void decreaseQuantity(Long count) {
