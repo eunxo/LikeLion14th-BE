@@ -3,6 +3,7 @@ package com.project.likelion14thbe.domain.review.controller;
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
+import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +19,14 @@ import java.util.List;
 public class ReviewController {
 
         private final ReviewCommandService reviewCommandService;
+        private final ReviewQueryService reviewQueryService;
 
         @GetMapping("/products/{productId}/reviews/{reviewId}")
         @Operation(summary = "리뷰 단일 조회", description = "리뷰 id를 입력하여 리뷰를 조회합니다.")
         public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReview(
                         @PathVariable Long productId,
                         @PathVariable Long reviewId) {
-                // 리뷰 조회 로직~~~
-                return ResponseEntity.ok(
-                                ReviewResDTO.ReviewDetailRes.builder().build());
+                return ResponseEntity.ok(reviewQueryService.getReview(reviewId));
         }
 
         @PostMapping("/products/{productId}/reviews")
@@ -70,16 +70,10 @@ public class ReviewController {
                 return ResponseEntity.ok(reviewList);
         }
 
-        @GetMapping("/products/reviews/{userId}") // {reviewId}가 빠짐
+        @GetMapping("/products/reviews/{userId}")
         @Operation(summary = "내 리뷰 목록 조회", description = "내가 작성한 모든 리뷰 목록을 조회합니다.")
         public ResponseEntity<List<ReviewResDTO.ReviewDetailRes>> getMyReviews(
                         @PathVariable Long userId) {
-                // 내 리뷰 목록 조회 로직 Mock data 활용
-                List<ReviewResDTO.ReviewDetailRes> reviewList = List.of(
-                                ReviewResDTO.ReviewDetailRes.builder().build(), // 첫 번째 리뷰
-                                ReviewResDTO.ReviewDetailRes.builder().build() // 두 번째 리뷰
-                );
-
-                return ResponseEntity.ok(reviewList);
+                return ResponseEntity.ok(reviewQueryService.getMyReviews(userId));
         }
 }
