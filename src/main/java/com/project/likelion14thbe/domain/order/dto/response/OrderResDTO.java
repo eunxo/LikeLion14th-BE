@@ -1,6 +1,8 @@
 package com.project.likelion14thbe.domain.order.dto.response;
 
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderResDTO {
@@ -17,5 +19,6 @@ public class OrderResDTO {
         private Integer quantity;
         private Double totalAmount;
         private String status;
+        private LocalDateTime orderDateTime;
     }
 }

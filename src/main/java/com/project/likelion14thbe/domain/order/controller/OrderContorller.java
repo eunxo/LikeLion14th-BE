@@ -1,5 +1,9 @@
 package com.project.likelion14thbe.domain.order.controller;
 
+import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
+import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,22 +19,28 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "주문 API", description = "주문 생성 및 내역 조회 API")
 @RequestMapping("/api/v1")
 public class OrderContorller {
 
+    private final OrderCommandService orderCommandService;
+    private final OrderQueryService orderQueryService;
+
     @PostMapping("/users/{userId}/orders")
-    @Operation(summary = "상품 주문", description = "상품을 구매하여 주문을 생성합니다.")
+    @Operation(summary = "주문하기", description = "상품 ID와 수량을 입력하여 주문을 생성합니다.")
     public ResponseEntity<String> createOrder(
             @PathVariable Long userId,
-            @RequestBody OrderReqDTO.CreateReq createReq) {
-        return ResponseEntity.ok("주문 생성 완료");
+            @RequestBody OrderReqDTO.CreateReq req
+    ) {
+        orderCommandService.createOrder(userId, req);
+        return ResponseEntity.status(HttpStatus.CREATED).body("주문 완료");
     }
 
     @GetMapping("/users/{userId}/orders")
-    @Operation(summary = "내 주문 목록 조회", description = "유저의 전체 주문 내역을 조회합니다.")
+    @Operation(summary = "내 주문 목록 조회")
     public ResponseEntity<OrderResDTO.OrderListRes> getOrders(@PathVariable Long userId) {
-        return ResponseEntity.ok(OrderResDTO.OrderListRes.builder().build());
+        return ResponseEntity.ok(orderQueryService.getOrderHistory(userId));
     }
 
     @DeleteMapping("/orders/{orderId}")
