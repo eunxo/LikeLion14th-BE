@@ -3,6 +3,7 @@ package com.project.likelion14thbe.domain.product.controller;
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.service.command.ProductCommandService;
+import com.project.likelion14thbe.domain.product.service.query.ProductQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 public class ProductContorller {
 
     private final ProductCommandService productCommandService;
+    private final ProductQueryService productQueryService;
 
     @PostMapping("/products")
     @Operation(summary = "상품 등록", description = "상품을 등록합니다.")
@@ -44,9 +46,7 @@ public class ProductContorller {
     public ResponseEntity<ProductResDTO.ProductDetailRes> getProduct (
             @PathVariable Long productId
     ){
-        // 상품 조회 로직~~~
-        return ResponseEntity.ok(
-                ProductResDTO.ProductDetailRes.builder().build());
+        return ResponseEntity.ok(productQueryService.getProduct(productId));
     }
 
     @GetMapping("/products")
