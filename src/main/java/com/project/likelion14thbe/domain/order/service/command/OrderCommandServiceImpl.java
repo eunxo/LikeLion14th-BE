@@ -29,7 +29,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
         Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다."));
 
         Integer totalPrice = product.getPrice() * request.quantity();
         Order order = OrderConverter.toOrder(member, product, request, totalPrice);

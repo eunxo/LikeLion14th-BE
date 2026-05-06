@@ -23,7 +23,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     @Override
     public ProductResDTO.ProductDetailResDTO getProduct(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다."));
         return ProductConverter.toProductDetailResDTO(product);
     }
 

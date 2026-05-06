@@ -28,7 +28,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     @Override
     public ReviewResDTO.ReviewDetailResDTO getReview(Long productId, Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."));
         if (!review.getProduct().getId().equals(productId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 상품의 리뷰가 아닙니다.");
         }
@@ -38,7 +38,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     @Override
     public ReviewResDTO.ReviewListResDTO getReviewList(Long productId, Integer page, Integer size, String sort) {
         if (!productRepository.existsById(productId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다.");
         }
         Sort sortOption = "rating".equals(sort)
                 ? Sort.by(Sort.Direction.DESC, "rating")

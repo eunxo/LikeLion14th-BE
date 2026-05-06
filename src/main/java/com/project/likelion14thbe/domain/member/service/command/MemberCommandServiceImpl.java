@@ -34,7 +34,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."));
         if (!member.getPassword().equals(request.password())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
         }
         String accessToken = "eyJhbGciOiJIUzI1NiJ9.dummy.access";
         String refreshToken = "eyJhbGciOiJIUzI1NiJ9.dummy.refresh";

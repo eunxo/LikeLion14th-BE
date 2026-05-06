@@ -33,7 +33,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다."));
 
         if (reviewRepository.existsByMember_IdAndProduct_Id(memberId, productId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 해당 상품에 리뷰를 작성했습니다.");
