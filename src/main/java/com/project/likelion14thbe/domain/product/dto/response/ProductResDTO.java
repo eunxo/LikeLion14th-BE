@@ -1,6 +1,8 @@
 package com.project.likelion14thbe.domain.product.dto.response;
 
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ProductResDTO {
@@ -35,5 +37,6 @@ public class ProductResDTO {
         private String name;
         private Double price;
         private String imageUrl;
+        private LocalDateTime createdAt;
     }
 }

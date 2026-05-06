@@ -9,6 +9,8 @@ public class ProductReqDTO {
         private String name;
         private Double price;
         private Integer stock;
+        private String category;
+        private String imageUrl;
         private String description;
     }
 }
