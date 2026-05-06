@@ -48,31 +48,6 @@ public class ReviewController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/reviews/{reviewId}")
-    @Operation(summary = "리뷰 수정", description = "본인의 리뷰 내용 및 평점을 수정합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "리뷰 수정 성공"),
-            @ApiResponse(responseCode = "404", description = "해당 리뷰를 찾을 수 없음"),
-            @ApiResponse(responseCode = "403", description = "수정 권한 없음")
-    })
-    public ResponseEntity<String> updateReview(
-            @PathVariable Long reviewId,
-            @RequestBody ReviewReqDTO.ReviewUpdateReq request
-    ) {
-        return ResponseEntity.ok("리뷰 수정 성공");
-    }
-
-    @DeleteMapping("/reviews/{reviewId}")
-    @Operation(summary = "리뷰 삭제", description = "본인이 작성한 리뷰를 삭제합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공"),
-            @ApiResponse(responseCode = "404", description = "해당 리뷰를 찾을 수 없음"),
-            @ApiResponse(responseCode = "403", description = "삭제 권한 없음")
-    })
-    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId) {
-        return ResponseEntity.ok("리뷰 삭제 성공");
-    }
-
     @GetMapping("/reviews/me")
     @Operation(summary = "내 리뷰 조회", description = "로그인한 사용자가 작성한 리뷰 목록을 조회합니다.")
     @ApiResponses({

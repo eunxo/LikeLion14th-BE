@@ -18,6 +18,9 @@ public class ReviewResDTO {
         @Schema(description = "리뷰 고유 ID", example = "123")
         private Long reviewId;
 
+        @Schema(description = "리뷰 제목")
+        private String title;
+
         @Schema(description = "평점", example = "5")
         private Double rating;
 
@@ -40,6 +43,9 @@ public class ReviewResDTO {
 
         @Schema(description = "리뷰 고유 ID", example = "123")
         private Long reviewId;
+
+        @Schema(description = "리뷰제목")
+        private String title;
 
         @Schema(description = "평점", example = "5")
         private Double rating;
