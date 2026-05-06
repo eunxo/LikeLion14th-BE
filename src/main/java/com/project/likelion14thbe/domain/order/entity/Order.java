@@ -1,13 +1,34 @@
 package com.project.likelion14thbe.domain.order.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.project.likelion14thbe.domain.member.entity.BaseEntity;
+import com.project.likelion14thbe.domain.member.entity.Member;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-public class Order {
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "orders")
+public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "order_number", unique = true, nullable = false)
+    private Long orderNumber;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "total_price")
+    private Double totalPrice;
+
+    @Column(name = "total_quantity")
+    private Long totalQuantity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
