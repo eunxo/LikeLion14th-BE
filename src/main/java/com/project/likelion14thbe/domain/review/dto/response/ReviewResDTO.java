@@ -6,6 +6,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewResDTO {
+
+    @Builder
+    public record ReviewCreateRes(
+            Long reviewId,
+            LocalDateTime createdAt
+    ){
+
+    }
+
     @Builder
     public record ReviewDetailRes(
             String content,
@@ -19,7 +28,6 @@ public class ReviewResDTO {
             List<ReviewInfo> datalist
     ) {
 
-        // 리스트 안에 들어갈 개별 주문 데이터
         @Builder
         public record ReviewInfo(
                 Long reviewId,
@@ -27,8 +35,7 @@ public class ReviewResDTO {
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt,
                 Double rating,
-                String nickname,
-                String profileImage
+                String nickname
         ) {
         }
     }
