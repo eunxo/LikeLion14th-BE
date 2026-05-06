@@ -13,8 +13,8 @@ public class ReviewReqDTO {
 
     @Getter
     @Setter
-    public class Test2DTO {
-        private Long id;
+    public static class ReviewUpdateReq {
         private String content;
+        private Double rating;
     }
 }

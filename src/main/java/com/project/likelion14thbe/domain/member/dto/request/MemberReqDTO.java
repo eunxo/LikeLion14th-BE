@@ -9,6 +9,7 @@ public class MemberReqDTO {
         private String name;
         private String email;
         private String password;
+        private String profileImage;
     }
 
     @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
