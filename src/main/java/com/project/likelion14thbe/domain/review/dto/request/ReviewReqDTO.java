@@ -13,6 +13,9 @@ public class ReviewReqDTO {
 
         @Schema(description = "별점", example = "5")
         private Integer rating;
+
+        @Schema(description = "주문상세 ID", example = "1")
+        private Long orderItemId;
     }
 
     @Getter

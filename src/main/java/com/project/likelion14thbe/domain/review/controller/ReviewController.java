@@ -2,6 +2,8 @@ package com.project.likelion14thbe.domain.review.controller;
 
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
+import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
+import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +20,11 @@ import java.util.List;
 @RestController
 @Tag(name = "리뷰 API", description = "리뷰 관련 API")
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class ReviewController {
+
+    private final ReviewCommandService reviewCommandService;
+    private final ReviewQueryService reviewQueryService;
 
     @PostMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 생성", description = "상품에 대한 리뷰를 생성합니다.")
@@ -37,14 +44,7 @@ public class ReviewController {
                         .isSuccess(true)
                         .code("REVIEW201")
                         .message("리뷰 생성 성공")
-                        .result(
-                                ReviewResDTO.ReviewCreateResult.builder()
-                                        .reviewId(1L)
-                                        .productId(productId)
-                                        .content(reviewCreateReq.getContent())
-                                        .rating(reviewCreateReq.getRating())
-                                        .build()
-                        )
+                        .result(reviewCommandService.createReview(productId, reviewCreateReq))
                         .build()
         );
     }
@@ -65,15 +65,7 @@ public class ReviewController {
                         .isSuccess(true)
                         .code("REVIEW200")
                         .message("리뷰 목록 조회 성공")
-                        .result(List.of(
-                                ReviewResDTO.ReviewSummaryRes.builder()
-                                        .reviewId(1L)
-                                        .productId(productId)
-                                        .writerName("홍길동")
-                                        .content("상품이 정말 좋아요.")
-                                        .rating(5)
-                                        .build()
-                        ))
+                        .result(reviewQueryService.getReviews(productId))
                         .build()
         );
     }
@@ -94,22 +86,7 @@ public class ReviewController {
                         .isSuccess(true)
                         .code("REVIEW200")
                         .message("리뷰 단일 조회 성공")
-                        .result(
-                                ReviewResDTO.ReviewDetailResult.builder()
-                                        .reviewId(reviewId)
-                                        .productId(1L)
-                                        .writerName("홍길동")
-                                        .content("상품이 정말 좋아요.")
-                                        .rating(5)
-                                        .comments(List.of(
-                                                ReviewResDTO.CommentRes.builder()
-                                                        .commentId(1L)
-                                                        .content("좋은 리뷰 감사합니다.")
-                                                        .writerName("관리자")
-                                                        .build()
-                                        ))
-                                        .build()
-                        )
+                        .result(reviewQueryService.getReview(reviewId))
                         .build()
         );
     }

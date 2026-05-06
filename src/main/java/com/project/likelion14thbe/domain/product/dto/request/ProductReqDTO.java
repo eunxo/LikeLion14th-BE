@@ -17,7 +17,10 @@ public class ProductReqDTO {
         @Schema(description = "상품 가격", example = "12000")
         private Integer price;
 
-        @Schema(description = "상품 이미지 URL", example = "https://example.com/product1.png")
-        private String imageUrl;
+        @Schema(description = "재고", example = "10")
+        private Integer stock;
+
+        @Schema(description = "카테고리 ID", example = "1")
+        private Long categoryId;
     }
 }

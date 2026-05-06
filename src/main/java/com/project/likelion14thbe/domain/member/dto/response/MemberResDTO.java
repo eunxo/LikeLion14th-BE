@@ -4,21 +4,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 public class MemberResDTO {
 
-    @Getter
     @Builder
-    public static class SignUpRes {
-
-        @Schema(description = "성공 여부", example = "true")
-        private boolean isSuccess;
-
-        @Schema(description = "응답 코드", example = "USER201")
-        private String code;
-
-        @Schema(description = "응답 메시지", example = "회원가입 성공")
-        private String message;
+    public record SignUpRes(
+            Long id,
+            LocalDateTime createdAt
+    ) {
     }
+
+
+    @Builder
+    public record MemberPreviewResDTO(
+            Long id,
+            String name
+    ) {
+    }
+
 
     @Getter
     @Builder
