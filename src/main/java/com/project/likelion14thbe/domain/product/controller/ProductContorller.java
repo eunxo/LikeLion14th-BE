@@ -53,14 +53,6 @@ public class ProductContorller {
     @Operation(summary = "상품 목록 조회", description = "상품 목록을 조회합니다.")
     public ResponseEntity<List<ProductResDTO.ProductDetailRes>> getProductList (
     ){
-        // 개별 상품 조회때 사용한 DTO 재사용
-
-        // 상품 목록 조회 로직 Mock data 활용
-        List<ProductResDTO.ProductDetailRes> productList = List.of(
-                ProductResDTO.ProductDetailRes.builder().build(), // 첫 번째 상품
-                ProductResDTO.ProductDetailRes.builder().build()  // 두 번째 상품
-        );
-
-        return ResponseEntity.ok(productList);
+        return ResponseEntity.ok(productQueryService.getProductList());
     }
 }
