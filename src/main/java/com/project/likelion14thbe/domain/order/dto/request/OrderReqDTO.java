@@ -32,4 +32,5 @@ public class OrderReqDTO {
         @Schema(description = "주문 수량", example = "2")
         private Integer quantity;
     }
+
 }

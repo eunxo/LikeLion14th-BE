@@ -2,10 +2,13 @@ package com.project.likelion14thbe.domain.order.controller;
 
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
+import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
+import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +17,11 @@ import java.util.List;
 @RestController
 @Tag(name = "Order", description = "주문 관련 API")
 @RequestMapping("/api/v1/orders")
+@RequiredArgsConstructor
 public class OrderController {
+
+    private final OrderCommandService orderCommandService;
+    private final OrderQueryService orderQueryService;
 
     @PostMapping("")
     @Operation(summary = "주문 생성", description = "상품 리스트와 배송 정보를 받아 새로운 주문을 생성합니다.")
@@ -35,5 +42,16 @@ public class OrderController {
     })
     public ResponseEntity<List<OrderResDTO.OrderHistoryRes>> getMyOrders() {
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/{orderId}")
+    @Operation(summary = "내 주문 상세 조회", description = "로그인한 사용자의 주문 ID를 이용해 특정 주문의 상세 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없음")
+    })
+    public ResponseEntity<OrderResDTO.OrderDetailResDto> getMyOrderDetail(
+            @PathVariable Long orderId
+    ) {
+        return ResponseEntity.ok(orderQueryService.getOrder(orderId));
     }
 }
