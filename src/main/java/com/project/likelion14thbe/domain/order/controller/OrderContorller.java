@@ -1,6 +1,8 @@
 package com.project.likelion14thbe.domain.order.controller;
 
+import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
+import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
 import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +19,15 @@ import java.util.List;
 public class OrderContorller {
 
     private final OrderQueryService orderQueryService;
+    private final OrderCommandService orderCommandService;
+
+    @PostMapping("/orders")
+    @Operation(summary = "주문 생성", description = "주문 내역을 생성합니다")
+    public ResponseEntity<String> createOrder(
+            @RequestBody OrderReqDTO.CreateOrderReqDTO createOrderReqDTO
+    ){
+        return ResponseEntity.ok(orderCommandService.createOrder(createOrderReqDTO));
+    }
 
     @GetMapping("/orders/list/{memberId}")
     @Operation(summary = "내 주문 목록 조회", description = "내 주문 목록을 조회합니다.")

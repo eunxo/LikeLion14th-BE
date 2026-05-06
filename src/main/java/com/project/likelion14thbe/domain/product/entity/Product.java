@@ -1,9 +1,13 @@
 package com.project.likelion14thbe.domain.product.entity;
 
 import com.project.likelion14thbe.domain.member.entity.BaseEntity;
+import com.project.likelion14thbe.domain.order.entity.OrderItem;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,4 +37,15 @@ public class Product extends BaseEntity {
 
     @Column(name = "quantity", nullable = false)
     private Long quantity;
+
+    @OneToMany(mappedBy = "product")
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    // 재고 차감 비즈니스 로직
+    public void decreaseQuantity(Long count) {
+        if (this.quantity < count) {
+            throw new IllegalArgumentException("상품의 재고가 부족합니다.");
+        }
+        this.quantity -= count;
+    }
 }
