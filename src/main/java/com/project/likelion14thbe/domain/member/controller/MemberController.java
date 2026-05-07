@@ -2,39 +2,55 @@ package com.project.likelion14thbe.domain.member.controller;
 
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
+import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
+import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "회원 API", description = "회원 관련 API")
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class MemberController {
+
+    private final MemberQueryService memberQueryService;
+    private final MemberCommandService memberCommandService;
 
     @PostMapping("/auth/signup")
     @Operation(summary = "회원가입", description = "이름, 이메일, 비밀번호를 입력하여 회원가입을 진행합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공",
+            @ApiResponse(responseCode = "200", description = "회원가입 성공",
                     content = @Content(schema = @Schema(implementation = MemberResDTO.SignUpRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청값"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "이미 존재하는 이메일")
+            @ApiResponse(responseCode = "400", description = "잘못된 요청값"),
+            @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일")
     })
     public ResponseEntity<MemberResDTO.SignUpRes> signup(
-            @RequestBody(description = "회원가입 요청 데이터", required = true)
-            @org.springframework.web.bind.annotation.RequestBody MemberReqDTO.SignUpReq request
+            @RequestBody MemberReqDTO.SignUpReq request
     ) {
-        return ResponseEntity.ok(
-                MemberResDTO.SignUpRes.builder()
-                        .isSuccess(true)
-                        .code("USER201")
-                        .message("회원가입 성공")
-                        .build()
-        );
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(memberCommandService.signUp(request));
+    }
+
+    @GetMapping("/users/{memberId}")
+    @Operation(summary = "회원 조회", description = "회원 ID로 회원의 기본 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 조회 성공",
+                    content = @Content(schema = @Schema(implementation = MemberResDTO.MemberPreviewResDTO.class))),
+            @ApiResponse(responseCode = "404", description = "사용자 없음")
+    })
+    public ResponseEntity<MemberResDTO.MemberPreviewResDTO> getMember(
+            @PathVariable Long memberId
+    ) {
+        return ResponseEntity.ok(memberQueryService.getMember(memberId));
     }
 
     @PostMapping("/auth/login")
@@ -46,8 +62,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
     public ResponseEntity<MemberResDTO.LoginRes> login(
-            @RequestBody(description = "로그인 요청 데이터", required = true)
-            @org.springframework.web.bind.annotation.RequestBody MemberReqDTO.LoginReq request
+            @RequestBody(required = true) MemberReqDTO.LoginReq request
     ) {
         return ResponseEntity.ok(
                 MemberResDTO.LoginRes.builder()
@@ -67,8 +82,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "유효하지 않은 토큰")
     })
     public ResponseEntity<MemberResDTO.KakaoLoginRes> kakaoLogin(
-            @RequestBody(description = "카카오 로그인 요청 데이터", required = true)
-            @org.springframework.web.bind.annotation.RequestBody MemberReqDTO.KakaoLoginReq request
+            @RequestBody(required = true) MemberReqDTO.KakaoLoginReq request
     ) {
         return ResponseEntity.ok(
                 MemberResDTO.KakaoLoginRes.builder()
@@ -131,8 +145,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패")
     })
     public ResponseEntity<MemberResDTO.UpdateRes> updateMember(
-            @RequestBody(description = "회원 수정 요청", required = true)
-            @org.springframework.web.bind.annotation.RequestBody MemberReqDTO.UpdateReq request
+            @RequestBody(required = true) MemberReqDTO.UpdateReq request
     ) {
         return ResponseEntity.ok(
                 MemberResDTO.UpdateRes.builder()

@@ -1,8 +1,41 @@
 package com.project.likelion14thbe.domain.member.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
 
-//@Entity
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "user")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Member {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long userId;
 
+    @Column(nullable = false, unique = true, length = 255)
+    private String email;
+
+    @Column(nullable = false, length = 255)
+    private String password;
+
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @Column(nullable = false, length = 50)
+    @Builder.Default
+    private String provider = "local";
+
+    @Column(name = "created_at", nullable = false)
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private String status = "active";
 }

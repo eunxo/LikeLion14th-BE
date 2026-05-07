@@ -2,6 +2,8 @@ package com.project.likelion14thbe.domain.order.controller;
 
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
+import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
+import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +20,11 @@ import java.util.List;
 @RestController
 @Tag(name = "주문 API", description = "주문 관련 API")
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class OrderController {
+
+    private final OrderCommandService orderCommandService;
+    private final OrderQueryService orderQueryService;
 
     @PostMapping("/orders")
     @Operation(summary = "상품 주문", description = "상품을 주문합니다.")
@@ -33,13 +40,7 @@ public class OrderController {
                         .isSuccess(true)
                         .code("ORDER201")
                         .message("주문 성공")
-                        .result(
-                                OrderResDTO.OrderCreateResult.builder()
-                                        .orderId(1L)
-                                        .productId(request.getProductId())
-                                        .quantity(request.getQuantity())
-                                        .build()
-                        )
+                        .result(orderCommandService.createOrder(request))
                         .build()
         );
     }
@@ -56,14 +57,7 @@ public class OrderController {
                         .isSuccess(true)
                         .code("ORDER200")
                         .message("주문 목록 조회 성공")
-                        .result(List.of(
-                                OrderResDTO.OrderSummaryRes.builder()
-                                        .orderId(1L)
-                                        .productName("무드등")
-                                        .quantity(2)
-                                        .status("ORDERED")
-                                        .build()
-                        ))
+                        .result(orderQueryService.getOrders())
                         .build()
         );
     }
