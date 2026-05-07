@@ -41,4 +41,21 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Long expiresIn = 3600L;
         return MemberConverter.toLoginResDTO(member, accessToken, refreshToken, expiresIn);
     }
+
+    @Override
+    public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto) {
+        // 회원 정보 조회
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        member.updatePassword(dto.password());
+    }
+
+    @Override
+    public void deleteMember(Long memberId) {
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        member.softDelete();
+    }
 }
