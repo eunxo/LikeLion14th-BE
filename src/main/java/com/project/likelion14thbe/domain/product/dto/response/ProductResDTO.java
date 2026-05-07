@@ -1,34 +1,39 @@
 package com.project.likelion14thbe.domain.product.dto.response;
 
-import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import lombok.Builder;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ProductResDTO {
+
+    @Builder
+    public record ProductCreateRes(
+            Long id,
+            LocalDateTime createdAt
+    ){
+
+    }
 
     @Builder
     public record ProductGetRes(
             List<ProductInfo> datalist
     ) {
 
-        // 리스트 안에 들어갈 개별 주문 데이터
         @Builder
         public record ProductInfo(
                 Long productId,
                 String name,
-                Double price,
-                String photo
+                Integer price
         ) {
         }
     }
 
     @Builder
-    public record ProductGetDeatilRes(
+    public record ProductGetDetailRes(
             Long productId,
             String name,
-            Double price,
+            Integer price,
             float rating,
             String description
     ){
