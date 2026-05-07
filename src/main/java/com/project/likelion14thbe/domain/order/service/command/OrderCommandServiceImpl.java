@@ -2,6 +2,7 @@ package com.project.likelion14thbe.domain.order.service.command;
 
 import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
+import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.order.entity.OrderItem;
@@ -46,14 +47,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
         }
 
         // 3. 주문(Order) 생성 (DB 저장 전)
-        Order order = Order.builder()
-                .member(member)
-                .orderNumber(System.currentTimeMillis()) // 임시로 시간값 사용
-                .status("주문 완료")
-                .totalPrice(totalPrice)
-                .totalQuantity(totalQuantity)
-                .orderItems(new ArrayList<>())
-                .build();
+        Order order = OrderConverter.toOrder(member, totalPrice, totalQuantity);
 
         // 4. 상품의 재고 차감 및 OrderItem 생성 후 Order에 연결
         for (OrderReqDTO.OrderItemReq orderItemReq : createOrderReqDTO.orderItems()) {
@@ -62,12 +56,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
             // 엔티티에 만들어둔 메서드로 재고 차감
             product.decreaseQuantity(orderItemReq.quantity());
 
-            OrderItem orderItem = OrderItem.builder()
-                    .order(order)
-                    .product(product)
-                    .quantity(orderItemReq.quantity())
-                    .orderPrice(product.getPrice())
-                    .build();
+            OrderItem orderItem = OrderConverter.toOrderItem(order, product, orderItemReq.quantity());
 
             // Order 엔티티의 리스트에 추가
             order.getOrderItems().add(orderItem);
