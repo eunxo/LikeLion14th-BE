@@ -3,12 +3,14 @@ package com.project.likelion14thbe.domain.review.controller;
 import com.project.likelion14thbe.domain.review.controller.docs.ReviewDocs;
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
+import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
+import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,22 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class ReviewController implements ReviewDocs {
+
+    private final ReviewCommandService reviewCommandService;
+    private final ReviewQueryService reviewQueryService;
 
     @Override
     @PostMapping("/products/{productId}/reviews")
     public ResponseEntity<ReviewResDTO.CreateReviewResDTO> createReview(
             @PathVariable Long productId,
+            @RequestParam Long memberId,
             @Valid @RequestBody ReviewReqDTO.CreateReviewReqDTO request
     ) {
-        ReviewResDTO.CreateReviewResDTO body = new ReviewResDTO.CreateReviewResDTO(
-                123L,
-                productId,
-                "bro",
-                request.rating(),
-                request.content(),
-                LocalDateTime.now()
-        );
+        ReviewResDTO.CreateReviewResDTO body =
+                reviewCommandService.createReview(memberId, productId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
@@ -46,16 +47,7 @@ public class ReviewController implements ReviewDocs {
             @PathVariable Long productId,
             @PathVariable Long reviewId
     ) {
-        ReviewResDTO.ReviewDetailResDTO body = new ReviewResDTO.ReviewDetailResDTO(
-                reviewId,
-                productId,
-                "bro",
-                4.5,
-                "nice!",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(reviewQueryService.getReview(productId, reviewId));
     }
 
     @Override
@@ -66,14 +58,7 @@ public class ReviewController implements ReviewDocs {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "latest") String sort
     ) {
-        List<ReviewResDTO.ReviewItemDTO> reviewList = List.of(
-                new ReviewResDTO.ReviewItemDTO(1L, "bro", 4.5, "nice!", LocalDateTime.now()),
-                new ReviewResDTO.ReviewItemDTO(2L, "bro", 5.0, "이 제품 정말 좋아요", LocalDateTime.now())
-        );
-        ReviewResDTO.ReviewListResDTO body = new ReviewResDTO.ReviewListResDTO(
-                productId, 123L, 13, page, size, false, reviewList
-        );
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(reviewQueryService.getReviewList(productId, page, size, sort));
     }
 
     @Override
@@ -85,7 +70,7 @@ public class ReviewController implements ReviewDocs {
     ) {
         ReviewResDTO.UpdateReviewResDTO body = new ReviewResDTO.UpdateReviewResDTO(
                 reviewId,
-                "bro",
+                "홍길동",
                 request.rating() != null ? request.rating() : 5.0,
                 request.content() != null ? request.content() : "다시 먹어봤는데 더 맛있네요!",
                 LocalDateTime.now()
@@ -109,18 +94,10 @@ public class ReviewController implements ReviewDocs {
     @Override
     @GetMapping("/members/me/reviews")
     public ResponseEntity<ReviewResDTO.MyReviewListResDTO> getMyReviews(
+            @RequestParam Long memberId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        List<ReviewResDTO.MyReviewItemDTO> reviewList = List.of(
-                new ReviewResDTO.MyReviewItemDTO(
-                        1L, 5L, "사과", 4.5, "nice!",
-                        LocalDateTime.now(), LocalDateTime.now()
-                )
-        );
-        ReviewResDTO.MyReviewListResDTO body = new ReviewResDTO.MyReviewListResDTO(
-                7L, 1, page, size, true, reviewList
-        );
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(reviewQueryService.getMyReviews(memberId, page, size));
     }
 }
