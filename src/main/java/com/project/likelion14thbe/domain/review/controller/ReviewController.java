@@ -33,10 +33,9 @@ public class ReviewController {
                 .body(reviewCommandService.createReview(reviewCreateReq, productId, memberId));
     }
 
-    @GetMapping("/products/{productId}/reviews/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 단일 조회", description = "리뷰 id를 입력하여 리뷰를 조회합니다")
     public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReview(
-            @PathVariable Long productId,
             @PathVariable Long reviewId
     ){
         return ResponseEntity.ok(reviewQueryService.getReviewDetail(reviewId));
