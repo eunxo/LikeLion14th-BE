@@ -21,6 +21,10 @@ public class OrderReqDTO {
 
         @Schema(description = "결제 수단 (CARD, TRANSFER)", example = "CARD")
         private String paymentMethod;
+
+        @Schema(description = "총 금액")
+        private Integer totalAmount;
+
     }
 
     @Getter

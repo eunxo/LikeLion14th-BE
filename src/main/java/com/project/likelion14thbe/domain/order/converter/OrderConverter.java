@@ -6,14 +6,17 @@ import com.project.likelion14thbe.domain.order.entity.Order;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderConverter {
 
     // 1. DTO -> Entity 변환: 주문 생성
     public static Order toOrder(OrderReqDTO.CreateOrderReq request) {
         return Order.builder()
+                .totalAmount(request.getTotalAmount())
+                .date(LocalDateTime.now())
                 .build();
     }
 
@@ -41,7 +44,6 @@ public class OrderConverter {
                 .orderDate(order.getDate() != null ? order.getDate().toString() : null)
                 .totalAmount(order.getTotalAmount())
                 .status(order.getStatus())
-                // .orderItems(...)
                 .build();
     }
 

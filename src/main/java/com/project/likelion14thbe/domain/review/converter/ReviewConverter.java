@@ -24,7 +24,6 @@ public class ReviewConverter {
                 .reviewId(review.getReviewId())
                 .rating(review.getRating() != null ? review.getRating().doubleValue() : null) // Entity(Double) -> DTO(Integer) 변환
                 .title(review.getTitle())
-                .createdAt(review.getDate() != null ? review.getDate().toString() : null)
                 .build();
     }
 
@@ -35,7 +34,7 @@ public class ReviewConverter {
                 .rating(review.getRating() != null ? review.getRating().doubleValue() : null)
                 .title(review.getTitle())
                 .content(review.getContent())
-                .createdAt(review.getDate() != null ? review.getDate().toString() : null)
+                .nickname(review.getMember() != null ? review.getMember().getName() : "익명")
                 .build();
     }
 }

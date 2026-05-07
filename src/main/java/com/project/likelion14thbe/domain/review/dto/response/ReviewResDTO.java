@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class ReviewResDTO {
 
     @Builder
@@ -27,8 +29,8 @@ public class ReviewResDTO {
         @Schema(description = "리뷰 내용", example = "이 제품 정말 좋아요 !! 다들 구매하세요 ~!")
         private String content;
 
-        @Schema(description = "작성 일시", example = "2026-04-30T15:48:09.025Z")
-        private String createdAt;
+        @Schema(description = "작성 일시")
+        private LocalDateTime date;
 
         @Schema(description = "작성자 닉네임", example = "Bruno Fernandes")
         private String nickname;

@@ -2,6 +2,8 @@ package com.project.likelion14thbe.domain.review.controller;
 
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
+import com.project.likelion14thbe.domain.review.service.command.ReviewCommandServiceImpl;
+import com.project.likelion14thbe.domain.review.service.query.ReviewQueryServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,45 +18,43 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class ReviewController {
 
+    private final ReviewCommandServiceImpl reviewCommandServiceImpl;
+    private final ReviewQueryServiceImpl reviewQueryServiceImpl;
+
+    public ReviewController(ReviewCommandServiceImpl reviewCommandServiceImpl, ReviewQueryServiceImpl reviewQueryServiceImpl) {
+        this.reviewCommandServiceImpl = reviewCommandServiceImpl;
+        this.reviewQueryServiceImpl = reviewQueryServiceImpl;
+    }
+
     @PostMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 작성", description = "특정 상품에 대한 리뷰를 작성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공"),
             @ApiResponse(responseCode = "404", description = "해당 상품을 찾을 수 없음")
     })
-    public ResponseEntity<String> createReview(
+    public ResponseEntity<Long> createReview(
             @PathVariable Long productId,
             @RequestBody ReviewReqDTO.ReviewCreateReq request
     ) {
-        return ResponseEntity.ok("리뷰 작성 성공");
+        Long reviewId = reviewCommandServiceImpl.createReview(productId, request);
+        return ResponseEntity.ok(reviewId);
     }
 
     @GetMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 목록 조회", description = "특정 상품에 대한 리뷰 목록을 조회합니다.")
     public ResponseEntity<List<ReviewResDTO.ReviewListRes>> getReviews(@PathVariable Long productId) {
-        return ResponseEntity.ok().build();
+        List<ReviewResDTO.ReviewListRes> response = reviewQueryServiceImpl.getReviews(productId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/products/{productId}/reviews/{reviewId}")
     @Operation(summary = "단일 리뷰 조회", description = "특정 상품의 단일 리뷰 상세 정보를 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "리뷰를 찾을 수 없음")
-    })
     public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReviewDetail(
             @PathVariable Long productId,
             @PathVariable Long reviewId
     ) {
-        return ResponseEntity.ok().build();
+        ReviewResDTO.ReviewDetailRes response = reviewQueryServiceImpl.getReviewDetail(productId, reviewId);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/reviews/me")
-    @Operation(summary = "내 리뷰 조회", description = "로그인한 사용자가 작성한 리뷰 목록을 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
-    public ResponseEntity<List<ReviewResDTO.ReviewListRes>> getMyReviews() {
-        return ResponseEntity.ok().build();
-    }
 }

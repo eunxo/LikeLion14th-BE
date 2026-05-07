@@ -30,10 +30,10 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "재고 부족 또는 잘못된 요청"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    public ResponseEntity<String> createOrder(@RequestBody OrderReqDTO.CreateOrderReq request) {
-        return ResponseEntity.ok("주문이 성공적으로 완료되었습니다.");
+    public ResponseEntity<OrderResDTO.OrderCreateResDto> createOrder(@RequestBody OrderReqDTO.CreateOrderReq request) {
+        OrderResDTO.OrderCreateResDto response = orderCommandService.createOrder(request);
+        return ResponseEntity.ok(response);
     }
-
     @GetMapping("/me")
     @Operation(summary = "내 주문 목록 조회", description = "현재 로그인한 사용자의 과거 주문 내역을 모두 조회합니다.")
     @ApiResponses({

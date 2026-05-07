@@ -18,7 +18,7 @@ public class OrderResDTO {
     public static class OrderHistoryRes {
 
         @Schema(description = "주문 ID", example = "20260430-001")
-        private String orderId;
+        private Long orderId;
 
         @Schema(description = "주문 날짜", example = "2026-04-30T13:37:10")
         private String orderDate;
@@ -60,7 +60,7 @@ public class OrderResDTO {
         private Long id;
 
         @Schema(description = "주문 번호", example = "20260430-001")
-        private String orderId;
+        private  Long orderId;
 
         @Schema(description = "주문 날짜", example = "2026-04-30T13:37:10")
         private String orderDate;
@@ -92,6 +92,9 @@ public class OrderResDTO {
         private Long id;
 
         @Schema(description = "주문 번호", example = "20260430-001")
-        private String orderId;
+        private Long orderId;
+
+        @Schema(description = "총 금액")
+        private Long totalAmount;
     }
 }

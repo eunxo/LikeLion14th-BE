@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order_item {
+public class Orderitem {
 
     @Id // 기본키
     @GeneratedValue(strategy = GenerationType.IDENTITY) //기본키 값을 자동으로 생성

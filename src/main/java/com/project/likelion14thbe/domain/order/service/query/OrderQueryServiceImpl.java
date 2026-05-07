@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.order.service.query;
 
+import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
@@ -22,24 +23,15 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
 
-        return OrderResDTO.OrderDetailResDto.builder()
-                .id(order.getMember().getId())
-                .orderId(order.getOrderId())
-                .orderDate(order.getDate() != null ? order.getDate().toString() : null)
-                .totalAmount(order.getTotalAmount())
-                .status(order.getStatus())
-                .build();
+        return OrderConverter.toOrderDetailResDto(order);
     }
 
     @Override
     public List<OrderResDTO.OrderHistoryRes> getOrderList() {
-        return orderRepository.findAll().stream()
-                .map(order -> OrderResDTO.OrderHistoryRes.builder()
-                        .orderId(order.getOrderId())
-                        .orderDate(order.getDate() != null ? order.getDate().toString() : null)
-                        .totalAmount(order.getTotalAmount())
-                        .status(order.getStatus())
-                        .build())
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .map(OrderConverter::toOrderHistoryRes)
                 .collect(Collectors.toList());
     }
 }
