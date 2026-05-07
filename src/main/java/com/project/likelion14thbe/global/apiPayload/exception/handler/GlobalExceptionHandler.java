@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,26 @@ public class GlobalExceptionHandler {
                 .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors));
     }
 
-    // 단일 파라미터 검증 (path/query parameter, @Validated)
+    // 단일 파라미터 검증 — Spring 6.1+ 내장 method validation (Boot 4 메인)
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<CustomResponse<Map<String, String>>> handleHandlerMethodValidation(
+            HandlerMethodValidationException ex
+    ) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getParameterValidationResults().forEach(result -> {
+            String name = result.getMethodParameter().getParameterName();
+            String message = result.getResolvableErrors().isEmpty()
+                    ? "검증 실패"
+                    : result.getResolvableErrors().get(0).getDefaultMessage();
+            errors.put(name != null ? name : "param", message);
+        });
+        log.warn("[ HandlerMethodValidationException ]: {}", errors);
+        BaseErrorCode errorCode = GeneralErrorCode.VALIDATION_FAILED;
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors));
+    }
+
+    // 단일 파라미터 검증 — 클래스 레벨 @Validated AOP 방식 (구식, Boot 4에서는 권장 X)
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<CustomResponse<Map<String, String>>> handleConstraintViolation(
             ConstraintViolationException ex
