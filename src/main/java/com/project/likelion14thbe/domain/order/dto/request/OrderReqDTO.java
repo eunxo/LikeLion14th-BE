@@ -4,7 +4,7 @@ import lombok.*;
 
 public class OrderReqDTO {
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Getter
     public static class CreateReq {
         private Long productId;
         private Integer quantity;

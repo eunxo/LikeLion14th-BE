@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewResDTO {
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Builder @Getter
     public static class ReviewDetailRes {
         private Long id;
         private String content;
@@ -13,7 +13,7 @@ public class ReviewResDTO {
         private LocalDateTime createdAt;
     }
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Builder @Getter
     public static class ReviewListRes {
         private List<ReviewDetailRes> reviews;
     }

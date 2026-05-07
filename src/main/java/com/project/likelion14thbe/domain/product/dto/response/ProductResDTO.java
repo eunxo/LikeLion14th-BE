@@ -8,20 +8,20 @@ import java.util.List;
 public class ProductResDTO {
 
     // 홈 화면 응답용
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Builder @Getter
     public static class HomeRes {
         private List<String> categories;
         private List<ProductItem> popularProducts;
     }
 
-    // 상품 목록 응답용 (여기 이름을 ListRes로 맞췄습니다!)
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    // 상품 목록 응답용
+    @Builder @Getter
     public static class ListRes {
         private List<ProductItem> products;
     }
 
     // 상품 상세 응답용
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Builder @Getter
     public static class ProductDetailRes {
         private Long productId;
         private String name;
@@ -31,7 +31,7 @@ public class ProductResDTO {
     }
 
     // 공통으로 사용하는 상품 아이템 정보
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Builder @Getter
     public static class ProductItem {
         private Long productId;
         private String name;

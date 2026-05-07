@@ -41,7 +41,7 @@ public class ReviewController {
     }
 
     // 2. 리뷰 단일 조회 (GET)
-    @GetMapping("/products/{productId}/reviews/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 단일 조회", description = "리뷰 ID를 통해 상세 내용을 조회합니다.")
     public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReview(
             @PathVariable Long productId,
@@ -51,7 +51,7 @@ public class ReviewController {
     }
 
     // 3. 리뷰 수정 (PUT) - 명세서의 PUT /api/v1/products/{productId}/reviews/{reviewId} 반영
-    @PutMapping("/products/{productId}/reviews/{reviewId}")
+    @PutMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 수정", description = "작성한 리뷰의 내용이나 별점을 수정합니다.")
     public ResponseEntity<String> updateReview(
             @PathVariable Long productId,
@@ -62,7 +62,7 @@ public class ReviewController {
     }
 
     // 4. 리뷰 삭제 (DELETE) - 명세서의 DELETE /api/v1/products/{productId}/reviews/{reviewId} 반영
-    @DeleteMapping("/products/{productId}/reviews/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 삭제", description = "리뷰 ID를 통해 리뷰를 삭제합니다.")
     public ResponseEntity<String> deleteReview(
             @PathVariable Long productId,

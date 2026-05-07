@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class MemberResDTO {
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Builder @Getter
     public static class ProfileRes {
         private String name;
         private String email;
