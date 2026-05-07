@@ -6,15 +6,15 @@ import com.project.likelion14thbe.domain.review.converter.ReviewConverter;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
 import com.project.likelion14thbe.domain.review.repository.ReviewRepository;
+import com.project.likelion14thbe.domain.review.exception.ReviewErrorCode;
+import com.project.likelion14thbe.domain.review.exception.ReviewException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +28,9 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     @Override
     public ReviewResDTO.ReviewDetailResDTO getReview(Long productId, Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."));
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
         if (!review.getProduct().getId().equals(productId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 상품의 리뷰가 아닙니다.");
+            throw new ReviewException(ReviewErrorCode.REVIEW_NOT_BELONG_TO_PRODUCT);
         }
         return ReviewConverter.toReviewDetailResDTO(review);
     }
@@ -38,7 +38,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     @Override
     public ReviewResDTO.ReviewListResDTO getReviewList(Long productId, Integer page, Integer size, String sort) {
         if (!productRepository.existsById(productId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다.");
+            throw new ReviewException(ReviewErrorCode.REVIEW_PRODUCT_NOT_FOUND);
         }
         Sort sortOption = "rating".equals(sort)
                 ? Sort.by(Sort.Direction.DESC, "rating")
@@ -51,7 +51,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     @Override
     public ReviewResDTO.MyReviewListResDTO getMyReviews(Long memberId, Integer page, Integer size) {
         if (!memberRepository.existsById(memberId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다.");
+            throw new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND);
         }
         Pageable pageable = PageRequest.of(page, size);
         Page<Review> reviews = reviewRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId, pageable);

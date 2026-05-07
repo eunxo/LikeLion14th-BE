@@ -9,11 +9,11 @@ import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
 import com.project.likelion14thbe.domain.review.repository.ReviewRepository;
+import com.project.likelion14thbe.domain.review.exception.ReviewErrorCode;
+import com.project.likelion14thbe.domain.review.exception.ReviewException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +31,12 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
             ReviewReqDTO.CreateReviewReqDTO request
     ) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND));
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_PRODUCT_NOT_FOUND));
 
         if (reviewRepository.existsByMember_IdAndProduct_Id(memberId, productId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 해당 상품에 리뷰를 작성했습니다.");
+            throw new ReviewException(ReviewErrorCode.REVIEW_ALREADY_EXISTS);
         }
 
         Review review = ReviewConverter.toReview(member, product, request);
