@@ -1,7 +1,11 @@
 package com.project.likelion14thbe.domain.review.repository;
 
-import org.springframework.stereotype.Repository;
+import com.project.likelion14thbe.domain.review.entity.Review;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public interface ReviewRepository {
+import java.util.List;
+
+public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+    List<Review> findAllByMemberId(Long memberId);
 }
