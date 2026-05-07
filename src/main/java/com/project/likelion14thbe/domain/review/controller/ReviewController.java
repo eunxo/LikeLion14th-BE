@@ -2,7 +2,9 @@ package com.project.likelion14thbe.domain.review.controller;
 
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
+import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandServiceImpl;
+import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,12 +20,12 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class ReviewController {
 
-    private final ReviewCommandServiceImpl reviewCommandServiceImpl;
-    private final ReviewQueryServiceImpl reviewQueryServiceImpl;
+    private final ReviewCommandService reviewCommandService;
+    private final ReviewQueryService reviewQueryService;
 
-    public ReviewController(ReviewCommandServiceImpl reviewCommandServiceImpl, ReviewQueryServiceImpl reviewQueryServiceImpl) {
-        this.reviewCommandServiceImpl = reviewCommandServiceImpl;
-        this.reviewQueryServiceImpl = reviewQueryServiceImpl;
+    public ReviewController(ReviewCommandServiceImpl reviewCommandServiceImpl, ReviewQueryServiceImpl reviewQueryServiceImpl, ReviewCommandService reviewCommandService, ReviewQueryService reviewQueryService) {
+        this.reviewCommandService = reviewCommandService;
+        this.reviewQueryService = reviewQueryService;
     }
 
     @PostMapping("/products/{productId}/reviews")
@@ -36,14 +38,14 @@ public class ReviewController {
             @PathVariable Long productId,
             @RequestBody ReviewReqDTO.ReviewCreateReq request
     ) {
-        Long reviewId = reviewCommandServiceImpl.createReview(productId, request);
+        Long reviewId = reviewCommandService.createReview(productId, request);
         return ResponseEntity.ok(reviewId);
     }
 
     @GetMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 목록 조회", description = "특정 상품에 대한 리뷰 목록을 조회합니다.")
     public ResponseEntity<List<ReviewResDTO.ReviewListRes>> getReviews(@PathVariable Long productId) {
-        List<ReviewResDTO.ReviewListRes> response = reviewQueryServiceImpl.getReviews(productId);
+        List<ReviewResDTO.ReviewListRes> response = reviewQueryService.getReviews(productId);
         return ResponseEntity.ok(response);
     }
 
@@ -53,7 +55,7 @@ public class ReviewController {
             @PathVariable Long productId,
             @PathVariable Long reviewId
     ) {
-        ReviewResDTO.ReviewDetailRes response = reviewQueryServiceImpl.getReviewDetail(productId, reviewId);
+        ReviewResDTO.ReviewDetailRes response = reviewQueryService.getReviewDetail(productId, reviewId);
         return ResponseEntity.ok(response);
     }
 

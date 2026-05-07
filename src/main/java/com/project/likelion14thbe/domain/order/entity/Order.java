@@ -41,7 +41,7 @@ public class Order  {
 
     @OneToMany
     @JoinColumn(name = "orderitem")
-    private List<Orderitem> orderitems;
+    private List<OrderItem> orderitems;
 
 }
 

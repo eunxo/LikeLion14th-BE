@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Orderitem {
+public class OrderItem {
 
     @Id // 기본키
     @GeneratedValue(strategy = GenerationType.IDENTITY) //기본키 값을 자동으로 생성
@@ -24,6 +24,9 @@ public class Orderitem {
 
     @Column(name = "order_price", nullable = false)
     private Long orderPrice;
+
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)

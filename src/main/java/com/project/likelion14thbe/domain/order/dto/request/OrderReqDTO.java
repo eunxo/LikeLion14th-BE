@@ -31,7 +31,7 @@ public class OrderReqDTO {
     @Setter
     public static class OrderItemReq {
         @Schema(description = "상품 ID", example = "101")
-        private Long productId;
+        private Integer productId;
 
         @Schema(description = "주문 수량", example = "2")
         private Integer quantity;

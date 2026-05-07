@@ -30,7 +30,10 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "재고 부족 또는 잘못된 요청"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    public ResponseEntity<OrderResDTO.OrderCreateResDto> createOrder(@RequestBody OrderReqDTO.CreateOrderReq request) {
+    public ResponseEntity<OrderResDTO.OrderCreateResDto> createOrder(
+            @RequestBody OrderReqDTO.CreateOrderReq request,
+            Long userId
+    ) {
         OrderResDTO.OrderCreateResDto response = orderCommandService.createOrder(request);
         return ResponseEntity.ok(response);
     }
