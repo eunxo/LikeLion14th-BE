@@ -4,12 +4,12 @@ import com.project.likelion14thbe.domain.member.converter.MemberConverter;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Override
     public MemberResDTO.SignUpResDTO signUp(MemberReqDTO.SignUpReqDTO request) {
         if (memberRepository.existsByEmail(request.email())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 가입된 이메일입니다.");
+            throw new MemberException(MemberErrorCode.MEMBER_EMAIL_DUPLICATE);
         }
         Member member = MemberConverter.toMember(request);
         Member saved = memberRepository.save(member);
@@ -32,9 +32,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional(readOnly = true)
     public MemberResDTO.LoginResDTO login(MemberReqDTO.LoginReqDTO request) {
         Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         if (!member.getPassword().equals(request.password())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberErrorCode.MEMBER_WRONG_PASSWORD);
         }
         String accessToken = "eyJhbGciOiJIUzI1NiJ9.dummy.access";
         String refreshToken = "eyJhbGciOiJIUzI1NiJ9.dummy.refresh";
