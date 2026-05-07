@@ -4,11 +4,13 @@ import lombok.*;
 
 public class ProductReqDTO {
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Getter
     public static class CreateReq {
         private String name;
         private Double price;
         private Integer stock;
+        private String category;
+        private String imageUrl;
         private String description;
     }
 }

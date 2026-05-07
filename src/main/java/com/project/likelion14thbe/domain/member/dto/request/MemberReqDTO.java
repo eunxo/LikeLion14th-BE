@@ -4,25 +4,26 @@ import lombok.*;
 
 public class MemberReqDTO {
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Getter
     public static class SignupReq {
         private String name;
         private String email;
         private String password;
+        private String profileImage;
     }
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Getter
     public static class LoginReq {
         private String email;
         private String password;
     }
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Getter
     public static class KakaoLoginReq {
         private String kakaoAccessToken;
     }
 
-    @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+    @Getter
     public static class UpdateReq {
         private String name;
         private String email;

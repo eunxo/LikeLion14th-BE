@@ -1,20 +1,18 @@
 package com.project.likelion14thbe.domain.review.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 public class ReviewReqDTO {
-
-    public record ReviewCreateReq (
-            String content,
-            Double rating
-    ) {
+    @Getter
+    public static class ReviewCreateReq {
+        private String content;
+        private Double rating;
     }
 
     @Getter
     @Setter
-    public class Test2DTO {
-        private Long id;
+    public static class ReviewUpdateReq {
         private String content;
+        private Double rating;
     }
 }

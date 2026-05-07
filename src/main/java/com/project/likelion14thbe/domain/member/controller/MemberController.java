@@ -1,5 +1,11 @@
 package com.project.likelion14thbe.domain.member.controller;
 
+import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
+import com.project.likelion14thbe.domain.member.service.command.MemberCommandServiceImpl;
+import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,14 +15,22 @@ import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import org.springframework.http.ResponseEntity;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "회원 API", description = "회원가입, 로그인, 마이페이지 관련 API")
 @RequestMapping("/api/v1")
 public class MemberController {
 
+    private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
+
     @PostMapping("/auth/signup")
     @Operation(summary = "회원가입", description = "이메일과 비밀번호로 가입합니다.")
-    public ResponseEntity<String> signup(@RequestBody MemberReqDTO.SignupReq signupReq) {
-        return ResponseEntity.ok("회원가입 성공");
+    public ResponseEntity<MemberResDTO.ProfileRes> signup(
+            @RequestBody MemberReqDTO.SignupReq signupReq
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(memberCommandService.signUp(signupReq));
     }
 
     @PostMapping("/auth/login")
@@ -27,8 +41,8 @@ public class MemberController {
 
     @GetMapping("/users/{userId}")
     @Operation(summary = "내 정보 조회", description = "유저 ID로 프로필을 조회합니다.")
-    public ResponseEntity<MemberResDTO.ProfileRes> getUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(MemberResDTO.ProfileRes.builder().build());
+    public ResponseEntity<MemberResDTO.ProfileRes> getMember(@PathVariable Long userId) {
+        return ResponseEntity.ok(memberQueryService.getMember(userId));
     }
 
     @PatchMapping("/users/{userId}")

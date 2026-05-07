@@ -1,5 +1,30 @@
 package com.project.likelion14thbe.domain.product.entity;
 
-//@Entity
-public class Product {
+import com.project.likelion14thbe.global.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "Product")
+public class Product extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private Double price;
+
+    private String category;
+    private String imageUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
 }
