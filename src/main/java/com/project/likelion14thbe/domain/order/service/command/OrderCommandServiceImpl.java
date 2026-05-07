@@ -6,14 +6,14 @@ import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
+import com.project.likelion14thbe.domain.order.exception.OrderErrorCode;
+import com.project.likelion14thbe.domain.order.exception.OrderException;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -27,13 +27,14 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     @Override
     public OrderResDTO.CreateOrderResDTO createOrder(Long memberId, OrderReqDTO.CreateOrderReqDTO request) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_MEMBER_NOT_FOUND));
         Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_PRODUCT_NOT_FOUND));
 
         Integer totalPrice = product.getPrice() * request.quantity();
         Order order = OrderConverter.toOrder(member, product, request, totalPrice);
         Order saved = orderRepository.save(order);
         return OrderConverter.toCreateOrderResDTO(saved);
     }
+
 }
