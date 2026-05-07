@@ -1,6 +1,6 @@
 package com.project.likelion14thbe.domain.product.entity;
 
-import com.project.likelion14thbe.domain.order.entity.BaseEntity;
+import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
