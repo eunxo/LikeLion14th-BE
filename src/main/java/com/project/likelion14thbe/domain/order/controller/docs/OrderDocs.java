@@ -2,7 +2,7 @@ package com.project.likelion14thbe.domain.order.controller.docs;
 
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
-import com.project.likelion14thbe.global.response.CustomResponse;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -106,5 +106,46 @@ public interface OrderDocs {
             @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size
+    );
+
+    @Operation(
+            summary = "주문 취소",
+            description = "본인의 주문을 취소(hard delete)한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 취소 성공",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": "주문 취소 성공"
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "403", description = "본인 주문이 아님",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": false,
+                                      "code": "ORDER403_1",
+                                      "message": "본인 주문만 취소할 수 있습니다.",
+                                      "result": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "주문이 존재하지 않음",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": false,
+                                      "code": "ORDER404_1",
+                                      "message": "주문을 찾을 수 없습니다.",
+                                      "result": null
+                                    }
+                                    """)))
+    })
+    CustomResponse<String> cancelOrder(
+            @Parameter(description = "취소할 주문 ID", example = "1") Long orderId,
+            @Parameter(description = "요청 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId
     );
 }
