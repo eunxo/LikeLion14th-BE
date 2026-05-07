@@ -4,10 +4,15 @@ import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import com.project.likelion14thbe.global.apiPayload.code.BaseErrorCode;
 import com.project.likelion14thbe.global.apiPayload.code.GeneralErrorCode;
 import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,6 +26,42 @@ public class GlobalExceptionHandler {
         //커스텀 예외에 정의된 에러 코드와 메시지를 포함한 응답 제공
         return ResponseEntity.status(ex.getCode().getHttpStatus())
                 .body(ex.getCode().getErrorResponse());
+    }
+
+    // @Valid DTO 필드 검증 실패 (request body)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CustomResponse<Map<String, String>>> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex
+    ) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(),
+                        error.getDefaultMessage() != null ? error.getDefaultMessage() : "검증 실패")
+        );
+        log.warn("[ MethodArgumentNotValidException ]: {}", errors);
+        BaseErrorCode errorCode = GeneralErrorCode.DTO_VALIDATION_FAILED;
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors));
+    }
+
+    // 단일 파라미터 검증 (path/query parameter, @Validated)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<CustomResponse<Map<String, String>>> handleConstraintViolation(
+            ConstraintViolationException ex
+    ) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            String propertyPath = violation.getPropertyPath().toString();
+            // 마지막 필드명만 추출 (예: createOrder.request.quantity -> quantity)
+            String fieldName = propertyPath.contains(".")
+                    ? propertyPath.substring(propertyPath.lastIndexOf(".") + 1)
+                    : propertyPath;
+            errors.put(fieldName, violation.getMessage());
+        });
+        log.warn("[ ConstraintViolationException ]: {}", errors);
+        BaseErrorCode errorCode = GeneralErrorCode.VALIDATION_FAILED;
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors));
     }
 
     // 그 외의 정의되지 않은 모든 예외 처리
