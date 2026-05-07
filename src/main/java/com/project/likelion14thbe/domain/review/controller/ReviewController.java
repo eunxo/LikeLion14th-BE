@@ -69,7 +69,7 @@ public class ReviewController {
                 return ResponseEntity.ok(reviewList);
         }
 
-        @GetMapping("/products/reviews/{userId}")
+        @GetMapping("/reviews/me/{userId}")
         @Operation(summary = "내 리뷰 목록 조회", description = "내가 작성한 모든 리뷰 목록을 조회합니다.")
         public ResponseEntity<List<ReviewResDTO.ReviewDetailRes>> getMyReviews(
                         @PathVariable Long userId) {
