@@ -2,7 +2,7 @@ package com.project.likelion14thbe.domain.review.controller.docs;
 
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
-import com.project.likelion14thbe.global.response.CustomResponse;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

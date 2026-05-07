@@ -12,4 +12,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAllByMember_IdOrderByCreatedAtDesc(Long memberId, Pageable pageable);
 
     boolean existsByMember_IdAndProduct_Id(Long memberId, Long productId);
+
+    boolean existsByMemberId(Long memberId);
 }
