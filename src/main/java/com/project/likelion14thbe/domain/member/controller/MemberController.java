@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,19 +23,17 @@ public class MemberController {
 
     @PostMapping("/auth/signup")
     @Operation(summary = "회원 가입", description = "유저가 회원 가입을 합니다.")
-    public ResponseEntity<MemberResDTO.MemberSignupResDTO> signup (
+    public CustomResponse<MemberResDTO.MemberSignupResDTO> signup (
             @RequestBody MemberReqDTO.MemberSignupReqDTO memberSignupReqDTO
     ){
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(memberCommandService.signup(memberSignupReqDTO));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, memberCommandService.signup(memberSignupReqDTO));
     }
 
     @GetMapping("/users")
     @Operation(summary = "유저 정보 조회", description = "유저 정보를 조회합니다.")
-    public ResponseEntity<MemberResDTO.MemberPreviewResDTO> getUsers (
+    public CustomResponse<MemberResDTO.MemberPreviewResDTO> getUsers (
     ){
-        return ResponseEntity.ok(memberQueryService.getMember());
+        return CustomResponse.onSuccess(memberQueryService.getMember());
     }
 
     @PatchMapping("/users/{userId}/password")
