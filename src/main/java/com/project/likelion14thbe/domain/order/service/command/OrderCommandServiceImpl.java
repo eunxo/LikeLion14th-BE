@@ -37,4 +37,16 @@ public class OrderCommandServiceImpl implements OrderCommandService {
         return OrderConverter.toCreateOrderResDTO(saved);
     }
 
+    @Override
+    public void cancelOrder(Long orderId, Long memberId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        // 본인 주문 검증 (시큐리티 미적용으로 임시)
+        if (!order.getMember().getId().equals(memberId)) {
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
+
+        orderRepository.delete(order);  // hard delete
+    }
 }
