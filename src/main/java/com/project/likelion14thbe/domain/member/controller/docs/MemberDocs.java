@@ -2,7 +2,7 @@ package com.project.likelion14thbe.domain.member.controller.docs;
 
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
-import com.project.likelion14thbe.global.response.CustomResponse;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,7 +30,8 @@ public interface MemberDocs {
                                     {
                                       "isSuccess": false,
                                       "code": "400 Bad Request",
-                                      "message": "잘못된 요청입니다."
+                                      "message": "잘못된 요청입니다.",
+                                      "result": null
                                     }
                                     """))),
             @ApiResponse(responseCode = "409", description = "이미 가입된 이메일",
@@ -39,7 +40,8 @@ public interface MemberDocs {
                                     {
                                       "isSuccess": false,
                                       "code": "409 Conflict",
-                                      "message": "이미 가입된 이메일입니다."
+                                      "message": "이미 가입된 이메일입니다.",
+                                      "result": null
                                     }
                                     """)))
     })
@@ -58,7 +60,8 @@ public interface MemberDocs {
                                     {
                                       "isSuccess": false,
                                       "code": "401 Unauthorized",
-                                      "message": "이메일 또는 비밀번호가 일치하지 않습니다."
+                                      "message": "이메일 또는 비밀번호가 일치하지 않습니다.",
+                                      "result": null
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원",
@@ -67,49 +70,68 @@ public interface MemberDocs {
                                     {
                                       "isSuccess": false,
                                       "code": "404 Not Found",
-                                      "message": "존재하지 않는 회원입니다."
+                                      "message": "존재하지 않는 회원입니다.",
+                                      "result": null
                                     }
                                     """)))
     })
     ResponseEntity<MemberResDTO.LoginResDTO> login(MemberReqDTO.LoginReqDTO request);
 
     @Operation(
-            summary = "비밀번호 수정",
-            description = "현재 로그인한 회원의 비밀번호를 변경한다. 현재 비밀번호 검증 필요."
+            summary = "비밀번호 변경 (5주차 강의 PDF 단순 버전)",
+            description = "회원의 비밀번호를 변경한다. 시큐리티 미적용으로 memberId를 PathVariable로 임시 전달."
     )
-    @SecurityRequirement(name = "JWT TOKEN")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.UpdatePasswordResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "현재 비밀번호 불일치 또는 새 비밀번호 형식 오류",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = {
-                                    @ExampleObject(name = "현재 비밀번호 불일치", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "400 Bad Request",
-                                              "message": "현재 비밀번호가 일치하지 않습니다."
-                                            }
-                                            """),
-                                    @ExampleObject(name = "새 비밀번호 형식 오류", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "400 Bad Request",
-                                              "message": "비밀번호는 8자 이상이어야 합니다."
-                                            }
-                                            """)
-                            })),
-            @ApiResponse(responseCode = "401", description = "토큰 만료/유효하지 않음",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": "비밀번호 변경 성공"
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
+                                      "code": "MEMBER404_1",
+                                      "message": "회원을 찾을 수 없습니다.",
+                                      "result": null
                                     }
                                     """)))
     })
-    ResponseEntity<MemberResDTO.UpdatePasswordResDTO> updatePassword(MemberReqDTO.UpdatePasswordReqDTO request);
+    CustomResponse<String> resetPassword(Long memberId, MemberReqDTO.PasswordResetDTO request);
+
+    @Operation(
+            summary = "회원 탈퇴 (soft delete)",
+            description = "회원을 soft delete 한다. 시큐리티 미적용으로 memberId를 PathVariable로 임시 전달."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": "회원 탈퇴 성공"
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": false,
+                                      "code": "MEMBER404_1",
+                                      "message": "회원을 찾을 수 없습니다.",
+                                      "result": null
+                                    }
+                                    """)))
+    })
+    CustomResponse<String> deleteMember(Long memberId);
 
     @Operation(
             summary = "내 정보 조회",
@@ -125,7 +147,8 @@ public interface MemberDocs {
                                     {
                                       "isSuccess": false,
                                       "code": "401 Unauthorized",
-                                      "message": "로그인이 필요합니다."
+                                      "message": "로그인이 필요합니다.",
+                                      "result": null
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "회원 미존재 (탈퇴 등)",
@@ -134,7 +157,8 @@ public interface MemberDocs {
                                     {
                                       "isSuccess": false,
                                       "code": "404 Not Found",
-                                      "message": "회원을 찾을 수 없습니다."
+                                      "message": "회원을 찾을 수 없습니다.",
+                                      "result": null
                                     }
                                     """)))
     })
