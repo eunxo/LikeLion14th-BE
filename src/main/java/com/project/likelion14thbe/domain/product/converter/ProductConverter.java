@@ -52,6 +52,15 @@ public class ProductConverter {
         );
     }
 
+    public static ProductResDTO.UpdateProductResDTO toUpdateProductResDTO(Product product) {
+        return new ProductResDTO.UpdateProductResDTO(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getThumbnailUrl()
+        );
+    }
+
     public static ProductResDTO.ProductListResDTO toProductListResDTO(Page<Product> page) {
         List<ProductResDTO.ProductItemDTO> productList = page.getContent().stream()
                 .map(ProductConverter::toProductItemDTO)

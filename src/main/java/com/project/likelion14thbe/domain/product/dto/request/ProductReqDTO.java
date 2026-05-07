@@ -25,4 +25,17 @@ public class ProductReqDTO {
             String description
     ) {
     }
+
+    @Schema(description = "상품 수정 요청 DTO (5주차 - 부분 갱신, null 필드는 미변경)")
+    public record UpdateProductReqDTO(
+            @Schema(description = "상품명 (선택)", example = "수정된 상품명")
+            String name,
+
+            @Schema(description = "가격 (선택, 0 이상)", example = "29000")
+            Integer price,
+
+            @Schema(description = "이미지 URL (선택)", example = "https://example.com/new.jpg")
+            String imageUrl
+    ) {
+    }
 }
