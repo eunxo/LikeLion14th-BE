@@ -5,6 +5,7 @@ import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.service.command.ProductCommandService;
 import com.project.likelion14thbe.domain.product.service.query.ProductQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,6 +56,15 @@ public class ProductController implements ProductDocs {
     ) {
         ProductResDTO.CreateProductResDTO body = productCommandService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    }
+
+    @Override
+    @PatchMapping("/{productId}")
+    public CustomResponse<ProductResDTO.UpdateProductResDTO> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductReqDTO.UpdateProductReqDTO request
+    ) {
+        return CustomResponse.onSuccess(productCommandService.updateProduct(productId, request));
     }
 
     @Override

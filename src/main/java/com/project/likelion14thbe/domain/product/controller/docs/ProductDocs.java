@@ -2,7 +2,7 @@ package com.project.likelion14thbe.domain.product.controller.docs;
 
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
-import com.project.likelion14thbe.global.response.CustomResponse;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -100,6 +100,42 @@ public interface ProductDocs {
     })
     ResponseEntity<ProductResDTO.CreateProductResDTO> createProduct(
             ProductReqDTO.CreateProductReqDTO request
+    );
+
+    @Operation(
+            summary = "상품 수정",
+            description = "특정 상품의 정보를 부분 수정한다. null 필드는 변경하지 않는다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "상품 수정 성공",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": {
+                                        "id": 51,
+                                        "name": "수정된 상품명",
+                                        "price": 29000,
+                                        "imageUrl": "https://example.com/new.jpg"
+                                      }
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "상품이 존재하지 않음",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": false,
+                                      "code": "PRODUCT404_1",
+                                      "message": "상품이 존재하지 않습니다.",
+                                      "result": null
+                                    }
+                                    """)))
+    })
+    CustomResponse<ProductResDTO.UpdateProductResDTO> updateProduct(
+            @Parameter(description = "상품 아이디", example = "51") Long productId,
+            ProductReqDTO.UpdateProductReqDTO request
     );
 
     @Operation(
