@@ -12,15 +12,12 @@ public class ProductReqDTO {
     public static class ProductRequestDTO {
         @Schema(description = "필터링할 카테고리", example = "Furniture")
         private String category;
-
-        @Schema(description = "정렬 기준 (latest, price_asc, price_desc)", example = "latest")
-        private String sortBy;
     }
 
     @Getter
     @Setter
     @Schema(description = "상품 추가 요청 DTO")
-    public static class ProductCreateReq {
+    public static class ProductCreateReqDto {
         @Schema(description = "상품 이름", example = "Minimal Stand")
         private String name;
 
@@ -36,4 +33,5 @@ public class ProductReqDTO {
         @Schema(description = "상품 이미지 URL", example = "https://image.com/stand.jpg")
         private String imageUrl;
     }
+
 }

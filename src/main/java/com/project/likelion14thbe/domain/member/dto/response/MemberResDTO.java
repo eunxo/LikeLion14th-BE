@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class MemberResDTO {
 
     @Builder
@@ -14,55 +16,37 @@ public class MemberResDTO {
     @AllArgsConstructor
     @Schema(description = "로그인 응답 DTO")
     public static class LoginRes {
-        @Schema(description = "액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+        @Schema(description = "액세스 토큰")
         private String accessToken;
 
-        @Schema(description = "리프레시 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+        @Schema(description = "리프레시 토큰")
         private String refreshToken;
 
-        @Schema(description = "사용자 이름", example = "최은서")
+        @Schema(description = "사용자 이름")
         private String name;
     }
 
-    @Builder
     @Getter
-    @NoArgsConstructor
+    @Builder
     @AllArgsConstructor
-    @Schema(description = "카카오 로그인 응답 DTO")
-    public static class KakaoLoginRes {
-        @Schema(description = "액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
-        private String accessToken;
+    @Schema(description = "회원가입 등 생성관련 응답 DTO")
+    public static class MemberCreateResDTO {
 
-        @Schema(description = "사용자 이름", example = "최은서")
-        private String name;
+        @Schema(description = "아이디")
+        private Long id;
 
-        @Schema(description = "이메일", example = "eunseo_kakao@gmail.com")
-        private String email;
-
-        @Schema(description = "신규 회원 여부", example = "false")
-        private Boolean isNewMember;
+        @Schema(description = "생성시간")
+        private LocalDateTime createdAt;
     }
 
-    @Builder
     @Getter
-    @NoArgsConstructor
+    @Builder
     @AllArgsConstructor
-    @Schema(description = "마이페이지(내 정보) 정보 응답 DTO")
-    public static class MemberProfileRes {
-
-        @Schema(description = "사용자 실명", example = "최은서")
-        private String name;
-
-        @Schema(description = "이메일 주소", example = "eunseo@sangmyung.ac.kr")
+    @Schema(description = "회원목록이나 미리보기용 응답 DTO")
+    public static class MemberPreviewResDTO {
+        private Long id;
         private String email;
-
-        @Schema(description = "총 주문 횟수", example = "12")
-        private Integer orderCount;
-
-        @Schema(description = "작성한 리뷰 개수", example = "5")
-        private Integer reviewCount;
-
-        @Schema(description = "프로필 이미지 URL", example = "https://image.com/profile/eunseo.png")
-        private String profileImage;
+        private Integer age;
     }
 }
+

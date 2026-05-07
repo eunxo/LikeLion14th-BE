@@ -21,15 +21,20 @@ public class OrderReqDTO {
 
         @Schema(description = "결제 수단 (CARD, TRANSFER)", example = "CARD")
         private String paymentMethod;
+
+        @Schema(description = "총 금액")
+        private Integer totalAmount;
+
     }
 
     @Getter
     @Setter
     public static class OrderItemReq {
         @Schema(description = "상품 ID", example = "101")
-        private Long productId;
+        private Integer productId;
 
         @Schema(description = "주문 수량", example = "2")
         private Integer quantity;
     }
+
 }

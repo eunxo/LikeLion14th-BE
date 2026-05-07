@@ -6,7 +6,23 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class ProductResDTO {
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "상품 생성 응답 DTO")
+    public static class ProductCreateResDto {
+
+        @Schema(description = "상품 ID", example = "1")
+        private Long id;
+
+        @Schema(description = "생성 시간")
+        private LocalDateTime createdAt;
+    }
 
     @Builder
     @Getter
@@ -33,23 +49,52 @@ public class ProductResDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Schema(description = "상품 상세 조회 응답 DTO")
-    public static class ProductDetailRes {
-        @Schema(description = "상품 고유 ID", example = "1")
+    public static class ProductDetailResDto {
+        @Schema(description = "상품 고유 ID")
         private Long productId;
 
-        @Schema(description = "상품 이름", example = "Minimal Stand")
+        @Schema(description = "상품 이름")
         private String name;
 
-        @Schema(description = "상품 상세 설명", example = "어디에나 잘 어울리는 미니멀한 디자인의 스탠드입니다.")
+        @Schema(description = "상품 상세 설명")
         private String description;
 
-        @Schema(description = "상품 가격", example = "25000")
+        @Schema(description = "상품 가격" )
         private Integer price;
 
-        @Schema(description = "카테고리", example = "Furniture")
+        @Schema(description = "카테고리")
         private String category;
 
-        @Schema(description = "상품 이미지 URL", example = "https://image.com/stand.jpg")
+        @Schema(description = "상품 이미지 URL")
         private String imageUrl;
+
+        @Schema(description = "상품 이미지(photoImg)")
+        private String photoImg;
+
+        @Schema(description = "상품 재고(stock)")
+        private Integer stock;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "상품 목록 미리보기용 응답 DTO")
+    public static class ProductPreviewResDto {
+
+        @Schema(description = "상품 ID", example = "1")
+        private Long id;
+
+        @Schema(description = "상품명", example = "멋사 후드티")
+        private String name;
+
+        @Schema(description = "상품가격", example = "30000")
+        private Long price;
+
+        @Schema(description = "상품이미지", example = "image_url.jpg")
+        private String photoImg;
+
+        @Schema(description = "상품재고", example = "100")
+        private Integer stock;
     }
 }
