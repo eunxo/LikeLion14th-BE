@@ -10,8 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.time.LocalDateTime;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -69,13 +67,10 @@ public class ProductController implements ProductDocs {
 
     @Override
     @DeleteMapping("/{productId}")
-    public ResponseEntity<ProductResDTO.DeleteProductResDTO> deleteProduct(
+    public CustomResponse<String> deleteProduct(
             @PathVariable Long productId
     ) {
-        ProductResDTO.DeleteProductResDTO body = new ProductResDTO.DeleteProductResDTO(
-                productId,
-                LocalDateTime.now()
-        );
-        return ResponseEntity.ok(body);
+        productCommandService.deleteProduct(productId);
+        return CustomResponse.onSuccess("상품 삭제 성공");
     }
 }

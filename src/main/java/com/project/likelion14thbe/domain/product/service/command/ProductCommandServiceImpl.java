@@ -32,4 +32,11 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         product.updateProduct(request.name(), request.price(), request.imageUrl());
         return ProductConverter.toUpdateProductResDTO(product);
     }
+
+    @Override
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        productRepository.delete(product);
+    }
 }

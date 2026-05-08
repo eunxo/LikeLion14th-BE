@@ -145,23 +145,13 @@ public interface ProductDocs {
     @SecurityRequirement(name = "JWT TOKEN")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "상품 삭제 성공",
-                    content = @Content(schema = @Schema(implementation = ProductResDTO.DeleteProductResDTO.class))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "403", description = "관리자 권한 없음",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "403 Forbidden",
-                                      "message": "관리자만 상품을 삭제할 수 있습니다."
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": "상품 삭제 성공"
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "상품이 존재하지 않음",
@@ -169,12 +159,13 @@ public interface ProductDocs {
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "404 Not Found",
-                                      "message": "상품이 존재하지 않습니다."
+                                      "code": "PRODUCT404_1",
+                                      "message": "상품이 존재하지 않습니다.",
+                                      "result": null
                                     }
                                     """)))
     })
-    ResponseEntity<ProductResDTO.DeleteProductResDTO> deleteProduct(
+    CustomResponse<String> deleteProduct(
             @Parameter(description = "상품 아이디", example = "51") Long productId
     );
 }
