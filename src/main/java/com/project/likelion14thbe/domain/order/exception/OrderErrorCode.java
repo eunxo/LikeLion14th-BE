@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum OrderErrorCode implements BaseErrorCode {
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER404_1", "주문을 찾을 수 없습니다."),
-    ORDER_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER404_2", "주문 회원을 찾을 수 없습니다."),
+    ORDER_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER404_2", "회원이 존재하지 않습니다."),
     ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER404_3", "주문 상품을 찾을 수 없습니다."),
     ORDER_FORBIDDEN(HttpStatus.FORBIDDEN, "ORDER403_1", "본인 주문만 취소할 수 있습니다.");
 
