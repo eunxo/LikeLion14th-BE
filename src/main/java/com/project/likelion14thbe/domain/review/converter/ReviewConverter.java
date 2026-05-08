@@ -38,6 +38,16 @@ public class ReviewConverter {
         );
     }
 
+    public static ReviewResDTO.UpdateReviewResDTO toUpdateReviewResDTO(Review review) {
+        return new ReviewResDTO.UpdateReviewResDTO(
+                review.getId(),
+                review.getMember().getName(),
+                review.getRating(),
+                review.getContent(),
+                review.getUpdatedAt()
+        );
+    }
+
     public static ReviewResDTO.ReviewDetailResDTO toReviewDetailResDTO(Review review) {
         return new ReviewResDTO.ReviewDetailResDTO(
                 review.getId(),

@@ -222,9 +222,10 @@ public interface ReviewDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<ReviewResDTO.UpdateReviewResDTO> updateReview(
+    CustomResponse<ReviewResDTO.UpdateReviewResDTO> updateReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
             @Parameter(description = "리뷰 아이디", example = "123") Long reviewId,
+            @Parameter(description = "작성자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             ReviewReqDTO.UpdateReviewReqDTO request
     );
 
@@ -263,9 +264,10 @@ public interface ReviewDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<ReviewResDTO.DeleteReviewResDTO> deleteReview(
+    CustomResponse<String> deleteReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
-            @Parameter(description = "리뷰 아이디", example = "123") Long reviewId
+            @Parameter(description = "리뷰 아이디", example = "123") Long reviewId,
+            @Parameter(description = "작성자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId
     );
 
     @Operation(

@@ -5,12 +5,11 @@ import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.time.LocalDateTime;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -63,32 +62,26 @@ public class ReviewController implements ReviewDocs {
 
     @Override
     @PatchMapping("/products/{productId}/reviews/{reviewId}")
-    public ResponseEntity<ReviewResDTO.UpdateReviewResDTO> updateReview(
+    public CustomResponse<ReviewResDTO.UpdateReviewResDTO> updateReview(
             @PathVariable Long productId,
             @PathVariable Long reviewId,
+            @RequestParam Long memberId,
             @Valid @RequestBody ReviewReqDTO.UpdateReviewReqDTO request
     ) {
-        ReviewResDTO.UpdateReviewResDTO body = new ReviewResDTO.UpdateReviewResDTO(
-                reviewId,
-                "홍길동",
-                request.rating() != null ? request.rating() : 5.0,
-                request.content() != null ? request.content() : "다시 먹어봤는데 더 맛있네요!",
-                LocalDateTime.now()
+        return CustomResponse.onSuccess(
+                reviewCommandService.updateReview(memberId, productId, reviewId, request)
         );
-        return ResponseEntity.ok(body);
     }
 
     @Override
     @DeleteMapping("/products/{productId}/reviews/{reviewId}")
-    public ResponseEntity<ReviewResDTO.DeleteReviewResDTO> deleteReview(
+    public CustomResponse<String> deleteReview(
             @PathVariable Long productId,
-            @PathVariable Long reviewId
+            @PathVariable Long reviewId,
+            @RequestParam Long memberId
     ) {
-        ReviewResDTO.DeleteReviewResDTO body = new ReviewResDTO.DeleteReviewResDTO(
-                reviewId,
-                LocalDateTime.now()
-        );
-        return ResponseEntity.ok(body);
+        reviewCommandService.deleteReview(memberId, productId, reviewId);
+        return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 
     @Override
