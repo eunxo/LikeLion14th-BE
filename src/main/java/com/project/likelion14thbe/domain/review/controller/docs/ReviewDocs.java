@@ -25,58 +25,47 @@ public interface ReviewDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "리뷰 생성 성공",
                     content = @Content(schema = @Schema(implementation = ReviewResDTO.CreateReviewResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "별점 범위 초과 또는 리뷰 내용 누락",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = {
-                                    @ExampleObject(name = "별점 범위 초과", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "400 Bad Request",
-                                              "message": "별점은 0.5 이상 5.0 이하여야 합니다."
-                                            }
-                                            """),
-                                    @ExampleObject(name = "리뷰 내용 누락", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "400 Bad Request",
-                                              "message": "리뷰 내용은 필수입니다."
-                                            }
-                                            """)
-                            })),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
+            @ApiResponse(responseCode = "400", description = "@Valid DTO 필드 검증 실패",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
+                                      "code": "VALID400_1",
+                                      "message": "잘못된 DTO 필드입니다.",
+                                      "result": {
+                                        "rating": "별점은 0.5 이상이어야 합니다.",
+                                        "content": "리뷰 내용은 필수입니다."
+                                      }
                                     }
                                     """))),
-            @ApiResponse(responseCode = "404", description = "회원 또는 상품이 존재하지 않음",
+            @ApiResponse(responseCode = "404", description = "회원 또는 상품 미존재",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = {
-                                    @ExampleObject(name = "상품 미존재", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "404 Not Found",
-                                              "message": "상품이 존재하지 않습니다."
-                                            }
-                                            """),
                                     @ExampleObject(name = "회원 미존재", value = """
                                             {
                                               "isSuccess": false,
-                                              "code": "404 Not Found",
-                                              "message": "회원을 찾을 수 없습니다."
+                                              "code": "REVIEW404_4",
+                                              "message": "회원이 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """),
+                                    @ExampleObject(name = "상품 미존재", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "REVIEW404_3",
+                                              "message": "리뷰 대상 상품이 존재하지 않습니다.",
+                                              "result": null
                                             }
                                             """)
                             })),
-            @ApiResponse(responseCode = "409", description = "이미 해당 상품에 리뷰를 작성함",
+            @ApiResponse(responseCode = "409", description = "이미 해당 상품에 리뷰 작성함",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "409 Conflict",
-                                      "message": "이미 해당 상품에 리뷰를 작성했습니다."
+                                      "code": "REVIEW409_1",
+                                      "message": "이미 해당 상품에 리뷰를 작성했습니다.",
+                                      "result": null
                                     }
                                     """)))
     })
@@ -93,30 +82,23 @@ public interface ReviewDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 단건 조회 성공",
                     content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailResDTO.class))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "404", description = "상품 또는 리뷰가 존재하지 않음",
+            @ApiResponse(responseCode = "404", description = "리뷰 미존재 또는 상품 불일치",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = {
                                     @ExampleObject(name = "리뷰 미존재", value = """
                                             {
                                               "isSuccess": false,
-                                              "code": "404 Not Found",
-                                              "message": "리뷰가 존재하지 않습니다."
+                                              "code": "REVIEW404_1",
+                                              "message": "리뷰가 존재하지 않습니다.",
+                                              "result": null
                                             }
                                             """),
-                                    @ExampleObject(name = "상품 미존재", value = """
+                                    @ExampleObject(name = "URL 상품과 리뷰 상품 불일치", value = """
                                             {
                                               "isSuccess": false,
-                                              "code": "404 Not Found",
-                                              "message": "상품이 존재하지 않습니다."
+                                              "code": "REVIEW404_2",
+                                              "message": "해당 상품의 리뷰가 아닙니다.",
+                                              "result": null
                                             }
                                             """)
                             }))
@@ -133,31 +115,14 @@ public interface ReviewDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공",
                     content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewListResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 페이지/정렬 파라미터",
+            @ApiResponse(responseCode = "404", description = "상품 미존재",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "400 Bad Request",
-                                      "message": "잘못된 요청입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "404", description = "상품이 존재하지 않음",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "404 Not Found",
-                                      "message": "상품이 존재하지 않습니다."
+                                      "code": "REVIEW404_3",
+                                      "message": "리뷰 대상 상품이 존재하지 않습니다.",
+                                      "result": null
                                     }
                                     """)))
     })
@@ -171,36 +136,35 @@ public interface ReviewDocs {
 
     @Operation(
             summary = "리뷰 수정",
-            description = "본인이 작성한 리뷰의 별점 또는 내용을 부분 수정한다."
+            description = "본인이 작성한 리뷰의 별점/내용을 부분 수정한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 수정 성공",
-                    content = @Content(schema = @Schema(implementation = ReviewResDTO.UpdateReviewResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "별점 범위 초과 또는 수정 항목 누락",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = {
-                                    @ExampleObject(name = "별점 범위 초과", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "400 Bad Request",
-                                              "message": "별점은 0.5 이상 5.0 이하여야 합니다."
-                                            }
-                                            """),
-                                    @ExampleObject(name = "수정 항목 누락 (PATCH 최소 1개 필수)", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "400 Bad Request",
-                                              "message": "수정할 항목을 1개 이상 입력해주세요."
-                                            }
-                                            """)
-                            })),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": {
+                                        "reviewId": 4,
+                                        "writerNickname": "홍길동",
+                                        "rating": 5.0,
+                                        "content": "다시 먹어봤는데 더 맛있네요!",
+                                        "updatedAt": "2026-05-08T19:33:04"
+                                      }
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "@Valid DTO 필드 검증 실패 (별점 범위 초과)",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
+                                      "code": "VALID400_1",
+                                      "message": "잘못된 DTO 필드입니다.",
+                                      "result": {
+                                        "rating": "별점은 5.0 이하여야 합니다."
+                                      }
                                     }
                                     """))),
             @ApiResponse(responseCode = "403", description = "본인이 작성한 리뷰가 아님",
@@ -208,19 +172,39 @@ public interface ReviewDocs {
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "403 Forbidden",
-                                      "message": "본인이 작성한 리뷰만 수정할 수 있습니다."
+                                      "code": "REVIEW403_1",
+                                      "message": "본인 리뷰만 수정/삭제할 수 있습니다.",
+                                      "result": null
                                     }
                                     """))),
-            @ApiResponse(responseCode = "404", description = "리뷰가 존재하지 않음",
+            @ApiResponse(responseCode = "404", description = "회원/리뷰 미존재 또는 상품 불일치",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "404 Not Found",
-                                      "message": "리뷰가 존재하지 않습니다."
-                                    }
-                                    """)))
+                            examples = {
+                                    @ExampleObject(name = "회원 미존재", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "REVIEW404_4",
+                                              "message": "회원이 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """),
+                                    @ExampleObject(name = "리뷰 미존재", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "REVIEW404_1",
+                                              "message": "리뷰가 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """),
+                                    @ExampleObject(name = "URL 상품과 리뷰 상품 불일치", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "REVIEW404_2",
+                                              "message": "해당 상품의 리뷰가 아닙니다.",
+                                              "result": null
+                                            }
+                                            """)
+                            }))
     })
     CustomResponse<ReviewResDTO.UpdateReviewResDTO> updateReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
@@ -231,18 +215,17 @@ public interface ReviewDocs {
 
     @Operation(
             summary = "리뷰 삭제",
-            description = "본인이 작성한 리뷰를 삭제한다."
+            description = "본인이 작성한 리뷰를 hard delete 한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공",
-                    content = @Content(schema = @Schema(implementation = ReviewResDTO.DeleteReviewResDTO.class))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": "리뷰 삭제 성공"
                                     }
                                     """))),
             @ApiResponse(responseCode = "403", description = "본인이 작성한 리뷰가 아님",
@@ -250,19 +233,39 @@ public interface ReviewDocs {
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "403 Forbidden",
-                                      "message": "본인이 작성한 리뷰만 삭제할 수 있습니다."
+                                      "code": "REVIEW403_1",
+                                      "message": "본인 리뷰만 수정/삭제할 수 있습니다.",
+                                      "result": null
                                     }
                                     """))),
-            @ApiResponse(responseCode = "404", description = "리뷰가 존재하지 않음",
+            @ApiResponse(responseCode = "404", description = "회원/리뷰 미존재 또는 상품 불일치",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "404 Not Found",
-                                      "message": "리뷰가 존재하지 않습니다."
-                                    }
-                                    """)))
+                            examples = {
+                                    @ExampleObject(name = "회원 미존재", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "REVIEW404_4",
+                                              "message": "회원이 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """),
+                                    @ExampleObject(name = "리뷰 미존재", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "REVIEW404_1",
+                                              "message": "리뷰가 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """),
+                                    @ExampleObject(name = "URL 상품과 리뷰 상품 불일치", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "REVIEW404_2",
+                                              "message": "해당 상품의 리뷰가 아닙니다.",
+                                              "result": null
+                                            }
+                                            """)
+                            }))
     })
     CustomResponse<String> deleteReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
@@ -277,31 +280,14 @@ public interface ReviewDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 리뷰 조회 성공",
                     content = @Content(schema = @Schema(implementation = ReviewResDTO.MyReviewListResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 페이지 파라미터",
+            @ApiResponse(responseCode = "404", description = "회원 미존재",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "400 Bad Request",
-                                      "message": "잘못된 요청입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "404", description = "회원이 존재하지 않음",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "404 Not Found",
-                                      "message": "회원을 찾을 수 없습니다."
+                                      "code": "REVIEW404_4",
+                                      "message": "회원이 존재하지 않습니다.",
+                                      "result": null
                                     }
                                     """)))
     })

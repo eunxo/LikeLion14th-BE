@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Order", description = "주문 API — 주문 생성, 내 주문 목록 조회")
+@Tag(name = "Order", description = "주문 API — 주문 생성, 내 주문 목록 조회, 주문 취소")
 @SecurityRequirement(name = "JWT TOKEN")
 public interface OrderDocs {
 
@@ -25,39 +25,35 @@ public interface OrderDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "주문 생성 성공",
                     content = @Content(schema = @Schema(implementation = OrderResDTO.CreateOrderResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 수량 또는 입력 형식 오류",
+            @ApiResponse(responseCode = "400", description = "@Valid DTO 필드 검증 실패 (예: 수량 1 미만)",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "400 Bad Request",
-                                      "message": "수량은 1 이상이어야 합니다."
+                                      "code": "VALID400_1",
+                                      "message": "잘못된 DTO 필드입니다.",
+                                      "result": {
+                                        "quantity": "수량은 1 이상이어야 합니다."
+                                      }
                                     }
                                     """))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "404", description = "회원 또는 상품이 존재하지 않음",
+            @ApiResponse(responseCode = "404", description = "회원 또는 상품 미존재 (RFC 9457 — most relevant problem 응답: 회원 검증 우선)",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = {
-                                    @ExampleObject(name = "상품 미존재", value = """
-                                            {
-                                              "isSuccess": false,
-                                              "code": "404 Not Found",
-                                              "message": "상품이 존재하지 않습니다."
-                                            }
-                                            """),
                                     @ExampleObject(name = "회원 미존재", value = """
                                             {
                                               "isSuccess": false,
-                                              "code": "404 Not Found",
-                                              "message": "회원을 찾을 수 없습니다."
+                                              "code": "ORDER404_2",
+                                              "message": "회원이 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """),
+                                    @ExampleObject(name = "상품 미존재", value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "ORDER404_3",
+                                              "message": "주문 상품을 찾을 수 없습니다.",
+                                              "result": null
                                             }
                                             """)
                             }))
@@ -74,31 +70,14 @@ public interface OrderDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 주문 목록 조회 성공",
                     content = @Content(schema = @Schema(implementation = OrderResDTO.MyOrderListResDTO.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 페이지 파라미터",
+            @ApiResponse(responseCode = "404", description = "회원 미존재",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "isSuccess": false,
-                                      "code": "400 Bad Request",
-                                      "message": "잘못된 요청입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "401 Unauthorized",
-                                      "message": "유효하지 않은 토큰입니다."
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "404", description = "회원이 존재하지 않음",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "404 Not Found",
-                                      "message": "회원을 찾을 수 없습니다."
+                                      "code": "ORDER404_2",
+                                      "message": "회원이 존재하지 않습니다.",
+                                      "result": null
                                     }
                                     """)))
     })
@@ -133,7 +112,7 @@ public interface OrderDocs {
                                       "result": null
                                     }
                                     """))),
-            @ApiResponse(responseCode = "404", description = "주문이 존재하지 않음",
+            @ApiResponse(responseCode = "404", description = "주문 미존재",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
                                     {
