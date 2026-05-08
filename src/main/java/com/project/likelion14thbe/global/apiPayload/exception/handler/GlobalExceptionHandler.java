@@ -7,10 +7,12 @@ import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +84,24 @@ public class GlobalExceptionHandler {
         BaseErrorCode errorCode = GeneralErrorCode.VALIDATION_FAILED;
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors));
+    }
+
+    // 잘못된 경로 (404) — fallback Exception(500)으로 새지 않도록 분리
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<CustomResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
+        log.warn("[ NoResourceFoundException ]: {}", ex.getMessage());
+        BaseErrorCode errorCode = GeneralErrorCode.NOT_FOUND_404;
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(CustomResponse.onFailure(errorCode.getCode(), "요청한 경로를 찾을 수 없습니다.", null));
+    }
+
+    // 잘못된 HTTP 메서드 (405)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<CustomResponse<Void>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+        log.warn("[ HttpRequestMethodNotSupportedException ]: {}", ex.getMessage());
+        BaseErrorCode errorCode = GeneralErrorCode.METHOD_NOT_ALLOWED_405;
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), null));
     }
 
     // 그 외의 정의되지 않은 모든 예외 처리
