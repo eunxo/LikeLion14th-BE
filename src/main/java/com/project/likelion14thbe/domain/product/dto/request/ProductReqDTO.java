@@ -32,6 +32,7 @@ public class ProductReqDTO {
             String name,
 
             @Schema(description = "가격 (선택, 0 이상)", example = "29000")
+            @Min(value = 0, message = "가격은 0 이상이어야 합니다.")
             Integer price,
 
             @Schema(description = "이미지 URL (선택)", example = "https://example.com/new.jpg")

@@ -62,7 +62,7 @@ public class ProductController implements ProductDocs {
     @PatchMapping("/{productId}")
     public CustomResponse<ProductResDTO.UpdateProductResDTO> updateProduct(
             @PathVariable Long productId,
-            @RequestBody ProductReqDTO.UpdateProductReqDTO request
+            @Valid @RequestBody ProductReqDTO.UpdateProductReqDTO request
     ) {
         return CustomResponse.onSuccess(productCommandService.updateProduct(productId, request));
     }
