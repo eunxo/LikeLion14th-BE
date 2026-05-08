@@ -50,7 +50,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
 
     @Override
     public ReviewResDTO.MyReviewListResDTO getMyReviews(Long memberId, Integer page, Integer size) {
-        if (!memberRepository.existsById(memberId)) {
+        if (memberRepository.findByIdAndNotDeleted(memberId).isEmpty()) {
             throw new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND);
         }
         Pageable pageable = PageRequest.of(page, size);

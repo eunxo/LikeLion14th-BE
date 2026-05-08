@@ -30,7 +30,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
             Long productId,
             ReviewReqDTO.CreateReviewReqDTO request
     ) {
-        Member member = memberRepository.findById(memberId)
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_PRODUCT_NOT_FOUND));

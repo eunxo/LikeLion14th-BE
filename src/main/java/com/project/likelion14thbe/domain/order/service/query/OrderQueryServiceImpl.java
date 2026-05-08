@@ -24,7 +24,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
 
     @Override
     public OrderResDTO.MyOrderListResDTO getMyOrders(Long memberId, Integer page, Integer size) {
-        if (!memberRepository.existsById(memberId)) {
+        if (memberRepository.findByIdAndNotDeleted(memberId).isEmpty()) {
             throw new OrderException(OrderErrorCode.ORDER_MEMBER_NOT_FOUND);
         }
         Pageable pageable = PageRequest.of(page, size);

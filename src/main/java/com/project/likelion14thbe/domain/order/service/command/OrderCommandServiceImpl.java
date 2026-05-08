@@ -26,7 +26,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
     @Override
     public OrderResDTO.CreateOrderResDTO createOrder(Long memberId, OrderReqDTO.CreateOrderReqDTO request) {
-        Member member = memberRepository.findById(memberId)
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_MEMBER_NOT_FOUND));
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_PRODUCT_NOT_FOUND));
