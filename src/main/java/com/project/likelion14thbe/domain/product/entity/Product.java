@@ -23,8 +23,8 @@ public class Product extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(name = "photo_img", nullable = false)
-    private String photoImg;
+    @Column(name = "image_url", nullable = false)
+    private String imageUrl;
 
     @Column(name = "stock", nullable = false)
     private Integer stock;

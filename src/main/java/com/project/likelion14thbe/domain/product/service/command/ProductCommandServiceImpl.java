@@ -8,6 +8,9 @@ import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static com.project.likelion14thbe.domain.product.converter.ProductConverter.toProductCreateResDTO;
+
+import static com.project.likelion14thbe.domain.product.converter.ProductConverter.toProductCreateResDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -18,13 +21,11 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
     @Override
     public ProductResDTO.ProductCreateResDto createProduct(ProductReqDTO.ProductCreateReqDto request) {
-        // 클라이언트가 보낸 DTO를 Product 엔티티로 변환
         Product product = ProductConverter.toProduct(request);
 
         Product savedProduct = productRepository.save(product);
 
-        // 생성 응답 DTO 반환
-        return ProductConverter.toProductCreateResDTO(savedProduct);
+        return toProductCreateResDTO(savedProduct);
     }
 
     @Override

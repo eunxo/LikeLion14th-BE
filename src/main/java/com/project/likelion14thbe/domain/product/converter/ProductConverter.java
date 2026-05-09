@@ -17,7 +17,7 @@ public class ProductConverter {
         return Product.builder()
                 .name(request.getName())
                 .price(request.getPrice())
-                .photoImg(request.getImageUrl())
+                .imageUrl(request.getImageUrl())
                 .description(request.getDescription())
                 .build();
     }
@@ -36,7 +36,7 @@ public class ProductConverter {
                 .id(product.getId())
                 .name(product.getName())
                 .price(Long.valueOf(product.getPrice()))
-                .photoImg(product.getPhotoImg())
+                .photoImg(product.getImageUrl())
                 .stock(product.getStock())
                 .build();
     }
@@ -49,8 +49,8 @@ public class ProductConverter {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .category(String.valueOf(product.getCategory())) // 엔티티의 category 값 연결
-                .imageUrl(product.getPhotoImg())
-                .photoImg(product.getPhotoImg())
+                .imageUrl(product.getImageUrl())
+                .photoImg(product.getImageUrl())
                 .stock(product.getStock())
                 .build();
     }

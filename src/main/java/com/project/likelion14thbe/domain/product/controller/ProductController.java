@@ -57,4 +57,5 @@ public class ProductController {
         productCommandService.deleteProduct(productId);
         return ResponseEntity.ok("상품 삭제 성공");
     }
+
 }
