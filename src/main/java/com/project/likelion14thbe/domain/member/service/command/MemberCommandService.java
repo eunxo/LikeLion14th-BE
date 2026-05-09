@@ -7,4 +7,8 @@ public interface MemberCommandService {
 
     MemberResDTO.MemberCreateResDTO createMember(MemberReqDTO.MemberCreateReqDTO memberCreateReqDTO);
 
+    public void deleteMember(Long memberId);
+
+    void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO request);
+
 }

@@ -48,5 +48,6 @@ public class MemberResDTO {
         private String email;
         private Integer age;
     }
+
 }
 

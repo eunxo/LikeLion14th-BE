@@ -4,10 +4,12 @@ import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "회원가입 성공"),
             @ApiResponse(responseCode = "400", description = "입력값 오류")
     })
-    public ResponseEntity<MemberResDTO.MemberCreateResDTO> signUp(@RequestBody MemberReqDTO.MemberCreateReqDTO request) {
+    public ResponseEntity<MemberResDTO.MemberCreateResDTO> signUp(@Valid @RequestBody MemberReqDTO.MemberCreateReqDTO request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(memberCommandService.createMember(request));
@@ -41,7 +43,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
-    public ResponseEntity<MemberResDTO.LoginRes> login(@RequestBody MemberReqDTO.LoginReq request) {
+    public ResponseEntity<MemberResDTO.LoginRes> login(@Valid@RequestBody MemberReqDTO.LoginReq request) {
         return ResponseEntity
                 .ok()
                 .build();
@@ -57,8 +59,20 @@ public class MemberController {
         return ResponseEntity.ok(memberQueryService.getMember(id));
     }
 
+    @PatchMapping("/members/{memberId}/password")
+    public CustomResponse<String> resetPassword(
+            @PathVariable Long memberId,
+            @RequestBody MemberReqDTO.PasswordResetDTO request
+    ) {
+        memberCommandService.updatePassword(memberId, request);
+        return CustomResponse.onSuccess("비밀번호 변경 성공");
+    }
 
-
+    @DeleteMapping("/members/{memberId}")
+    public CustomResponse<String> deleteMember(Long memberId) {
+        memberCommandService.deleteMember(memberId);
+        return CustomResponse.onSuccess("회원 탈퇴 성공");
+    }
 
 
 
