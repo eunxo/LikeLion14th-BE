@@ -6,10 +6,12 @@ import com.project.likelion14thbe.domain.review.service.command.ReviewCommandSer
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandServiceImpl;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryServiceImpl;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +36,19 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공"),
             @ApiResponse(responseCode = "404", description = "해당 상품을 찾을 수 없음")
     })
-    public ResponseEntity<Long> createReview(
-            @PathVariable Long productId,
-            @RequestBody ReviewReqDTO.ReviewCreateReq request
+    public ResponseEntity<CustomResponse<ReviewResDTO.ReviewCreateResDto>> createReview(
+            @PathVariable("productId") Long productId,
+
+            @RequestHeader("memberId") Long memberId,
+            @Valid @RequestBody ReviewReqDTO.ReviewCreateReq request
     ) {
-        Long reviewId = reviewCommandService.createReview(productId, request);
-        return ResponseEntity.ok(reviewId);
+
+        request.setProductId(productId);
+
+
+        ReviewResDTO.ReviewCreateResDto response = reviewCommandService.createReview(memberId, request);
+
+        return ResponseEntity.ok(CustomResponse.onSuccess(response));
     }
 
     @GetMapping("/products/{productId}/reviews")
@@ -58,5 +67,6 @@ public class ReviewController {
         ReviewResDTO.ReviewDetailRes response = reviewQueryService.getReviewDetail(productId, reviewId);
         return ResponseEntity.ok(response);
     }
+
 
 }

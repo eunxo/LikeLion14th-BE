@@ -1,11 +1,10 @@
 package com.project.likelion14thbe.domain.review.entity;
 
+import com.project.likelion14thbe.domain.member.entity.BaseEntity;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Date;
 
 @Entity
 @Getter
@@ -14,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Review {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +29,7 @@ public class Review {
     @Column(name = "rating", nullable = false)
     private Double rating;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
