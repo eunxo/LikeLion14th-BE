@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.product.service.command;
 
+import com.project.likelion14thbe.domain.product.converter.ProductConverter;
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.entity.Product;
@@ -18,20 +19,12 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     @Override
     public ProductResDTO.ProductCreateResDto createProduct(ProductReqDTO.ProductCreateReqDto request) {
         // 클라이언트가 보낸 DTO를 Product 엔티티로 변환
-        Product product = Product.builder()
-                .name(request.getName())
-                .price(request.getPrice())
-                .photoImg(request.getImageUrl())
-                .description(request.getDescription())
-                .build();
+        Product product = ProductConverter.toProduct(request);
 
         Product savedProduct = productRepository.save(product);
 
         // 생성 응답 DTO 반환
-        return ProductResDTO.ProductCreateResDto.builder()
-                .id(savedProduct.getId())
-                .createdAt(savedProduct.getCreatedAt())
-                .build();
+        return ProductConverter.toProductCreateResDTO(savedProduct);
     }
 
     @Override
