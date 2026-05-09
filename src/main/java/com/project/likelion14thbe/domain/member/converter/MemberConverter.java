@@ -34,6 +34,14 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResDTO.LoginRes toLoginRes(Member member, String token) {
+        return MemberResDTO.LoginRes.builder()
+                .memberId(member.getId())
+                .email(member.getEmail())
+                .accessToken(token)
+                .build();
+    }
+
 
 
 }

@@ -6,4 +6,6 @@ import org.jspecify.annotations.Nullable;
 public interface MemberQueryService {
 
     MemberResDTO.@Nullable MemberPreviewResDTO getMember(Long id);
+
+    MemberResDTO.MemberPreviewResDTO getMyInfo(Long memberId);
 }

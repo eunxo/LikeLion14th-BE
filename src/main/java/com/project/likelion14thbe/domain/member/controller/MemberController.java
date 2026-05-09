@@ -43,10 +43,10 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
-    public ResponseEntity<MemberResDTO.LoginRes> login(@Valid@RequestBody MemberReqDTO.LoginReq request) {
+    public ResponseEntity<CustomResponse<MemberResDTO.LoginRes>> login(@Valid @RequestBody MemberReqDTO.LoginReq request) {
+        MemberResDTO.LoginRes loginResult = memberCommandService.login(request);
         return ResponseEntity
-                .ok()
-                .build();
+                .ok(CustomResponse.onSuccess(loginResult));
     }
 
     @GetMapping("/{id}")
@@ -72,6 +72,17 @@ public class MemberController {
     public CustomResponse<String> deleteMember(Long memberId) {
         memberCommandService.deleteMember(memberId);
         return CustomResponse.onSuccess("회원 탈퇴 성공");
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "내 정보 조회", description = "현재 로그인한 회원의 정보를 조회합니다.")
+    public ResponseEntity<CustomResponse<MemberResDTO.MemberPreviewResDTO>> getMyInfo(
+            @RequestHeader("memberId") Long memberId
+    ) {
+        Long currentMemberId = 1L;
+
+        MemberResDTO.MemberPreviewResDTO myInfo = memberQueryService.getMyInfo(memberId);
+        return ResponseEntity.ok(CustomResponse.onSuccess(myInfo));
     }
 
 
