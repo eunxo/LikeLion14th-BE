@@ -38,9 +38,19 @@ public class Member extends BaseEntity {
     @Column(name = "profile_image")
     private String profileImage;
 
+    // soft delete를 위한 필드 추가
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Review> reviews = new ArrayList<>();
+
+    // 비밀번호 변경 메서드
+    public void updatePassword(String newPassword) {this.password = newPassword;}
+
+    // soft delete 메서드
+    public void delete(){this.deletedAt = LocalDateTime.now();}
 }

@@ -38,11 +38,19 @@ public class MemberController {
 
     @PatchMapping("/users/{userId}/password")
     @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
-    public ResponseEntity<String> changePassword (
-            @PathVariable Long userId
+    public CustomResponse<String> changePassword (
+            @PathVariable Long userId,
+            @RequestBody MemberReqDTO.PasswordResetDTO request
     ){
-        // 비밀번호 변경 로직~~~
-        return ResponseEntity.ok("비밀번호 변경 성공");
+        memberCommandService.updatePassword(userId, request);
+        return CustomResponse.onSuccess("비밀번호 변경 성공");
+    }
+
+    @DeleteMapping("/users/{userId}")
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴")
+    public CustomResponse<String> deleteMember (Long memberId) {
+        memberCommandService.deleteMember(memberId);
+        return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 
     @PostMapping("/auth/login")
