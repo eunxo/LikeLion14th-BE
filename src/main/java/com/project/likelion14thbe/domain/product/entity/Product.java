@@ -3,10 +3,12 @@ package com.project.likelion14thbe.domain.product.entity;
 import com.project.likelion14thbe.domain.member.entity.BaseEntity;
 import com.project.likelion14thbe.domain.order.entity.OrderItem;
 
+import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,10 @@ public class Product extends BaseEntity {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
+    // soft delete를 위한 필드 추가
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -52,4 +58,17 @@ public class Product extends BaseEntity {
         }
         this.quantity -= count;
     }
+
+    // 상품 수정 메서드
+    public void updateProduct(ProductReqDTO.CreateProductReq dto) {
+        this.name = dto.name();
+        this.description = dto.description();
+        this.price = dto.price();
+        this.category = dto.category();
+        this.imageUrl = dto.productImage();
+        this.quantity = dto.quantity();
+    }
+
+    // soft delete 메서드
+    public void delete() {this.deletedAt = LocalDateTime.now();}
 }
