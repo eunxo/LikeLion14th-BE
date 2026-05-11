@@ -1,4 +1,4 @@
-package com.project.likelion14thbe.domain.member.entity;
+package com.project.likelion14thbe.domain.category.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
