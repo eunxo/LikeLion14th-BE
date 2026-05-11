@@ -59,6 +59,11 @@ public class Product extends BaseEntity {
         this.quantity -= count;
     }
 
+    // 재고 추가 비즈니스 로직
+    public void increaseQuantity(Long count) {
+        this.quantity += count;
+    }
+
     // 상품 수정 메서드
     public void updateProduct(ProductReqDTO.CreateProductReq dto) {
         this.name = dto.name();
