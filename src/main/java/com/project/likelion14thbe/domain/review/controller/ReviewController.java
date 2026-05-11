@@ -37,13 +37,13 @@ public class ReviewController {
                 return CustomResponse.onSuccess(reviewCommandService.createReview(productId, reviewCreateReq));
         }
 
-        @DeleteMapping("/products/{productId}/reviews/{reviewId}")
+        @DeleteMapping("/reviews/{reviewId}")
         @Operation(summary = "리뷰 삭제", description = "리뷰 id를 입력하여 리뷰를 삭제합니다.")
-        public ResponseEntity<String> deleteReview(
-                        @PathVariable Long productId,
-                        @PathVariable Long reviewId) {
-                // 리뷰 삭제 로직~~~
-                return ResponseEntity.ok("리뷰 삭제 완료");
+        public CustomResponse<String> deleteReview(
+                        @PathVariable Long reviewId
+        ){
+                reviewCommandService.deleteReview(reviewId);
+                return CustomResponse.onSuccess("리뷰 삭제 완료");
         }
 
         @PutMapping("/reviews/{reviewId}")

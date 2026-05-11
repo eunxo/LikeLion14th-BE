@@ -44,4 +44,7 @@ public class Review extends BaseEntity {
         this.score = updateReqDTO.rating();
         this.content = updateReqDTO.content();
     }
+
+    // 리뷰 삭제 메서드
+    public void deleteReview(){ this.deletedAt = LocalDateTime.now(); }
 }
