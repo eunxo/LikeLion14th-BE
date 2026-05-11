@@ -1,6 +1,6 @@
 package com.project.likelion14thbe.domain.product.entity;
 
-import com.project.likelion14thbe.domain.member.entity.BaseEntity;
+import com.project.likelion14thbe.global.BaseEntity;
 import com.project.likelion14thbe.domain.order.entity.OrderItem;
 
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
