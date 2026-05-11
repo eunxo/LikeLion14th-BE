@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +24,17 @@ public class ReviewController {
 
         @GetMapping("/reviews/{reviewId}")
         @Operation(summary = "리뷰 단일 조회", description = "리뷰 id를 입력하여 리뷰를 조회합니다.")
-        public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReview(
+        public CustomResponse<ReviewResDTO.ReviewDetailRes> getReview(
                         @PathVariable Long reviewId) {
-                return ResponseEntity.ok(reviewQueryService.getReview(reviewId));
+                return CustomResponse.onSuccess(reviewQueryService.getReview(reviewId));
         }
 
         @PostMapping("/products/{productId}/reviews")
         @Operation(summary = "리뷰 생성", description = "리뷰를 생성합니다.")
-        public ResponseEntity<String> createReview(
+        public CustomResponse<String> createReview(
                         @PathVariable Long productId,
                         @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq) {
-                return ResponseEntity.ok(reviewCommandService.createReview(productId, reviewCreateReq));
+                return CustomResponse.onSuccess(reviewCommandService.createReview(productId, reviewCreateReq));
         }
 
         @DeleteMapping("/products/{productId}/reviews/{reviewId}")
@@ -45,15 +46,14 @@ public class ReviewController {
                 return ResponseEntity.ok("리뷰 삭제 완료");
         }
 
-        @PutMapping("/products/{productId}/reviews/{reviewId}")
+        @PutMapping("/reviews/{reviewId}")
         @Operation(summary = "리뷰 수정", description = "리뷰 id를 입력하여 리뷰를 수정합니다.")
-        public ResponseEntity<String> updateReview(
-                        @PathVariable Long productId,
+        public CustomResponse<String> updateReview(
                         @PathVariable Long reviewId,
-                        @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq // ReviewCreateReq 와 동일하기 때문에 재사용
+                        @RequestBody ReviewReqDTO.ReviewUpdateReq reviewUpdateReq
         ) {
-                // 리뷰 수정 로직
-                return ResponseEntity.ok("리뷰 수정 완료");
+                reviewCommandService.updateReview(reviewId, reviewUpdateReq);
+                return CustomResponse.onSuccess("리뷰 수정 완료");
         }
 
         @GetMapping("/products/{productId}/reviews") // {reviewId}가 빠짐
@@ -71,8 +71,8 @@ public class ReviewController {
 
         @GetMapping("/reviews/me/{userId}")
         @Operation(summary = "내 리뷰 목록 조회", description = "내가 작성한 모든 리뷰 목록을 조회합니다.")
-        public ResponseEntity<List<ReviewResDTO.ReviewDetailRes>> getMyReviews(
+        public CustomResponse<List<ReviewResDTO.ReviewDetailRes>> getMyReviews(
                         @PathVariable Long userId) {
-                return ResponseEntity.ok(reviewQueryService.getMyReviews(userId));
+                return CustomResponse.onSuccess(reviewQueryService.getMyReviews(userId));
         }
 }
