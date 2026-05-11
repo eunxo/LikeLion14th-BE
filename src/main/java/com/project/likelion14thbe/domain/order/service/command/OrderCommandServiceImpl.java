@@ -1,11 +1,17 @@
 package com.project.likelion14thbe.domain.order.service.command;
 
+import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.order.entity.OrderItem;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
+import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.repository.ProductRepository;
+import com.project.likelion14thbe.global.apiPayload.code.GeneralErrorCode;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,31 +27,49 @@ import java.util.stream.Collectors;
 public class OrderCommandServiceImpl implements OrderCommandService {
 
     private final OrderRepository orderRepository;
+    private final MemberRepository memberRepository;
+    private final ProductRepository productRepository;
 
     @Override
-    public OrderResDTO.OrderCreateResDto createOrder(OrderReqDTO.CreateOrderReq request) {
-//        1. 주문아이템 목록 만들기
-//                리퀘스트 안에 있는 재료들로 오더 아이템 엔티티를 만드는 컨버터 + 서비스 메서드 만들기 - 리스트형태로
-//
-//
-//        2. 만든 주문 아이템 목록 변수를 toOrder메서드의 매개변수로 넣어주기
+    public OrderResDTO.OrderCreateResDto createOrder(OrderReqDTO.CreateOrderReq request, Long memberId) {
 
-        // 1. 주문아이템 목록 만들기
-        // request.getItems() (List<OrderItemReq>)를 List<OrderItem>으로 변환합니다.
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.MEMBER_NOT_FOUND_404));
+
         List<OrderItem> orderItems = request.getItems().stream()
-                .map(itemReq -> OrderConverter.toOrderItem(itemReq)) // 각 요소를 엔티티로 변환
+                .map(itemReq -> {
+                    Product product = productRepository.findById(Long.valueOf(itemReq.getProductId()))
+                            .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
+
+                    return OrderConverter.toOrderItem(itemReq, product);
+                })
                 .collect(Collectors.toList());
 
-        // 2. 만든 주문 아이템 목록 변수를 toOrder 메서드의 매개변수로 넣어주기
-        Order order = OrderConverter.toOrder(request, orderItems);
-
+        Order order = OrderConverter.toOrder(request, orderItems, member);
         Order savedOrder = orderRepository.save(order);
 
         return OrderConverter.toOrderCreateResDto(savedOrder);
+    }
 
-//        Order order = OrderConverter.toOrder(request, 주문 아이템 목록);
-//        Order savedOrder = orderRepository.save(order);
-//        return OrderConverter.toOrderCreateResDto(savedOrder);
+    @Override
+    @Transactional
+    public void updateOrderStatus(Long orderId, String status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
+        order.updateStatus(status);
+    }
+
+    @Override
+    @Transactional
+    public void cancelOrder(Long orderId, Long memberId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
+
+        if (!order.getMember().getId().equals(memberId)) {
+            throw new CustomException(GeneralErrorCode.FORBIDDEN_403);
+        }
+
+        order.cancel();
     }
 }

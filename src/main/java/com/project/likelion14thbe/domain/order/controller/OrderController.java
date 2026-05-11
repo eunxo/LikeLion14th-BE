@@ -32,9 +32,9 @@ public class OrderController {
     })
     public ResponseEntity<OrderResDTO.OrderCreateResDto> createOrder(
             @RequestBody OrderReqDTO.CreateOrderReq request,
-            Long userId
+            @RequestHeader("memberId") Long memberId
     ) {
-        OrderResDTO.OrderCreateResDto response = orderCommandService.createOrder(request);
+        OrderResDTO.OrderCreateResDto response = orderCommandService.createOrder(request,memberId);
         return ResponseEntity.ok(response);
     }
     @GetMapping("/me")
@@ -43,8 +43,11 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "주문 내역 조회 성공"),
             @ApiResponse(responseCode = "401", description = "인증 실패")
     })
-    public ResponseEntity<List<OrderResDTO.OrderHistoryRes>> getMyOrders() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<OrderResDTO.OrderHistoryRes>> getMyOrders(
+            @RequestHeader("memberId") Long memberId
+    ) {
+        List<OrderResDTO.OrderHistoryRes> response = orderQueryService.getMyOrders(memberId);
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/{orderId}")
     @Operation(summary = "내 주문 상세 조회", description = "로그인한 사용자의 주문 ID를 이용해 특정 주문의 상세 정보를 조회합니다.")
@@ -56,5 +59,44 @@ public class OrderController {
             @PathVariable Long orderId
     ) {
         return ResponseEntity.ok(orderQueryService.getOrder(orderId));
+    }
+
+    @PatchMapping("/{orderId}/status")
+    @Operation(summary = "주문 상태 변경", description = "주문의 상태를 변경합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "상태 변경 성공"),
+            @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음")
+    })
+    public ResponseEntity<String> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody OrderReqDTO.UpdateOrderStatusReq request   // DTO로 변경
+    ) {
+        orderCommandService.updateOrderStatus(orderId, request.getStatus());
+        return ResponseEntity.ok("주문 상태가 변경되었습니다.");
+    }
+
+    @DeleteMapping("/{orderId}")
+    @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 취소 성공"),
+            @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음"),
+            @ApiResponse(responseCode = "403", description = "취소 권한 없음")
+    })
+    public ResponseEntity<String> cancelOrder(
+            @PathVariable Long orderId,
+            @RequestHeader("memberId") Long memberId
+    ) {
+        orderCommandService.cancelOrder(orderId, memberId);
+        return ResponseEntity.ok("주문이 취소되었습니다.");
+    }
+    @GetMapping("")
+    @Operation(summary = "전체 주문 목록 조회", description = "시스템의 전체 주문 목록을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "전체 주문 목록 조회 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 에러")
+    })
+    public ResponseEntity<List<OrderResDTO.OrderHistoryRes>> getOrders() {
+        List<OrderResDTO.OrderHistoryRes> response = orderQueryService.getOrderList();
+        return ResponseEntity.ok(response);
     }
 }

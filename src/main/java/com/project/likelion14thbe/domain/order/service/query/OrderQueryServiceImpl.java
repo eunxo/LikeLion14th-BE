@@ -4,6 +4,8 @@ import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
+import com.project.likelion14thbe.global.apiPayload.code.GeneralErrorCode;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     @Override
     public OrderResDTO.OrderDetailResDto getOrder(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
         return OrderConverter.toOrderDetailResDto(order);
     }
@@ -29,6 +31,14 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     @Override
     public List<OrderResDTO.OrderHistoryRes> getOrderList() {
         List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .map(OrderConverter::toOrderHistoryRes)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<OrderResDTO.OrderHistoryRes> getMyOrders(Long memberId) {
+        List<Order> orders = orderRepository.findByMemberId(memberId);  // 성능 개선
 
         return orders.stream()
                 .map(OrderConverter::toOrderHistoryRes)
