@@ -4,6 +4,8 @@ import com.project.likelion14thbe.domain.review.converter.ReviewConverter;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
 import com.project.likelion14thbe.domain.review.repository.ReviewRepository;
+import com.project.likelion14thbe.global.apiPayload.code.GeneralErrorCode;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +22,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
 
     @Override
     public List<ReviewResDTO.ReviewListRes> getReviews(Long productId) {
-        List<Review> reviews = reviewRepository.findAll();
-
+        List<Review> reviews = reviewRepository.findByProductId(productId);
         return reviews.stream()
                 .map(ReviewConverter::toReviewListRes)
                 .collect(Collectors.toList());
@@ -30,11 +31,26 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     @Override
     public ReviewResDTO.ReviewDetailRes getReviewDetail(Long productId, Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
         return ReviewConverter.toReviewDetailRes(review);
     }
 
+    @Override
+    public List<ReviewResDTO.ReviewListRes> getMyReviews(Long memberId) {
+        List<Review> reviews = reviewRepository.findByMemberId(memberId);
+        return reviews.stream()
+                .map(ReviewConverter::toReviewListRes)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReviewResDTO.ReviewListRes> getReviewsByProduct(Long productId) {
+        List<Review> reviews = reviewRepository.findByProductId(productId);
+        return reviews.stream()
+                .map(ReviewConverter::toReviewListRes)
+                .collect(Collectors.toList());
+    }
 
 
 }

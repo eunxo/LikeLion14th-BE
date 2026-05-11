@@ -38,7 +38,30 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     }
 
     @Override
-    public void deleteReview(Long id) {
-        reviewRepository.deleteById(id);
+    @Transactional
+    public ReviewResDTO.ReviewDetailRes updateReview(Long reviewId, ReviewReqDTO.ReviewUpdateReq request, Long memberId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
+
+        if (!review.getMember().getId().equals(memberId)) {
+            throw new CustomException(GeneralErrorCode.FORBIDDEN_403);
+        }
+
+        review.update(request.getTitle(), request.getContent(), request.getRating());
+        return ReviewConverter.toReviewDetailRes(review);
     }
+
+    @Override
+    @Transactional
+    public void deleteReview(Long reviewId, Long memberId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
+
+        if (!review.getMember().getId().equals(memberId)) {
+            throw new CustomException(GeneralErrorCode.FORBIDDEN_403);
+        }
+
+        reviewRepository.delete(review);
+    }
+
 }

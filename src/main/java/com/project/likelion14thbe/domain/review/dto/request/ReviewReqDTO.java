@@ -32,5 +32,21 @@ public class ReviewReqDTO {
         private String memberId;
 
     }
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "리뷰 수정 요청 DTO")
+    public static class ReviewUpdateReq {
+
+        @Schema(description = "리뷰제목")
+        private String title;
+
+        @Schema(description = "리뷰 내용")
+        private String content;
+
+        @Schema(description = "평점 (0.0 ~ 5.0)", example = "4.5")
+        private Double rating;
+    }
 
 }

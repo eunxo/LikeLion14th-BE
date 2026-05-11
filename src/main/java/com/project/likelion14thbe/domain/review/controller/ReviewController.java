@@ -25,7 +25,7 @@ public class ReviewController {
     private final ReviewCommandService reviewCommandService;
     private final ReviewQueryService reviewQueryService;
 
-    public ReviewController(ReviewCommandServiceImpl reviewCommandServiceImpl, ReviewQueryServiceImpl reviewQueryServiceImpl, ReviewCommandService reviewCommandService, ReviewQueryService reviewQueryService) {
+    public ReviewController(ReviewCommandService reviewCommandService, ReviewQueryService reviewQueryService) {
         this.reviewCommandService = reviewCommandService;
         this.reviewQueryService = reviewQueryService;
     }
@@ -38,13 +38,11 @@ public class ReviewController {
     })
     public ResponseEntity<CustomResponse<ReviewResDTO.ReviewCreateResDto>> createReview(
             @PathVariable("productId") Long productId,
-
             @RequestHeader("memberId") Long memberId,
             @Valid @RequestBody ReviewReqDTO.ReviewCreateReq request
     ) {
 
         request.setProductId(productId);
-
 
         ReviewResDTO.ReviewCreateResDto response = reviewCommandService.createReview(memberId, request);
 
@@ -68,5 +66,24 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/reviews/{reviewId}")
+    @Operation(summary = "리뷰 수정")
+    public ResponseEntity<ReviewResDTO.ReviewDetailRes> updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody ReviewReqDTO.ReviewUpdateReq request,
+            @RequestParam Long memberId) {
 
+        ReviewResDTO.ReviewDetailRes response = reviewCommandService.updateReview(reviewId, request, memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/reviews/{reviewId}")
+    @Operation(summary = "리뷰 삭제")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable Long reviewId,
+            @RequestParam Long memberId) {
+
+        reviewCommandService.deleteReview(reviewId, memberId);
+        return ResponseEntity.noContent().build();
+    }
 }

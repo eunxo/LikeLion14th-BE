@@ -3,6 +3,7 @@ package com.project.likelion14thbe.domain.review.entity;
 import com.project.likelion14thbe.domain.member.entity.BaseEntity;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.member.entity.Member;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,5 +38,11 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "item_id")
     private Product product;
 
+    @Schema(name = "update")
+    public void update(String title, String content, Double rating) {
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
+    }
 
 }

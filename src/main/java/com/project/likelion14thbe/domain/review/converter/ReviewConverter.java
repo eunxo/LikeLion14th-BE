@@ -5,7 +5,6 @@ import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
-import com.project.likelion14thbe.domain.member.entity.Member;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
