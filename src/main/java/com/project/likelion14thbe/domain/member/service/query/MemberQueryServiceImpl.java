@@ -18,8 +18,9 @@ public class MemberQueryServiceImpl implements MemberQueryService{
     private final MemberRepository memberRepository;
 
     @Override
-    public MemberResDTO.MemberPreviewResDTO getMember(Long id){
-        Member member = memberRepository.findById(1L).get();
+    public MemberResDTO.MemberPreviewResDTO getMember(Long id) {
+        Member member = memberRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.MEMBER_NOT_FOUND_404));
 
         return MemberConverter.toMemberPreviewResDTO(member);
     }

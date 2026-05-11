@@ -59,7 +59,7 @@ public class MemberController {
         return ResponseEntity.ok(memberQueryService.getMember(id));
     }
 
-    @PatchMapping("/members/{memberId}/password")
+    @PatchMapping("/{memberId}/password")
     public CustomResponse<String> resetPassword(
             @PathVariable Long memberId,
             @RequestBody MemberReqDTO.PasswordResetDTO request
@@ -68,8 +68,8 @@ public class MemberController {
         return CustomResponse.onSuccess("비밀번호 변경 성공");
     }
 
-    @DeleteMapping("/members/{memberId}")
-    public CustomResponse<String> deleteMember(Long memberId) {
+    @DeleteMapping("/{memberId}")
+    public CustomResponse<String> deleteMember(@PathVariable Long memberId) {
         memberCommandService.deleteMember(memberId);
         return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
@@ -79,8 +79,6 @@ public class MemberController {
     public ResponseEntity<CustomResponse<MemberResDTO.MemberPreviewResDTO>> getMyInfo(
             @RequestHeader("memberId") Long memberId
     ) {
-        Long currentMemberId = 1L;
-
         MemberResDTO.MemberPreviewResDTO myInfo = memberQueryService.getMyInfo(memberId);
         return ResponseEntity.ok(CustomResponse.onSuccess(myInfo));
     }
