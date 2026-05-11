@@ -58,4 +58,12 @@ public class ProductController {
         return ResponseEntity.ok("상품 삭제 성공");
     }
 
+    @PutMapping("/{productId}")
+    @Operation(summary = "상품 수정", description = "상품 ID를 이용해 상품 정보를 수정합니다.")
+    public ResponseEntity<ProductResDTO.ProductCreateResDto> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductReqDTO.ProductUpdateReqDto request) {
+        return ResponseEntity.ok(productCommandService.updateProduct(productId, request));
+    }
+
 }

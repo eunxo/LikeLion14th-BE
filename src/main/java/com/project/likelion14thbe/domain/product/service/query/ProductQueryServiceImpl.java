@@ -4,6 +4,8 @@ import com.project.likelion14thbe.domain.product.converter.ProductConverter;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
+import com.project.likelion14thbe.global.apiPayload.code.GeneralErrorCode;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +22,16 @@ public class ProductQueryServiceImpl implements ProductQueryService {
 
     @Override
     public ProductResDTO.ProductDetailResDto getProductDetail(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+        Product product = productRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
         return ProductConverter.toProductDetailResDTO(product);
     }
 
     @Override
     public List<ProductResDTO.ProductPreviewResDto> getProductList() {
-        return productRepository.findAll().stream()
-                .map(ProductConverter :: toProductPreviewResDTO)
+        return productRepository.findAllByDeletedAtIsNull().stream()
+                .map(ProductConverter::toProductPreviewResDTO)
                 .collect(Collectors.toList());
     }
 }

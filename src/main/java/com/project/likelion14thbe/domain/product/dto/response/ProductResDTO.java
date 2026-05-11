@@ -1,5 +1,7 @@
 package com.project.likelion14thbe.domain.product.dto.response;
 
+import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
+import com.project.likelion14thbe.domain.product.entity.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -112,4 +114,5 @@ public class ProductResDTO {
         private Integer totalCount;
 
     }
+
 }

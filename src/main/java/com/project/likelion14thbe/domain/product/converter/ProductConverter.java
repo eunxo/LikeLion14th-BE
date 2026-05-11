@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.product.converter;
 
+import com.project.likelion14thbe.domain.category.entity.Category;
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.entity.Product;
@@ -12,13 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductConverter {
 
-    // 1. DTO -> Entity 변환: 상품 생성
-    public static Product toProduct(ProductReqDTO.ProductCreateReqDto request) {
+    // 1. DTO -> Entity 변환: 상품 생성 (Category 포함)
+    public static Product toProduct(ProductReqDTO.ProductCreateReqDto request, Category category) {
         return Product.builder()
                 .name(request.getName())
                 .price(request.getPrice())
                 .imageUrl(request.getImageUrl())
                 .description(request.getDescription())
+                .category(category)
+                .stock(request.getStock())
                 .build();
     }
 
@@ -48,10 +51,25 @@ public class ProductConverter {
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
-                .category(String.valueOf(product.getCategory())) // 엔티티의 category 값 연결
+                .category(product.getCategory() != null ? product.getCategory().getName() : null)
                 .imageUrl(product.getImageUrl())
                 .photoImg(product.getImageUrl())
                 .stock(product.getStock())
                 .build();
+    }
+
+    // 5. 상품 수정용: DTO 값으로 엔티티 업데이트 (Category 포함)
+    public static void updateProduct(Product product, ProductReqDTO.ProductUpdateReqDto request, Category category) {
+        product.update(
+                request.getName(),
+                request.getDescription(),
+                request.getPrice(),
+                request.getImageUrl(),
+                request.getStock()
+        );
+
+        if (category != null) {
+            product.setCategory(category);
+        }
     }
 }
