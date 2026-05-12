@@ -27,4 +27,10 @@ public class MemberReqDTO {
     ){
 
     }
+
+    public record PasswordResetDTO(
+            String password
+    ){
+
+    }
 }
