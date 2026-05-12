@@ -26,6 +26,7 @@ public class MemberConverter {
 
     public static MemberResDTO.MemberGetRes toMemberGetRes(Member member){
         return MemberResDTO.MemberGetRes.builder()
+                .id(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())
                 .build();
