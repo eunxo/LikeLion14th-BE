@@ -9,5 +9,5 @@ public interface ProductCommandService {
 
     void updateProduct(Long ProductId, ProductReqDTO.ProductChangeDTO dto);
 
-    void deleteMember(Long productId);
+    void deleteProduct(Long productId);
 }
