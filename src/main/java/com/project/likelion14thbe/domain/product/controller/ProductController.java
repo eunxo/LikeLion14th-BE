@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.service.command.ProductCommandService;
 import com.project.likelion14thbe.domain.product.service.query.ProductQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class ProductController {
     private final ProductCommandService productCommandService;
     private final ProductQueryService productQueryService;
 
-    @GetMapping("/products")
+    @GetMapping("/products/get")
     @Operation(summary = "상품 목록 조회", description = "상품 전체 목록을 조회합니다")
     public ResponseEntity<ProductResDTO.ProductGetRes> getProducts(){
         return ResponseEntity.ok(productQueryService.getProducts());
@@ -42,5 +43,24 @@ public class ProductController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(productCommandService.createProduct(productCreateReq));
+    }
+
+    @PatchMapping("/products/{productId}")
+    @Operation(summary = "상품 수정", description = "상품 정보를 변경합니다")
+    public CustomResponse<String> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductReqDTO.ProductChangeDTO update
+    ){
+        productCommandService.updateProduct(productId, update);
+        return CustomResponse.onSuccess("상품 정보 변경 성공");
+    }
+
+    @DeleteMapping("/product/{productId}/delete")
+    @Operation(summary = "상품 삭제", description = "상품을 삭제합니다.")
+    public CustomResponse<String> deleteProduct(
+            @PathVariable Long productId
+    ){
+        productCommandService.deleteProduct(productId);
+        return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 }
