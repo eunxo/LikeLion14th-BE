@@ -1,14 +1,12 @@
 package com.project.likelion14thbe.domain.review.dto.request;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
 public class ReviewReqDTO {
 
     public record ReviewCreateReq(
-            String content,
-            Double rating
+            String reviewContent,
+            Double reviewRating
     ) {
 
     }
@@ -16,6 +14,13 @@ public class ReviewReqDTO {
     @Builder
     public record ReviewFixReq(
             String content
+    ){
+
+    }
+
+    public record ReviewChangeReq(
+            String reviewContent,
+            Double reviewRating
     ){
 
     }
