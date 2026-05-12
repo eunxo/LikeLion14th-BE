@@ -6,6 +6,8 @@ import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -27,4 +29,13 @@ public class Order extends BaseEntity {
     private Product product;
 
     private Integer quantity;
+
+    // 주문 취소 시간 기록
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    // 주문 취소
+    public void cancel() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
