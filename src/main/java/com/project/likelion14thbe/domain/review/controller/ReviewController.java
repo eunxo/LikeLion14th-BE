@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,24 @@ public class ReviewController {
             @PathVariable Long productId
     ){
         return ResponseEntity.ok(reviewQueryService.getReviewsByProduct(productId));
+    }
+
+    @PatchMapping("/reviews/{reviewId}/update")
+    @Operation(summary = "리뷰 수정", description = "리뷰의 내용과 별점을 수정합니다.")
+    public CustomResponse<String> updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody ReviewReqDTO.ReviewChangeReq update
+    ){
+        reviewCommandService.updateReview(reviewId, update);
+        return CustomResponse.onSuccess("리뷰 수정 성공");
+    }
+
+    @DeleteMapping("/reviews/{reviewId}/delete")
+    @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
+    public CustomResponse<String> deleteReview(
+            @PathVariable Long reviewId
+    ) {
+        reviewCommandService.deleteReview(reviewId);
+        return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 }
