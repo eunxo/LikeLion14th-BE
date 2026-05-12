@@ -7,6 +7,8 @@ import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.order.entity.ProductOrder;
+import com.project.likelion14thbe.domain.order.execption.OrderErrorCode;
+import com.project.likelion14thbe.domain.order.execption.OrderException;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
 import com.project.likelion14thbe.domain.order.repository.ProductOrderRepository;
 import com.project.likelion14thbe.domain.product.entity.Product;
@@ -44,5 +46,23 @@ public class OrderCommandServiceImpl implements OrderCommandService{
         }
 
         return OrderConverter.toCreateResDto(order, totalPrice);
+    }
+
+    @Override
+    public void changeStatus(Long orderId, OrderReqDTO.ChangeStatusDTO dto){
+        // 주문정보 조회
+        Order order = orderRepository.findByIdAndNotDeleted(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        order.changeStatus(dto.status());
+    }
+
+    @Override
+    public void deleteOrder(Long orderId){
+        // 주문 정보 조회
+        Order order = orderRepository.findByIdAndNotDeleted(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        order.delete();
     }
 }
