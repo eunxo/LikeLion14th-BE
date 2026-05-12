@@ -8,6 +8,8 @@ import com.project.likelion14thbe.domain.review.converter.ReviewConverter;
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
+import com.project.likelion14thbe.domain.review.exception.ReviewErrorCode;
+import com.project.likelion14thbe.domain.review.exception.ReviewException;
 import com.project.likelion14thbe.domain.review.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +38,24 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
         reviewRepository.save(review);
 
         return ReviewConverter.toReviewCreateRes(review);
+    }
+
+    @Override
+    public void updateReview(Long reviewId, ReviewReqDTO.ReviewChangeReq dto){
+        // 리뷰 정보 조회
+        Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        review.updatedReview(dto.reviewContent(), dto.reviewRating());
+    }
+
+    @Override
+    public void deleteReview(Long reviewId){
+        // 리뷰 정보 조회
+        Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        //soft delete 처리
+        review.delete();
     }
 }
