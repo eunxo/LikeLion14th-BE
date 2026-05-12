@@ -28,4 +28,8 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<ProductOrder> product;
+
+    public void changeStatus(String newStatus){
+        this.status = newStatus;
+    }
 }
