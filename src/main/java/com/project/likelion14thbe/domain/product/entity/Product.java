@@ -34,4 +34,11 @@ public class Product extends BaseEntity {
     @Lob
     @Column(name = "product_description", columnDefinition = "TEXT")
     private String productDescription;
+
+    public void updateProduct(Integer newProductPrice, Integer newProductQuantity, String newProductName, String newProductDescription){
+        this.productPrice = newProductPrice;
+        this.productQuantity = newProductQuantity;
+        this.productName = newProductName;
+        this.productDescription = newProductDescription;
+    }
 }
