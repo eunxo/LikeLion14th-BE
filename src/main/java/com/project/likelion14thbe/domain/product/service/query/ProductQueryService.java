@@ -4,4 +4,5 @@ import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 
 public interface ProductQueryService {
     ProductResDTO.ListRes getProducts();
+    ProductResDTO.HomeRes getHome();
 }
