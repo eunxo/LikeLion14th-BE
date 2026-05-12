@@ -6,4 +6,8 @@ import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 public interface OrderCommandService {
 
     OrderResDTO.OrderCreateRes createOrder(OrderReqDTO.OrderCreateReq orderCreateReq, Long jwtMemberId);
+
+    void changeStatus(Long orderId, OrderReqDTO.ChangeStatusDTO dto);
+
+    void deleteOrder(Long orderId);
 }
