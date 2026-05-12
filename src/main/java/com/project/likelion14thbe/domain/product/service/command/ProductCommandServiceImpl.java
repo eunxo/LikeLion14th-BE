@@ -4,6 +4,8 @@ import com.project.likelion14thbe.domain.product.converter.ProductConverter;
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
+import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +26,23 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         productRepository.save(product);
 
         return ProductConverter.toProductCreateRes(product);
+    }
+
+    @Override
+    public void updateProduct(Long productId, ProductReqDTO.ProductChangeDTO dto){
+        // 상품 정보 조회
+        Product product = productRepository.findByAndNotDeleted(productId)
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        product.updateProduct(dto.productPrice(), dto.productQuantity(), dto.productName(), dto.description());
+    }
+
+    @Override
+    public void deleteProduct(Long productId){
+        //상품 정보 조회
+        Product product = productRepository.findByAndNotDeleted(productId)
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        product.delete();
     }
 }
