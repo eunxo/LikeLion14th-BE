@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.id = :id AND m.deletedAt IS NULL")
     Optional<Member> findByIdAndNotDeleted(@Param("id") Long id);
 
+    void deleteByDeletedAtBefore(LocalDateTime threshold);
 }
