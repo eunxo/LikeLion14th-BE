@@ -3,6 +3,8 @@ package com.project.likelion14thbe.domain.product.service.command;
 import com.project.likelion14thbe.domain.category.entity.Category;
 import com.project.likelion14thbe.domain.category.repository.CategoryRepository;
 import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import com.project.likelion14thbe.domain.product.converter.ProductConverter;
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
@@ -26,7 +28,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     public ProductResDTO.ProductCreateResult createProduct(ProductReqDTO.ProductCreateReq request) {
         Category category = resolveCategory(request.getCategoryId());
         Member seller = memberRepository.findFirstByDeletedAtIsNullOrderByUserIdAsc()
-                .orElseThrow(() -> new IllegalArgumentException("판매자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Product product = ProductConverter.toProduct(request, category, seller);
         productRepository.save(product);

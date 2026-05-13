@@ -3,6 +3,8 @@ package com.project.likelion14thbe.domain.product.service.query;
 import com.project.likelion14thbe.domain.product.converter.ProductConverter;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
+import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     @Override
     public ProductResDTO.ProductDetailResult getProduct(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
         return ProductConverter.toDetailResult(product);
     }
 }
