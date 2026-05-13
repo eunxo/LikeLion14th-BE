@@ -10,4 +10,13 @@ public interface ReviewCommandService {
             Long productId,
             ReviewReqDTO.CreateReviewReqDTO request
     );
+
+    ReviewResDTO.UpdateReviewResDTO updateReview(
+            Long memberId,
+            Long productId,
+            Long reviewId,
+            ReviewReqDTO.UpdateReviewReqDTO request
+    );
+
+    void deleteReview(Long memberId, Long productId, Long reviewId);
 }

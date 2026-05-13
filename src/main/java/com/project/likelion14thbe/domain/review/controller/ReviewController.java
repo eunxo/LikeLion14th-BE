@@ -5,12 +5,10 @@ import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.time.LocalDateTime;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,73 +29,67 @@ public class ReviewController implements ReviewDocs {
 
     @Override
     @PostMapping("/products/{productId}/reviews")
-    public ResponseEntity<ReviewResDTO.CreateReviewResDTO> createReview(
+    public CustomResponse<ReviewResDTO.CreateReviewResDTO> createReview(
             @PathVariable Long productId,
             @RequestParam Long memberId,
             @Valid @RequestBody ReviewReqDTO.CreateReviewReqDTO request
     ) {
         ReviewResDTO.CreateReviewResDTO body =
                 reviewCommandService.createReview(memberId, productId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+        return CustomResponse.onSuccess(HttpStatus.CREATED, "리뷰 작성 성공", body);
     }
 
     @Override
     @GetMapping("/products/{productId}/reviews/{reviewId}")
-    public ResponseEntity<ReviewResDTO.ReviewDetailResDTO> getReview(
+    public CustomResponse<ReviewResDTO.ReviewDetailResDTO> getReview(
             @PathVariable Long productId,
             @PathVariable Long reviewId
     ) {
-        return ResponseEntity.ok(reviewQueryService.getReview(productId, reviewId));
+        return CustomResponse.onSuccess(HttpStatus.OK, "리뷰 상세 조회 성공", reviewQueryService.getReview(productId, reviewId));
     }
 
     @Override
     @GetMapping("/products/{productId}/reviews")
-    public ResponseEntity<ReviewResDTO.ReviewListResDTO> getReviewList(
+    public CustomResponse<ReviewResDTO.ReviewListResDTO> getReviewList(
             @PathVariable Long productId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "latest") String sort
     ) {
-        return ResponseEntity.ok(reviewQueryService.getReviewList(productId, page, size, sort));
+        return CustomResponse.onSuccess(HttpStatus.OK, "리뷰 목록 조회 성공", reviewQueryService.getReviewList(productId, page, size, sort));
     }
 
     @Override
     @PatchMapping("/products/{productId}/reviews/{reviewId}")
-    public ResponseEntity<ReviewResDTO.UpdateReviewResDTO> updateReview(
+    public CustomResponse<ReviewResDTO.UpdateReviewResDTO> updateReview(
             @PathVariable Long productId,
             @PathVariable Long reviewId,
+            @RequestParam Long memberId,
             @Valid @RequestBody ReviewReqDTO.UpdateReviewReqDTO request
     ) {
-        ReviewResDTO.UpdateReviewResDTO body = new ReviewResDTO.UpdateReviewResDTO(
-                reviewId,
-                "홍길동",
-                request.rating() != null ? request.rating() : 5.0,
-                request.content() != null ? request.content() : "다시 먹어봤는데 더 맛있네요!",
-                LocalDateTime.now()
+        return CustomResponse.onSuccess(
+                reviewCommandService.updateReview(memberId, productId, reviewId, request)
         );
-        return ResponseEntity.ok(body);
     }
 
     @Override
     @DeleteMapping("/products/{productId}/reviews/{reviewId}")
-    public ResponseEntity<ReviewResDTO.DeleteReviewResDTO> deleteReview(
+    public CustomResponse<String> deleteReview(
             @PathVariable Long productId,
-            @PathVariable Long reviewId
+            @PathVariable Long reviewId,
+            @RequestParam Long memberId
     ) {
-        ReviewResDTO.DeleteReviewResDTO body = new ReviewResDTO.DeleteReviewResDTO(
-                reviewId,
-                LocalDateTime.now()
-        );
-        return ResponseEntity.ok(body);
+        reviewCommandService.deleteReview(memberId, productId, reviewId);
+        return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 
     @Override
     @GetMapping("/members/me/reviews")
-    public ResponseEntity<ReviewResDTO.MyReviewListResDTO> getMyReviews(
+    public CustomResponse<ReviewResDTO.MyReviewListResDTO> getMyReviews(
             @RequestParam Long memberId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return ResponseEntity.ok(reviewQueryService.getMyReviews(memberId, page, size));
+        return CustomResponse.onSuccess(HttpStatus.OK, "내 리뷰 목록 조회 성공", reviewQueryService.getMyReviews(memberId, page, size));
     }
 }

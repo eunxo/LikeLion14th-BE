@@ -39,4 +39,11 @@ public class Product extends BaseEntity {
 
     @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
+
+    // 상품 정보 부분 수정 메서드
+    public void updateProduct(String name, Integer price, String imageUrl) {
+        if (name != null) this.name = name;
+        if (price != null) this.price = price;
+        if (imageUrl != null) this.thumbnailUrl = imageUrl;
+    }
 }

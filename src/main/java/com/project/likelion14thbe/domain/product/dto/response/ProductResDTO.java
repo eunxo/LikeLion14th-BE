@@ -71,6 +71,19 @@ public class ProductResDTO {
     ) {
     }
 
+    @Schema(description = "상품 수정 응답 DTO")
+    public record UpdateProductResDTO(
+            @Schema(description = "상품 ID", example = "51")
+            Long id,
+            @Schema(description = "상품명", example = "수정된 상품명")
+            String name,
+            @Schema(description = "가격", example = "29000")
+            Integer price,
+            @Schema(description = "이미지 URL", example = "https://example.com/new.jpg")
+            String imageUrl
+    ) {
+    }
+
     @Schema(description = "상품 삭제 응답 DTO")
     public record DeleteProductResDTO(
             @Schema(description = "상품 ID", example = "51")

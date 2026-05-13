@@ -47,4 +47,11 @@ public class MemberReqDTO {
             String newPassword
     ) {
     }
+
+    @Schema(description = "비밀번호 변경 요청 DTO (5주차 강의 PDF 단순 버전)")
+    public record PasswordResetDTO(
+            @Schema(description = "새 비밀번호", example = "newPassw0rd!!")
+            String password
+    ) {
+    }
 }
