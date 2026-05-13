@@ -29,10 +29,13 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     public ReviewResDTO.ReviewCreateResult createReview(Long productId, ReviewReqDTO.ReviewCreateReq request) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
-        Member member = memberRepository.findById(1L)
+        Member member = memberRepository.findFirstByDeletedAtIsNullOrderByUserIdAsc()
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
         OrderItem orderItem = orderItemRepository.findById(request.getOrderItemId())
                 .orElseThrow(() -> new IllegalArgumentException("주문 상세를 찾을 수 없습니다."));
+        if (!orderItem.getProduct().getProductId().equals(productId)) {
+            throw new IllegalArgumentException("주문 상세가 해당 상품과 일치하지 않습니다.");
+        }
 
         Review review = ReviewConverter.toReview(request, product, member, orderItem);
         reviewRepository.save(review);

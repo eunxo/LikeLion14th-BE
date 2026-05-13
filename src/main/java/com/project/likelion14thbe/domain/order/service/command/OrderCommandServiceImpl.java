@@ -29,7 +29,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     public OrderResDTO.OrderCreateResult createOrder(OrderReqDTO.OrderCreateReq request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
-        Member member = memberRepository.findById(1L)
+        Member member = memberRepository.findFirstByDeletedAtIsNullOrderByUserIdAsc()
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
         int quantity = request.getQuantity() == null ? 1 : request.getQuantity();

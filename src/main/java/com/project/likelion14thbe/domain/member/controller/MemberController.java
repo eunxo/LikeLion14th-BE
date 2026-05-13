@@ -4,6 +4,9 @@ import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,12 +16,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "회원 API", description = "회원 관련 API")
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Validated
 public class MemberController {
 
     private final MemberQueryService memberQueryService;
@@ -33,7 +38,7 @@ public class MemberController {
             @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일")
     })
     public ResponseEntity<MemberResDTO.SignUpRes> signup(
-            @RequestBody MemberReqDTO.SignUpReq request
+            @Valid @RequestBody MemberReqDTO.SignUpReq request
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -48,7 +53,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "사용자 없음")
     })
     public ResponseEntity<MemberResDTO.MemberPreviewResDTO> getMember(
-            @PathVariable Long memberId
+            @PathVariable @Min(value = 1, message = "memberId는 1 이상이어야 합니다.") Long memberId
     ) {
         return ResponseEntity.ok(memberQueryService.getMember(memberId));
     }
@@ -62,7 +67,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
     public ResponseEntity<MemberResDTO.LoginRes> login(
-            @RequestBody(required = true) MemberReqDTO.LoginReq request
+            @Valid @RequestBody(required = true) MemberReqDTO.LoginReq request
     ) {
         return ResponseEntity.ok(
                 MemberResDTO.LoginRes.builder()
@@ -145,7 +150,7 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패")
     })
     public ResponseEntity<MemberResDTO.UpdateRes> updateMember(
-            @RequestBody(required = true) MemberReqDTO.UpdateReq request
+            @Valid @RequestBody(required = true) MemberReqDTO.UpdateReq request
     ) {
         return ResponseEntity.ok(
                 MemberResDTO.UpdateRes.builder()
@@ -155,21 +160,35 @@ public class MemberController {
         );
     }
 
-    @DeleteMapping("/users/me")
-    @Operation(summary = "회원 탈퇴", description = "현재 로그인한 사용자의 계정을 탈퇴 처리합니다.")
+    @PatchMapping("/members/{memberId}/password")
+    @Operation(summary = "회원 비밀번호 변경", description = "회원 ID 기준으로 비밀번호를 변경합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.DeleteRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "사용자 없음")
+            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음")
     })
-    public ResponseEntity<MemberResDTO.DeleteRes> deleteMember() {
-        return ResponseEntity.ok(
-                MemberResDTO.DeleteRes.builder()
-                        .isSuccess(true)
-                        .code("USER200")
-                        .message("회원 탈퇴 성공")
-                        .build()
-        );
+    public CustomResponse<String> resetPassword(
+            @PathVariable @Min(value = 1, message = "memberId는 1 이상이어야 합니다.") Long memberId,
+            @Valid @RequestBody MemberReqDTO.PasswordResetDTO request
+    ) {
+
+        memberCommandService.updatePassword(memberId, request);
+
+        return CustomResponse.onSuccess("비밀번호 변경 성공");
+    }
+
+    @DeleteMapping("/members/{memberId}")
+    @Operation(summary = "회원 탈퇴(관리자/식별자 기준)", description = "회원 ID 기준으로 논리 삭제 처리합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음")
+    })
+    public CustomResponse<String> deleteMember(
+            @PathVariable @Min(value = 1, message = "memberId는 1 이상이어야 합니다.") Long memberId
+    ) {
+
+        memberCommandService.deleteMember(memberId);
+
+        return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 }
