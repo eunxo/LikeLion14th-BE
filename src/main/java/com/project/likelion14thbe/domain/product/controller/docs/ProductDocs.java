@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Product", description = "상품 API — 목록/상세 조회, 추가, 부분 수정, 삭제")
 public interface ProductDocs {
@@ -25,7 +24,7 @@ public interface ProductDocs {
             @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공",
                     content = @Content(schema = @Schema(implementation = ProductResDTO.ProductListResDTO.class)))
     })
-    ResponseEntity<ProductResDTO.ProductListResDTO> getProductList(
+    CustomResponse<ProductResDTO.ProductListResDTO> getProductList(
             @Parameter(description = "상품명 검색어 (선택)", example = "사과") String keyword,
             @Parameter(description = "카테고리 필터 (선택)", example = "과일") String category,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
@@ -50,7 +49,7 @@ public interface ProductDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<ProductResDTO.ProductDetailResDTO> getProduct(
+    CustomResponse<ProductResDTO.ProductDetailResDTO> getProduct(
             @Parameter(description = "상품 아이디", example = "1") Long productId
     );
 
@@ -76,7 +75,7 @@ public interface ProductDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<ProductResDTO.CreateProductResDTO> createProduct(
+    CustomResponse<ProductResDTO.CreateProductResDTO> createProduct(
             ProductReqDTO.CreateProductReqDTO request
     );
 

@@ -9,8 +9,6 @@ import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,22 +28,22 @@ public class OrderController implements OrderDocs {
 
     @Override
     @PostMapping("/orders")
-    public ResponseEntity<OrderResDTO.CreateOrderResDTO> createOrder(
+    public CustomResponse<OrderResDTO.CreateOrderResDTO> createOrder(
             @RequestParam Long memberId,
             @Valid @RequestBody OrderReqDTO.CreateOrderReqDTO request
     ) {
         OrderResDTO.CreateOrderResDTO body = orderCommandService.createOrder(memberId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+        return CustomResponse.onSuccess(HttpStatus.CREATED, "주문 생성 성공", body);
     }
 
     @Override
     @GetMapping("/members/me/orders")
-    public ResponseEntity<OrderResDTO.MyOrderListResDTO> getMyOrders(
+    public CustomResponse<OrderResDTO.MyOrderListResDTO> getMyOrders(
             @RequestParam Long memberId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return ResponseEntity.ok(orderQueryService.getMyOrders(memberId, page, size));
+        return CustomResponse.onSuccess(HttpStatus.OK, "내 주문 목록 조회 성공", orderQueryService.getMyOrders(memberId, page, size));
     }
 
     @Override

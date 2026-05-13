@@ -32,6 +32,11 @@ public class CustomResponse<T> {
         return new CustomResponse<>(true, String.valueOf(status.value()), status.getReasonPhrase(), result);
     }
 
+    //상태 코드 + 메시지를 함께 지정하는 성공 응답 생성 메서드
+    public static <T> CustomResponse<T> onSuccess(HttpStatus status, String message, T result) {
+        return new CustomResponse<>(true, String.valueOf(status.value()), message, result);
+    }
+
     //실패 응답 생성 메서드 (데이터 포함)
     public static <T> CustomResponse<T> onFailure(String code, String message, T result) {
         return new CustomResponse<>(false, code, message, result);

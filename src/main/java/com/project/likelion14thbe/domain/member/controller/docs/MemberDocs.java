@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Member", description = "회원 API — 회원가입, 로그인, 내 정보 조회, 비밀번호 수정, 회원 탈퇴")
 public interface MemberDocs {
@@ -48,7 +47,7 @@ public interface MemberDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<MemberResDTO.SignUpResDTO> signUp(MemberReqDTO.SignUpReqDTO request);
+    CustomResponse<MemberResDTO.SignUpResDTO> signUp(MemberReqDTO.SignUpReqDTO request);
 
     @Operation(
             summary = "일반 로그인",
@@ -78,7 +77,7 @@ public interface MemberDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<MemberResDTO.LoginResDTO> login(MemberReqDTO.LoginReqDTO request);
+    CustomResponse<MemberResDTO.LoginResDTO> login(MemberReqDTO.LoginReqDTO request);
 
     @Operation(
             summary = "비밀번호 변경 (5주차 강의 PDF 단순 버전)",
@@ -155,7 +154,7 @@ public interface MemberDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo(
+    CustomResponse<MemberResDTO.MyInfoResDTO> getMyInfo(
             @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId
     );
 }

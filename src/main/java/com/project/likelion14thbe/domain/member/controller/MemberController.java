@@ -9,7 +9,6 @@ import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,19 +29,19 @@ public class MemberController implements MemberDocs {
 
     @Override
     @PostMapping("/members")
-    public ResponseEntity<MemberResDTO.SignUpResDTO> signUp(
+    public CustomResponse<MemberResDTO.SignUpResDTO> signUp(
             @Valid @RequestBody MemberReqDTO.SignUpReqDTO request
     ) {
         MemberResDTO.SignUpResDTO body = memberCommandService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+        return CustomResponse.onSuccess(HttpStatus.CREATED, "회원가입 성공", body);
     }
 
     @Override
     @PostMapping("/auth/login")
-    public ResponseEntity<MemberResDTO.LoginResDTO> login(
+    public CustomResponse<MemberResDTO.LoginResDTO> login(
             @Valid @RequestBody MemberReqDTO.LoginReqDTO request
     ) {
-        return ResponseEntity.ok(memberCommandService.login(request));
+        return CustomResponse.onSuccess(HttpStatus.OK, "로그인 성공", memberCommandService.login(request));
     }
 
     @Override
@@ -64,9 +63,9 @@ public class MemberController implements MemberDocs {
 
     @Override
     @GetMapping("/members/me")
-    public ResponseEntity<MemberResDTO.MyInfoResDTO> getMyInfo(
+    public CustomResponse<MemberResDTO.MyInfoResDTO> getMyInfo(
             @RequestParam Long memberId
     ) {
-        return ResponseEntity.ok(memberQueryService.getMyInfo(memberId));
+        return CustomResponse.onSuccess(HttpStatus.OK, "내 정보 조회 성공", memberQueryService.getMyInfo(memberId));
     }
 }

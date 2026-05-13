@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Review", description = "리뷰 API — 생성, 단건/목록 조회, 수정, 삭제")
 @SecurityRequirement(name = "JWT TOKEN")
@@ -69,7 +68,7 @@ public interface ReviewDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<ReviewResDTO.CreateReviewResDTO> createReview(
+    CustomResponse<ReviewResDTO.CreateReviewResDTO> createReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
             @Parameter(description = "작성자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             ReviewReqDTO.CreateReviewReqDTO request
@@ -103,7 +102,7 @@ public interface ReviewDocs {
                                             """)
                             }))
     })
-    ResponseEntity<ReviewResDTO.ReviewDetailResDTO> getReview(
+    CustomResponse<ReviewResDTO.ReviewDetailResDTO> getReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
             @Parameter(description = "리뷰 아이디", example = "1") Long reviewId
     );
@@ -126,7 +125,7 @@ public interface ReviewDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<ReviewResDTO.ReviewListResDTO> getReviewList(
+    CustomResponse<ReviewResDTO.ReviewListResDTO> getReviewList(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size,
@@ -291,7 +290,7 @@ public interface ReviewDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<ReviewResDTO.MyReviewListResDTO> getMyReviews(
+    CustomResponse<ReviewResDTO.MyReviewListResDTO> getMyReviews(
             @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size

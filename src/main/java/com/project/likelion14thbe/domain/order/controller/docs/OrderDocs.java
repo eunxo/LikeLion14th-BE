@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Order", description = "주문 API — 주문 생성, 내 주문 목록 조회, 주문 취소")
 @SecurityRequirement(name = "JWT TOKEN")
@@ -58,7 +57,7 @@ public interface OrderDocs {
                                             """)
                             }))
     })
-    ResponseEntity<OrderResDTO.CreateOrderResDTO> createOrder(
+    CustomResponse<OrderResDTO.CreateOrderResDTO> createOrder(
             @Parameter(description = "주문자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             OrderReqDTO.CreateOrderReqDTO request
     );
@@ -81,7 +80,7 @@ public interface OrderDocs {
                                     }
                                     """)))
     })
-    ResponseEntity<OrderResDTO.MyOrderListResDTO> getMyOrders(
+    CustomResponse<OrderResDTO.MyOrderListResDTO> getMyOrders(
             @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size
