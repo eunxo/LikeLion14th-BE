@@ -37,16 +37,12 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
     @Override
     public void deleteOrder(Long orderId, Long memberId) {
-        // 1. 취소되지 않은 주문 조회
         Order order = orderRepository.findByIdAndNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
-
-        // 2. 권한 확인 (본인 주문인지)
         if (!order.getMember().getId().equals(memberId)) {
-            throw new OrderException(OrderErrorCode.ORDER_UNAUTHORIZED);
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
         }
 
-        // 3. 주문 취소 (Soft Delete 실행)
         order.cancel();
     }
 }

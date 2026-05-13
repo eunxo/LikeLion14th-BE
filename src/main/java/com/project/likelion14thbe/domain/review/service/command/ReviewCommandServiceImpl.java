@@ -35,7 +35,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
         if (!review.getMember().getId().equals(memberId)) {
-            throw new ReviewException(ReviewErrorCode.REVIEW_UNAUTHORIZED);
+            throw new ReviewException(ReviewErrorCode.REVIEW_FORBIDDEN);
         }
         review.update(req.getContent(), req.getRating());
     }
@@ -45,7 +45,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
         if (!review.getMember().getId().equals(memberId)) {
-            throw new ReviewException(ReviewErrorCode.REVIEW_UNAUTHORIZED);
+            throw new ReviewException(ReviewErrorCode.REVIEW_FORBIDDEN);
         }
         reviewRepository.delete(review);
     }
