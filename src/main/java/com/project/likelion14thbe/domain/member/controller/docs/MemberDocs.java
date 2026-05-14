@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Member", description = "회원 API — 회원가입, 로그인, 내 정보 조회, 비밀번호 수정, 회원 탈퇴")
+@Tag(name = "Member", description = "회원 API — 회원가입, 내 정보 조회, 비밀번호 수정, 회원 탈퇴 (로그인은 시큐리티 필터 /api/v1/login 으로 이동)")
 public interface MemberDocs {
 
     @Operation(
@@ -48,36 +48,6 @@ public interface MemberDocs {
                                     """)))
     })
     CustomResponse<MemberResDTO.SignUpResDTO> signUp(MemberReqDTO.SignUpReqDTO request);
-
-    @Operation(
-            summary = "일반 로그인",
-            description = "이메일·비밀번호로 로그인 후 JWT Access/Refresh 토큰을 발급한다. (현재 토큰 3개 필드는 dummy 상수 — 실제 발급은 jjwt 도입 시 service 내부에서 교체 예정)"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.LoginResDTO.class))),
-            @ApiResponse(responseCode = "401", description = "비밀번호 불일치",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "MEMBER401_1",
-                                      "message": "비밀번호가 일치하지 않습니다.",
-                                      "result": null
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "404", description = "회원 미존재",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "MEMBER404_1",
-                                      "message": "회원이 존재하지 않습니다.",
-                                      "result": null
-                                    }
-                                    """)))
-    })
-    CustomResponse<MemberResDTO.LoginResDTO> login(MemberReqDTO.LoginReqDTO request);
 
     @Operation(
             summary = "비밀번호 변경 (5주차 강의 PDF 단순 버전)",

@@ -19,21 +19,6 @@ public class MemberResDTO {
     ) {
     }
 
-    @Schema(description = "일반 로그인 응답 DTO")
-    public record LoginResDTO(
-            @Schema(description = "회원 ID", example = "1")
-            Long memberId,
-            @Schema(description = "이름", example = "홍길동")
-            String name,
-            @Schema(description = "JWT Access Token", example = "eyJhbGciOi...")
-            String accessToken,
-            @Schema(description = "JWT Refresh Token", example = "eyJhbGciOi...")
-            String refreshToken,
-            @Schema(description = "Access Token 만료 시간(초)", example = "3600")
-            Long expiresIn
-    ) {
-    }
-
     @Schema(description = "비밀번호 수정 응답 DTO")
     public record UpdatePasswordResDTO(
             @Schema(description = "회원 ID", example = "1")

@@ -37,14 +37,6 @@ public class MemberController implements MemberDocs {
     }
 
     @Override
-    @PostMapping("/auth/login")
-    public CustomResponse<MemberResDTO.LoginResDTO> login(
-            @Valid @RequestBody MemberReqDTO.LoginReqDTO request
-    ) {
-        return CustomResponse.onSuccess(HttpStatus.OK, "로그인 성공", memberCommandService.login(request));
-    }
-
-    @Override
     @PatchMapping("/members/{memberId}/password")
     public CustomResponse<String> resetPassword(
             @PathVariable Long memberId,

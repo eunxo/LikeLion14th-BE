@@ -8,6 +8,7 @@ import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
 import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,29 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public MemberResDTO.SignUpResDTO signUp(MemberReqDTO.SignUpReqDTO request) {
         if (memberRepository.existsByEmail(request.email())) {
             throw new MemberException(MemberErrorCode.MEMBER_EMAIL_DUPLICATE);
         }
-        Member member = MemberConverter.toMember(request);
+        String encodedPassword = passwordEncoder.encode(request.password());
+        Member member = MemberConverter.toMember(request, encodedPassword);
         Member saved = memberRepository.save(member);
         return MemberConverter.toSignUpResDTO(saved);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public MemberResDTO.LoginResDTO login(MemberReqDTO.LoginReqDTO request) {
-        Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        if (!member.getPassword().equals(request.password())) {
-            throw new MemberException(MemberErrorCode.MEMBER_WRONG_PASSWORD);
-        }
-        String accessToken = "eyJhbGciOiJIUzI1NiJ9.dummy.access";
-        String refreshToken = "eyJhbGciOiJIUzI1NiJ9.dummy.refresh";
-        Long expiresIn = 3600L;
-        return MemberConverter.toLoginResDTO(member, accessToken, refreshToken, expiresIn);
     }
 
     @Override
@@ -48,7 +37,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        member.updatePassword(dto.password());
+        member.updatePassword(passwordEncoder.encode(dto.password()));
     }
 
     @Override
