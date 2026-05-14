@@ -2,6 +2,8 @@ package com.project.likelion14thbe.domain.review.service.command;
 
 import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
+import com.project.likelion14thbe.domain.order.execption.OrderErrorCode;
+import com.project.likelion14thbe.domain.order.execption.OrderException;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import com.project.likelion14thbe.domain.review.converter.ReviewConverter;
@@ -41,19 +43,29 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     }
 
     @Override
-    public void updateReview(Long reviewId, ReviewReqDTO.ReviewChangeReq dto){
+    public void updateReview(Long reviewId, Long memberId, ReviewReqDTO.ReviewChangeReq dto){
         // 리뷰 정보 조회
         Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        //  리뷰 접근 권한 확인
+        if (!review.getMember().getId().equals(memberId)) {
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
 
         review.updatedReview(dto.reviewContent(), dto.reviewRating());
     }
 
     @Override
-    public void deleteReview(Long reviewId){
+    public void deleteReview(Long reviewId, Long memberId){
         // 리뷰 정보 조회
         Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        // 리뷰 접근 권한 확인
+        if (!review.getMember().getId().equals(memberId)) {
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
 
         //soft delete 처리
         review.delete();
