@@ -7,6 +7,8 @@ import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import com.project.likelion14thbe.domain.review.converter.ReviewConverter;
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
+import com.project.likelion14thbe.domain.review.exception.ReviewErrorCode;
+import com.project.likelion14thbe.domain.review.exception.ReviewException;
 import com.project.likelion14thbe.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,5 +37,23 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
         reviewRepository.save(review);
 
         return "리뷰 생성 완료";
+    }
+
+    @Override
+    public void updateReview(Long reviewId, ReviewReqDTO.ReviewUpdateReq reviewUpdateReq){
+
+        Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        review.updateReview(reviewUpdateReq);
+    }
+
+    @Override
+    public void deleteReview(Long reviewId){
+
+        Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        review.deleteReview();
     }
 }

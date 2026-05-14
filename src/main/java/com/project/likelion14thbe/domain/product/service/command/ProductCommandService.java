@@ -5,4 +5,8 @@ import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 public interface ProductCommandService {
 
      String createProduct(ProductReqDTO.CreateProductReq createProductReqDTO);
+
+     void updateProduct(Long productId, ProductReqDTO.CreateProductReq updateProductReqDTO);
+
+     void deleteProduct(Long productId);
 }

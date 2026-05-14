@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,28 +23,34 @@ public class MemberController {
 
     @PostMapping("/auth/signup")
     @Operation(summary = "회원 가입", description = "유저가 회원 가입을 합니다.")
-    public ResponseEntity<MemberResDTO.MemberSignupResDTO> signup (
+    public CustomResponse<MemberResDTO.MemberSignupResDTO> signup (
             @RequestBody MemberReqDTO.MemberSignupReqDTO memberSignupReqDTO
     ){
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(memberCommandService.signup(memberSignupReqDTO));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, memberCommandService.signup(memberSignupReqDTO));
     }
 
     @GetMapping("/users")
     @Operation(summary = "유저 정보 조회", description = "유저 정보를 조회합니다.")
-    public ResponseEntity<MemberResDTO.MemberPreviewResDTO> getUsers (
+    public CustomResponse<MemberResDTO.MemberPreviewResDTO> getUsers (
     ){
-        return ResponseEntity.ok(memberQueryService.getMember());
+        return CustomResponse.onSuccess(memberQueryService.getMember());
     }
 
     @PatchMapping("/users/{userId}/password")
     @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
-    public ResponseEntity<String> changePassword (
-            @PathVariable Long userId
+    public CustomResponse<String> changePassword (
+            @PathVariable Long userId,
+            @RequestBody MemberReqDTO.PasswordResetDTO request
     ){
-        // 비밀번호 변경 로직~~~
-        return ResponseEntity.ok("비밀번호 변경 성공");
+        memberCommandService.updatePassword(userId, request);
+        return CustomResponse.onSuccess("비밀번호 변경 성공");
+    }
+
+    @DeleteMapping("/users/{userId}")
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴")
+    public CustomResponse<String> deleteMember (Long memberId) {
+        memberCommandService.deleteMember(memberId);
+        return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 
     @PostMapping("/auth/login")

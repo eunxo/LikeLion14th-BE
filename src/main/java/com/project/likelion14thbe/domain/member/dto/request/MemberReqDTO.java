@@ -18,4 +18,9 @@ public class MemberReqDTO {
             String kakaoAccessToken
     ) {
     }
+
+    public record PasswordResetDTO(
+            String password
+    ){
+    }
 }

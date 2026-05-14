@@ -1,10 +1,13 @@
 package com.project.likelion14thbe.domain.review.entity;
 
-import com.project.likelion14thbe.domain.member.entity.BaseEntity;
+import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
+import com.project.likelion14thbe.global.BaseEntity;
 import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,6 +27,10 @@ public class Review extends BaseEntity {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
+    // soft delete를 위한 필드 추가
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -31,4 +38,13 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    // 리뷰 수정 메서드
+    public void updateReview(ReviewReqDTO.ReviewUpdateReq updateReqDTO) {
+        this.score = updateReqDTO.rating();
+        this.content = updateReqDTO.content();
+    }
+
+    // 리뷰 삭제 메서드
+    public void deleteReview(){ this.deletedAt = LocalDateTime.now(); }
 }

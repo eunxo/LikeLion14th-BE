@@ -6,6 +6,8 @@ import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.order.entity.OrderItem;
+import com.project.likelion14thbe.domain.order.exception.OrderErrorCode;
+import com.project.likelion14thbe.domain.order.exception.OrderException;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
@@ -66,5 +68,24 @@ public class OrderCommandServiceImpl implements OrderCommandService {
         orderRepository.save(order);
 
         return "주문 생성 성공";
+    }
+
+    @Override
+    public void deleteOrder(Long orderId){
+        // 주문 조회
+        Order order = orderRepository.findByIdAndNotDeleted(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        // 재고 복구
+        for (OrderItem orderItem : order.getOrderItems()) {
+            // 해당 제품 조회
+            Product product = orderItem.getProduct();
+
+            // 제품 재고 복구
+            product.increaseQuantity(orderItem.getQuantity());
+        }
+
+        // Order soft delete 처리
+        order.deleteOrder();
     }
 }
