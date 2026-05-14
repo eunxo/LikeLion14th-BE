@@ -23,49 +23,52 @@ public class ReviewController {
 
     @PostMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 생성", description = "리뷰를 생성합니다.")
-    public ResponseEntity<ReviewResDTO.ReviewCreateRes> createReview(
+    public CustomResponse<ReviewResDTO.ReviewCreateRes> createReview(
             @PathVariable Long productId,
             @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq
     ){
         Long memberId = 1L;
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(reviewCommandService.createReview(reviewCreateReq, productId, memberId));
+        return CustomResponse
+                .onSuccess(reviewCommandService.createReview(reviewCreateReq, productId, memberId));
     }
 
     @GetMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 단일 조회", description = "리뷰 id를 입력하여 리뷰를 조회합니다")
-    public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReview(
+    public CustomResponse<ReviewResDTO.ReviewDetailRes> getReview(
             @PathVariable Long reviewId
     ){
-        return ResponseEntity.ok(reviewQueryService.getReviewDetail(reviewId));
+        return CustomResponse
+                .onSuccess(reviewQueryService.getReviewDetail(reviewId));
     }
 
     @GetMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 목록 조회", description = "한 상품에 있는 모든 리뷰를 가져온다")
-    public ResponseEntity<ReviewResDTO.ReviewGetRes> getReviews(
+    public CustomResponse<ReviewResDTO.ReviewGetRes> getReviews(
             @PathVariable Long productId
     ){
-        return ResponseEntity.ok(reviewQueryService.getReviewsByProduct(productId));
+        return CustomResponse
+                .onSuccess(reviewQueryService.getReviewsByProduct(productId));
     }
 
     @PatchMapping("/reviews/{reviewId}/update")
     @Operation(summary = "리뷰 수정", description = "리뷰의 내용과 별점을 수정합니다.")
     public CustomResponse<String> updateReview(
             @PathVariable Long reviewId,
-            @RequestBody ReviewReqDTO.ReviewChangeReq update
+            @RequestBody ReviewReqDTO.ReviewChangeReq update,
+            @RequestParam Long memberId
     ){
-        reviewCommandService.updateReview(reviewId, update);
+        reviewCommandService.updateReview(reviewId, memberId, update);
         return CustomResponse.onSuccess("리뷰 수정 성공");
     }
 
     @DeleteMapping("/reviews/{reviewId}/delete")
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
     public CustomResponse<String> deleteReview(
-            @PathVariable Long reviewId
+            @PathVariable Long reviewId,
+            @RequestParam Long memberId
     ) {
-        reviewCommandService.deleteReview(reviewId);
+        reviewCommandService.deleteReview(reviewId, memberId);
         return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 }

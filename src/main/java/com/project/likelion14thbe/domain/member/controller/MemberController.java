@@ -33,10 +33,11 @@ public class MemberController {
 
     @PostMapping("/auth/login")
     @Operation(summary = "로그인", description = "로그인을 합니다")
-    public ResponseEntity<MemberResDTO.MemberLoginRes> login(
+    public CustomResponse<MemberResDTO.MemberLoginRes> login(
             @RequestBody MemberReqDTO.MemberLoginReq MemberLoginReq
     ){
-        return ResponseEntity.ok(MemberResDTO.MemberLoginRes.builder().build());
+        return CustomResponse
+                .onSuccess(MemberResDTO.MemberLoginRes.builder().build());
     }
 
     @DeleteMapping("/members/{memberId}/deletemember")
@@ -59,11 +60,12 @@ public class MemberController {
 
     @PatchMapping("/users/{userId}/fixprofile")
     @Operation(summary = "프로필 수정", description = "프로필 수정을 합니다")
-    public ResponseEntity<String> fixProfile(
-            @PathVariable int userId,
+    public CustomResponse<String> fixProfile(
+            @PathVariable Long userId,
             @RequestBody MemberReqDTO.MemberFixReq MemberFixReq
     ){
-        return ResponseEntity.ok("프로필 수정 성공");
+        return CustomResponse
+                .onSuccess("프로필 수정 성공");
     }
 
     @PatchMapping("/members/{memberId}/password")

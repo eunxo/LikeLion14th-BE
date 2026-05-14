@@ -23,40 +23,42 @@ public class OrderController {
 
     @GetMapping("/orders")
     @Operation(summary = "내 주문 목록 조회", description = "memberId 받아서 내 주문 목록 전체 조회")
-    public ResponseEntity<OrderResDTO.OrderGetListRes> getMyOrderList(){
+    public CustomResponse<OrderResDTO.OrderGetListRes> getMyOrderList(){
 
         Long memberId = 1L;
 
-        return ResponseEntity.ok(orderQueryService.getMyOrderList(memberId));
+        return CustomResponse
+                .onSuccess(orderQueryService.getMyOrderList(memberId));
     }
 
     @PostMapping("/orders/create")
     @Operation(summary = "주문 추가", description = "주문 상품을 추가한다")
-    public ResponseEntity<OrderResDTO.OrderCreateRes> createOrder(
+    public CustomResponse<OrderResDTO.OrderCreateRes> createOrder(
             @RequestBody OrderReqDTO.OrderCreateReq orderCreateReq) {
 
         Long memberId = 1L;
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(orderCommandService.createOrder(orderCreateReq, memberId));
+        return CustomResponse
+                .onSuccess(orderCommandService.createOrder(orderCreateReq, memberId));
     }
 
     @PatchMapping("/orders/{orderId}/status")
     @Operation(summary = "배송 상태 변경", description = "각 주문의 주문상태를 변경합니다.")
     public CustomResponse<String> changeStatus(
             @PathVariable Long orderId,
-            @RequestBody OrderReqDTO.ChangeStatusDTO change
+            @RequestBody OrderReqDTO.ChangeStatusDTO change,
+            @RequestParam Long memberId
     ){
-        orderCommandService.changeStatus(orderId, change);
+        orderCommandService.changeStatus(orderId, memberId, change);
         return CustomResponse.onSuccess("주문상태 변경 성공");
     }
 
     @DeleteMapping("/orders/{orderId}/delete")
     public CustomResponse<String> deleteOrder(
-            @PathVariable Long orderId
+            @PathVariable Long orderId,
+            @RequestParam Long memberId
     ){
-        orderCommandService.deleteOrder(orderId);
+        orderCommandService.deleteOrder(orderId, memberId);
         return CustomResponse.onSuccess("주문 내역 삭제 성공");
     }
 }
