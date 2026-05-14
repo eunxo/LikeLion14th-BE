@@ -49,19 +49,28 @@ public class OrderCommandServiceImpl implements OrderCommandService{
     }
 
     @Override
-    public void changeStatus(Long orderId, OrderReqDTO.ChangeStatusDTO dto){
+    public void changeStatus(Long orderId, Long memberId, OrderReqDTO.ChangeStatusDTO dto){
         // 주문정보 조회
         Order order = orderRepository.findByIdAndNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        if (!order.getMember().getId().equals(memberId)){
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
 
         order.changeStatus(dto.status());
     }
 
     @Override
-    public void deleteOrder(Long orderId){
+    public void deleteOrder(Long orderId, Long memberId){
         // 주문 정보 조회
         Order order = orderRepository.findByIdAndNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        // 주문 정보 접근 권한 확인
+        if (!order.getMember().getId().equals(memberId)) {
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
 
         order.delete();
     }
