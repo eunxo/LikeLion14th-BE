@@ -7,7 +7,7 @@ public interface OrderCommandService {
 
     OrderResDTO.OrderCreateRes createOrder(OrderReqDTO.OrderCreateReq orderCreateReq, Long jwtMemberId);
 
-    void changeStatus(Long orderId, OrderReqDTO.ChangeStatusDTO dto);
+    void changeStatus(Long orderId, Long memberId, OrderReqDTO.ChangeStatusDTO dto);
 
-    void deleteOrder(Long orderId);
+    void deleteOrder(Long orderId, Long memberId);
 }
