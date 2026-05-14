@@ -1,8 +1,11 @@
 package com.project.likelion14thbe.domain.member.entity;
 
+import com.project.likelion14thbe.domain.member.enums.Role;
 import com.project.likelion14thbe.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,6 +41,11 @@ public class Member extends BaseEntity {
 
     @Column(name = "profile_image", length = 500)
     private String profileImage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 20)
+    @Builder.Default
+    private Role role = Role.ROLE_USER;
 
     // soft delete를 위한 필드 추가
     @Column(name = "deleted_at")
