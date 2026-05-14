@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ReviewErrorCode implements BaseErrorCode {
 
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404_1", "리뷰를 찾을 수 없습니다.");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW404_1", "리뷰를 찾을 수 없습니다."),
+    REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW403_1", "해당 리뷰를 수정하거나 삭제할 권한이 없습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
