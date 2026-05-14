@@ -10,7 +10,9 @@ public class MemberResDTO {
 
     @Builder
     public record SignUpRes(
+            @Schema(description = "회원 ID", example = "1")
             Long id,
+            @Schema(description = "가입 일시", example = "2026-05-13T10:00:00")
             LocalDateTime createdAt
     ) {
     }

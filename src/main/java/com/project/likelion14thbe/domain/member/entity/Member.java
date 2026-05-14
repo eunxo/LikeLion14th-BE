@@ -38,4 +38,16 @@ public class Member {
     @Column(nullable = false, length = 20)
     @Builder.Default
     private String status = "active";
+
+    @Column(name="deleted_at")
+    private LocalDateTime deletedAt;
+
+    public void updatePassword(String newPassword){this.password=newPassword;}
+
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+        this.status = "deleted";
+    }
+
 }

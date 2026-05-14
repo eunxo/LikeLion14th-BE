@@ -3,6 +3,8 @@ package com.project.likelion14thbe.domain.member.service.query;
 import com.project.likelion14thbe.domain.member.converter.MemberConverter;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,8 @@ public class MemberQueryServiceImpl implements MemberQueryService{
 
     @Override
     public MemberResDTO.MemberPreviewResDTO getMember(Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member member = memberRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         return MemberConverter.toMemberPreviewResponseDTO(member);
     }
 
