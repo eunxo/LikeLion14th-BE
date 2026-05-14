@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -21,7 +23,7 @@ import java.util.List;
 public class Order  {
 
     @Id // 기본키
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //기본키 값을 자동으로 생성
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private long orderId;
 
@@ -30,18 +32,30 @@ public class Order  {
     private LocalDateTime date;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
 
     @Column(name = "total_amount")
     private Integer totalAmount;
+
+    @Column(name = "address")
+    private String address;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany
-    @JoinColumn(name = "orderitem")
-    private List<OrderItem> orderitems;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
+
+    public void updateStatus(String status) {
+        this.status = OrderStatus.valueOf(status);
+    }
+
+    public void cancel() {
+        this.status = OrderStatus.CANCELLED;
+    }
 
 }
 

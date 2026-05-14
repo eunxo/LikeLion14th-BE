@@ -1,7 +1,10 @@
 package com.project.likelion14thbe.domain.product.service.query;
 
+import com.project.likelion14thbe.domain.product.converter.ProductConverter;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
+import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,35 +15,23 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true) // 조회 전용 트랜잭션
+@Transactional(readOnly = true)
 public class ProductQueryServiceImpl implements ProductQueryService {
 
     private final ProductRepository productRepository;
 
     @Override
     public ProductResDTO.ProductDetailResDto getProductDetail(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+        Product product = productRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        return ProductResDTO.ProductDetailResDto.builder()
-                .productId(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .imageUrl(product.getPhotoImg())
-                .description(product.getDescription())
-                .build();
+        return ProductConverter.toProductDetailResDTO(product);
     }
 
     @Override
     public List<ProductResDTO.ProductPreviewResDto> getProductList() {
-        return productRepository.findAll().stream()
-                .map(item -> ProductResDTO.ProductPreviewResDto.builder()
-                        .id(item.getId())
-                        .name(item.getName())
-                        .price(Long.valueOf(item.getPrice()))
-                        .photoImg(item.getPhotoImg())
-                        .stock(item.getStock())
-                        .build())
+        return productRepository.findAllByDeletedAtIsNull().stream()
+                .map(ProductConverter::toProductPreviewResDTO)
                 .collect(Collectors.toList());
     }
 }

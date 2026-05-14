@@ -14,6 +14,22 @@ public class ReviewResDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ReviewCreateResDto {
+
+        @Schema(description = "리뷰아이디")
+        private Long id;
+
+        @Schema(description = "제목")
+        private String title;
+
+        @Schema(description = "생성일시")
+        private LocalDateTime createdAt;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Schema(description = "리뷰 목록 조회 응답 DTO")
     public static class ReviewListRes {
 
@@ -30,10 +46,10 @@ public class ReviewResDTO {
         private String content;
 
         @Schema(description = "작성 일시")
-        private LocalDateTime date;
+        private LocalDateTime createdAt;
 
         @Schema(description = "작성자 닉네임", example = "Bruno Fernandes")
-        private String nickname;
+        private Long  memberId;
     }
 
     @Builder
@@ -56,13 +72,13 @@ public class ReviewResDTO {
         private String content;
 
         @Schema(description = "작성 일시", example = "2026-04-30T15:48:09.025Z")
-        private String createdAt;
+        private LocalDateTime createdAt;
 
         @Schema(description = "수정 일시", example = "2026-04-30T15:48:09.025Z")
-        private String updatedAt;
+        private LocalDateTime updatedAt;
 
         @Schema(description = "작성자 닉네임", example = "Bruno Fernandes")
-        private String nickname;
+        private Long  memberId;
 
         @Schema(description = "작성자 프로필 이미지 URL", example = "http~")
         private String profileImage;

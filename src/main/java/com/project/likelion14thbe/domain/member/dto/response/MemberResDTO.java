@@ -16,11 +16,15 @@ public class MemberResDTO {
     @AllArgsConstructor
     @Schema(description = "로그인 응답 DTO")
     public static class LoginRes {
+
+        @Schema(description = "아이디")
+        private Long memberId;
+
+        @Schema(description = "이메일")
+        private String email;
+
         @Schema(description = "액세스 토큰")
         private String accessToken;
-
-        @Schema(description = "리프레시 토큰")
-        private String refreshToken;
 
         @Schema(description = "사용자 이름")
         private String name;
@@ -48,5 +52,6 @@ public class MemberResDTO {
         private String email;
         private Integer age;
     }
+
 }
 

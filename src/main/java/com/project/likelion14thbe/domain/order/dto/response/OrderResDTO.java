@@ -59,7 +59,7 @@ public class OrderResDTO {
         @Schema(description = "주문 고유 ID", example = "1")
         private Long id;
 
-        @Schema(description = "주문 번호", example = "20260430-001")
+        @Schema(description = "주문 번호")
         private  Long orderId;
 
         @Schema(description = "주문 날짜", example = "2026-04-30T13:37:10")
@@ -75,7 +75,7 @@ public class OrderResDTO {
         private String recipientName;
 
         @Schema(description = "배송 주소", example = "서울시 강남구 테헤란로 123")
-        private String deliveryAddress;
+        private String address;
 
         @Schema(description = "주문 상품 상세 목록")
         private List<OrderResDTO.OrderItemRes> orderItems;
@@ -95,6 +95,6 @@ public class OrderResDTO {
         private Long orderId;
 
         @Schema(description = "총 금액")
-        private Long totalAmount;
+        private Integer totalAmount;
     }
 }

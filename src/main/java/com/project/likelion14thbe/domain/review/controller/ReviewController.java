@@ -6,10 +6,12 @@ import com.project.likelion14thbe.domain.review.service.command.ReviewCommandSer
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandServiceImpl;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryServiceImpl;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,7 @@ public class ReviewController {
     private final ReviewCommandService reviewCommandService;
     private final ReviewQueryService reviewQueryService;
 
-    public ReviewController(ReviewCommandServiceImpl reviewCommandServiceImpl, ReviewQueryServiceImpl reviewQueryServiceImpl, ReviewCommandService reviewCommandService, ReviewQueryService reviewQueryService) {
+    public ReviewController(ReviewCommandService reviewCommandService, ReviewQueryService reviewQueryService) {
         this.reviewCommandService = reviewCommandService;
         this.reviewQueryService = reviewQueryService;
     }
@@ -34,12 +36,17 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공"),
             @ApiResponse(responseCode = "404", description = "해당 상품을 찾을 수 없음")
     })
-    public ResponseEntity<Long> createReview(
-            @PathVariable Long productId,
-            @RequestBody ReviewReqDTO.ReviewCreateReq request
+    public ResponseEntity<CustomResponse<ReviewResDTO.ReviewCreateResDto>> createReview(
+            @PathVariable("productId") Long productId,
+            @RequestHeader("memberId") Long memberId,
+            @Valid @RequestBody ReviewReqDTO.ReviewCreateReq request
     ) {
-        Long reviewId = reviewCommandService.createReview(productId, request);
-        return ResponseEntity.ok(reviewId);
+
+        request.setProductId(productId);
+
+        ReviewResDTO.ReviewCreateResDto response = reviewCommandService.createReview(memberId, request);
+
+        return ResponseEntity.ok(CustomResponse.onSuccess(response));
     }
 
     @GetMapping("/products/{productId}/reviews")
@@ -59,4 +66,24 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/reviews/{reviewId}")
+    @Operation(summary = "리뷰 수정")
+    public ResponseEntity<ReviewResDTO.ReviewDetailRes> updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody ReviewReqDTO.ReviewUpdateReq request,
+            @RequestParam Long memberId) {
+
+        ReviewResDTO.ReviewDetailRes response = reviewCommandService.updateReview(reviewId, request, memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/reviews/{reviewId}")
+    @Operation(summary = "리뷰 삭제")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable Long reviewId,
+            @RequestParam Long memberId) {
+
+        reviewCommandService.deleteReview(reviewId, memberId);
+        return ResponseEntity.noContent().build();
+    }
 }

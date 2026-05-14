@@ -1,5 +1,7 @@
 package com.project.likelion14thbe.domain.product.dto.response;
 
+import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
+import com.project.likelion14thbe.domain.product.entity.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ProductResDTO {
 
@@ -97,4 +100,19 @@ public class ProductResDTO {
         @Schema(description = "상품재고", example = "100")
         private Integer stock;
     }
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "상품 목록 조회 최종 응답 DTO")
+    public static class ProductListResDto {
+
+        @Schema(description = "상품 목록")
+        private List<ProductResponseDTO> productList;
+
+        @Schema(description = "조회된 총 상품 수")
+        private Integer totalCount;
+
+    }
+
 }

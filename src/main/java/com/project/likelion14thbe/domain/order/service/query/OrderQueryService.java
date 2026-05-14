@@ -6,4 +6,5 @@ import java.util.List;
 public interface OrderQueryService {
     OrderResDTO.OrderDetailResDto getOrder(Long id);
     List<OrderResDTO.OrderHistoryRes> getOrderList();
+    List<OrderResDTO.OrderHistoryRes> getMyOrders(Long memberId);
 }

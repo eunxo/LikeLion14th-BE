@@ -1,11 +1,11 @@
 package com.project.likelion14thbe.domain.review.entity;
 
+import com.project.likelion14thbe.domain.member.entity.BaseEntity;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.member.entity.Member;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Date;
 
 @Entity
 @Getter
@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Review {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class Review {
     @Column(name = "rating", nullable = false)
     private Double rating;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -38,5 +38,11 @@ public class Review {
     @JoinColumn(name = "item_id")
     private Product product;
 
+    @Schema(name = "update")
+    public void update(String title, String content, Double rating) {
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
+    }
 
 }

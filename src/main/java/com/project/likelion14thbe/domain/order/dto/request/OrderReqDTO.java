@@ -36,5 +36,13 @@ public class OrderReqDTO {
         @Schema(description = "주문 수량", example = "2")
         private Integer quantity;
     }
+    @Getter
+    @Setter
+    @Schema(description = "주문 상태 변경 요청 DTO")
+    public static class UpdateOrderStatusReq {
+
+        @Schema(description = "변경할 주문 상태", example = "SHIPPING")
+        private String status;
+    }
 
 }
