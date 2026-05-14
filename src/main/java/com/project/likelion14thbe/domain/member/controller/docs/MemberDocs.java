@@ -3,8 +3,8 @@ package com.project.likelion14thbe.domain.member.controller.docs;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Member", description = "회원 API — 회원가입, 내 정보 조회, 비밀번호 수정, 회원 탈퇴 (로그인은 시큐리티 필터 /api/v1/login 으로 이동)")
+@Tag(name = "Member", description = "회원 API — 회원가입, 내 정보 조회, 비밀번호 수정, 회원 탈퇴")
 public interface MemberDocs {
 
     @Operation(
@@ -50,9 +50,10 @@ public interface MemberDocs {
     CustomResponse<MemberResDTO.SignUpResDTO> signUp(MemberReqDTO.SignUpReqDTO request);
 
     @Operation(
-            summary = "비밀번호 변경 (5주차 강의 PDF 단순 버전)",
-            description = "회원의 비밀번호를 변경한다. 시큐리티 미적용으로 memberId를 PathVariable로 임시 전달."
+            summary = "비밀번호 변경",
+            description = "로그인한 본인의 비밀번호를 변경한다. JWT의 subject(email)로 본인을 식별한다."
     )
+    @SecurityRequirement(name = "JWT TOKEN")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
@@ -64,55 +65,8 @@ public interface MemberDocs {
                                       "result": "비밀번호 변경 성공"
                                     }
                                     """))),
-            @ApiResponse(responseCode = "404", description = "회원 미존재",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "MEMBER404_1",
-                                      "message": "회원이 존재하지 않습니다.",
-                                      "result": null
-                                    }
-                                    """)))
-    })
-    CustomResponse<String> resetPassword(Long memberId, MemberReqDTO.PasswordResetDTO request);
-
-    @Operation(
-            summary = "회원 탈퇴 (soft delete)",
-            description = "회원을 soft delete 한다. Member.deletedAt 컬럼이 갱신되며 30일 후 스케줄러가 hard delete 시도."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": true,
-                                      "code": "200",
-                                      "message": "OK",
-                                      "result": "회원 탈퇴 성공"
-                                    }
-                                    """))),
-            @ApiResponse(responseCode = "404", description = "회원 미존재",
-                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "isSuccess": false,
-                                      "code": "MEMBER404_1",
-                                      "message": "회원이 존재하지 않습니다.",
-                                      "result": null
-                                    }
-                                    """)))
-    })
-    CustomResponse<String> deleteMember(Long memberId);
-
-    @Operation(
-            summary = "내 정보 조회",
-            description = "현재 로그인한 회원의 정보를 조회한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
-    )
-    @SecurityRequirement(name = "JWT TOKEN")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "내 정보 조회 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.MyInfoResDTO.class))),
+            @ApiResponse(responseCode = "401", description = "인증 토큰 없음·만료·위조",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
             @ApiResponse(responseCode = "404", description = "회원 미존재 (탈퇴 등)",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
                             examples = @ExampleObject(value = """
@@ -124,7 +78,59 @@ public interface MemberDocs {
                                     }
                                     """)))
     })
-    CustomResponse<MemberResDTO.MyInfoResDTO> getMyInfo(
-            @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId
-    );
+    CustomResponse<String> resetPassword(CustomUserDetails user, MemberReqDTO.PasswordResetDTO request);
+
+    @Operation(
+            summary = "회원 탈퇴 (soft delete)",
+            description = "로그인한 본인을 soft delete 한다. Member.deletedAt 컬럼이 갱신되며 30일 후 스케줄러가 hard delete 시도."
+    )
+    @SecurityRequirement(name = "JWT TOKEN")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": true,
+                                      "code": "200",
+                                      "message": "OK",
+                                      "result": "회원 탈퇴 성공"
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "인증 토큰 없음·만료·위조",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "회원 미존재",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": false,
+                                      "code": "MEMBER404_1",
+                                      "message": "회원이 존재하지 않습니다.",
+                                      "result": null
+                                    }
+                                    """)))
+    })
+    CustomResponse<String> deleteMember(CustomUserDetails user);
+
+    @Operation(
+            summary = "내 정보 조회",
+            description = "로그인한 본인의 정보를 조회한다."
+    )
+    @SecurityRequirement(name = "JWT TOKEN")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "내 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = MemberResDTO.MyInfoResDTO.class))),
+            @ApiResponse(responseCode = "401", description = "인증 토큰 없음·만료·위조",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "회원 미존재 (탈퇴 등)",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "isSuccess": false,
+                                      "code": "MEMBER404_1",
+                                      "message": "회원이 존재하지 않습니다.",
+                                      "result": null
+                                    }
+                                    """)))
+    })
+    CustomResponse<MemberResDTO.MyInfoResDTO> getMyInfo(CustomUserDetails user);
 }

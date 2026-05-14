@@ -32,17 +32,16 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto) {
-        // 회원 정보 조회
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public void updatePassword(String email, MemberReqDTO.PasswordResetDTO dto) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         member.updatePassword(passwordEncoder.encode(dto.password()));
     }
 
     @Override
-    public void deleteMember(Long memberId) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public void deleteMember(String email) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         member.softDelete();
