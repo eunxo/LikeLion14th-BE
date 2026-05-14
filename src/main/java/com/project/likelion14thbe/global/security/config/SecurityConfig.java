@@ -1,7 +1,10 @@
 package com.project.likelion14thbe.global.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import com.project.likelion14thbe.global.security.filter.CustomLoginFilter;
 import com.project.likelion14thbe.global.security.filter.JwtAuthorizationFilter;
+import com.project.likelion14thbe.global.security.handler.CustomLogoutHandler;
 import com.project.likelion14thbe.global.security.handler.JwtAccessDeniedHandler;
 import com.project.likelion14thbe.global.security.handler.JwtAuthenticationEntryPoint;
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
@@ -9,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +34,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomLogoutHandler customLogoutHandler;
 
     // 인증 없이 접근 허용할 URL
     private final String[] allowUrl = {
@@ -61,6 +67,19 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler(customLogoutHandler)
+                        .logoutSuccessHandler((req, res, auth) -> {
+                            res.setStatus(HttpStatus.OK.value());
+                            res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            res.setCharacterEncoding("UTF-8");
+                            res.getWriter().write(
+                                    new ObjectMapper().writeValueAsString(
+                                            CustomResponse.onSuccess("로그아웃 성공")
+                                    )
+                            );
+                        }))
                 .exceptionHandling(eh -> eh
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint));

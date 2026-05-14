@@ -19,4 +19,11 @@ public class AuthController implements AuthDocs {
     public CustomResponse<JwtDTO> login(@RequestBody MemberReqDTO.LoginReqDTO request) {
         throw new UnsupportedOperationException("로그인은 CustomLoginFilter가 처리한다.");
     }
+
+    // Spring Security LogoutFilter가 /api/v1/auth/logout 요청을 가로채 CustomLogoutHandler를 호출하므로 이 메서드는 호출되지 않는다.
+    @Override
+    @PostMapping("/auth/logout")
+    public CustomResponse<String> logout() {
+        throw new UnsupportedOperationException("로그아웃은 Spring Security LogoutFilter가 처리한다.");
+    }
 }
