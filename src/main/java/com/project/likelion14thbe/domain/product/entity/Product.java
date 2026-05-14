@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.product.entity;
 
+import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,4 +42,8 @@ public class Product extends BaseEntity {
         this.productName = newProductName;
         this.productDescription = newProductDescription;
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Member member;
 }
