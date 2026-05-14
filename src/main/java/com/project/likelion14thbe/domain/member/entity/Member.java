@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.member.entity;
 
+import com.project.likelion14thbe.domain.member.enums.Role;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.review.entity.Review;
 import com.project.likelion14thbe.global.BaseEntity;
@@ -29,6 +30,9 @@ public class Member extends BaseEntity {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "social_provider")
     private String socialProvider;
