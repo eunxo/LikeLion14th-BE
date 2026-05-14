@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.member.entity;
 
+import com.project.likelion14thbe.domain.member.enums.Role;
 import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jdk.jfr.Name;
@@ -46,4 +47,7 @@ public class Member extends BaseEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

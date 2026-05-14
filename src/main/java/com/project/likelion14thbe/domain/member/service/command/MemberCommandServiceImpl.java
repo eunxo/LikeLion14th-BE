@@ -9,6 +9,7 @@ import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,9 +17,10 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class MemberCommandServiceImpl implements MemberCommandService {
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public MemberResDTO.ProfileRes signUp(MemberReqDTO.SignupReq signupReq) {
-        Member member = MemberConverter.toMember(signupReq);
+        Member member = MemberConverter.toMember(signupReq, passwordEncoder);
 
         memberRepository.save(member);
 

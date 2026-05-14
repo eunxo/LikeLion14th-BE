@@ -3,18 +3,23 @@ package com.project.likelion14thbe.domain.member.converter;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.enums.Role;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 //생성자 접근 비허용
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberConverter {
 
-    public static Member toMember(MemberReqDTO.SignupReq memberReqDTO) {
+    public static Member toMember(MemberReqDTO.SignupReq memberReqDTO, BCryptPasswordEncoder passwordEncoder) {
+        final String encodedPassword = passwordEncoder.encode(memberReqDTO.getPassword());
+
         return Member.builder()
                 .email(memberReqDTO.getEmail())
-                .password(memberReqDTO.getPassword())
+                .password(encodedPassword)
                 .name(memberReqDTO.getName())
+                .role(Role.ROLE_USER)
                 .profileImage(memberReqDTO.getProfileImage())
                 .build();
     }
