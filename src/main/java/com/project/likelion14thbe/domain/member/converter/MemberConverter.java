@@ -23,6 +23,9 @@ public class MemberConverter {
         return MemberResDTO.ProfileRes.builder()
                 .id(member.getId())
                 .createdAt(member.getCreatedAt())
+                .profileImage(member.getProfileImage())
+                .name(member.getName())
+                .email(member.getEmail())
                 .build();
     }
 

@@ -27,7 +27,7 @@ public class OrderConverter {
                 .orderId(order.getId().toString())
                 .date(order.getCreatedAt().toString())
                 .quantity(order.getQuantity())
-                .totalAmount(order.getProduct().getPrice() * order.getQuantity())
+                .totalAmount(Integer.valueOf(order.getProduct().getPrice() * order.getQuantity()))
                 .status("ORDERED")
                 .build();
     }

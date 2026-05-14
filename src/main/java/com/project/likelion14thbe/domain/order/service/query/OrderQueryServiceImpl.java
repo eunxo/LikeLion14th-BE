@@ -17,8 +17,9 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     private final OrderRepository orderRepository;
 
     @Override
-    public OrderResDTO.OrderListRes getOrderHistory(Long userId) {
-        List<Order> orders = orderRepository.findAllByMemberId(userId);
+    public OrderResDTO.OrderListRes getOrderHistory(Long memberId) {
+        // 취소되지 않은 주문만 가져옴
+        List<Order> orders = orderRepository.findAllByMemberIdAndNotDeleted(memberId);
         return OrderConverter.toOrderListRes(orders);
     }
 }

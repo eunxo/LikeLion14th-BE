@@ -17,7 +17,7 @@ public class OrderResDTO {
         private String orderId;
         private String date;
         private Integer quantity;
-        private Double totalAmount;
+        private Integer totalAmount;
         private String status;
         private LocalDateTime orderDateTime;
     }

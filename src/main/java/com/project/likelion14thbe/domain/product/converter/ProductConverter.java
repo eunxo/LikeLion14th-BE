@@ -37,4 +37,15 @@ public class ProductConverter {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    public static ProductResDTO.HomeRes toHomeRes(List<Product> products) {
+        List<ProductResDTO.ProductItem> items = products.stream()
+                .map(ProductConverter::toProductItem)
+                .collect(Collectors.toList());
+
+        return ProductResDTO.HomeRes.builder()
+                .popularProducts(items)
+                .newProducts(items)
+                .build();
+    }
 }

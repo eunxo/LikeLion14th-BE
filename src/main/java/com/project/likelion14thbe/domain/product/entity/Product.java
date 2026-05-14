@@ -20,11 +20,19 @@ public class Product extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private Double price;
+    private Integer price;
 
     private String category;
+
     private String imageUrl;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
+
+    public void update(String name, Integer price, String category, String imageUrl, String description) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.imageUrl = imageUrl;
+        this.description = description;
+    }
 }

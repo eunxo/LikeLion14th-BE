@@ -29,4 +29,9 @@ public class MemberReqDTO {
         private String email;
         private String profileImage;
     }
+
+    @Getter
+    public static class PasswordResetDTO {
+        private String password;
+    }
 }
