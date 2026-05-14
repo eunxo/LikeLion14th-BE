@@ -33,4 +33,9 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public void updatedReview(String newReviewContent, Double newReviewRating){
+        this.reviewContent = newReviewContent;
+        this.reviewRating = newReviewRating;
+    }
 }

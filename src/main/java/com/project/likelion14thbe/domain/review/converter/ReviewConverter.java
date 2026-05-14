@@ -15,8 +15,8 @@ public class ReviewConverter {
 
     public static Review toReview(ReviewReqDTO.ReviewCreateReq reviewCreateReq, Member member, Product product) {
         return Review.builder()
-                .reviewContent(reviewCreateReq.content())
-                .reviewRating(reviewCreateReq.rating())
+                .reviewContent(reviewCreateReq.reviewContent())
+                .reviewRating(reviewCreateReq.reviewRating())
                 .member(member)
                 .product(product)
                 .build();

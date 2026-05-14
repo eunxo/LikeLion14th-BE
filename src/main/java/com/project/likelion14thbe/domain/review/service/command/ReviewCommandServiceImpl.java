@@ -1,13 +1,21 @@
 package com.project.likelion14thbe.domain.review.service.command;
 
 import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
+import com.project.likelion14thbe.domain.order.execption.OrderErrorCode;
+import com.project.likelion14thbe.domain.order.execption.OrderException;
 import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
+import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import com.project.likelion14thbe.domain.review.converter.ReviewConverter;
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.entity.Review;
+import com.project.likelion14thbe.domain.review.exception.ReviewErrorCode;
+import com.project.likelion14thbe.domain.review.exception.ReviewException;
 import com.project.likelion14thbe.domain.review.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +34,44 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     public ReviewResDTO.ReviewCreateRes createReview(ReviewReqDTO.ReviewCreateReq reviewCreateReq, Long productId, Long memberId) {
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         Review review = ReviewConverter.toReview(reviewCreateReq, member, product);
 
         reviewRepository.save(review);
 
         return ReviewConverter.toReviewCreateRes(review);
+    }
+
+    @Override
+    public void updateReview(Long reviewId, Long memberId, ReviewReqDTO.ReviewChangeReq dto){
+        // 리뷰 정보 조회
+        Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        //  리뷰 접근 권한 확인
+        if (!review.getMember().getId().equals(memberId)) {
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
+
+        review.updatedReview(dto.reviewContent(), dto.reviewRating());
+    }
+
+    @Override
+    public void deleteReview(Long reviewId, Long memberId){
+        // 리뷰 정보 조회
+        Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        // 리뷰 접근 권한 확인
+        if (!review.getMember().getId().equals(memberId)) {
+            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
+
+        //soft delete 처리
+        review.delete();
     }
 }

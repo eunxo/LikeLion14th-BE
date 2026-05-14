@@ -13,4 +13,10 @@ public class OrderReqDTO {
         ) {
         }
     }
+
+    public record ChangeStatusDTO(
+            String status
+    ){
+
+    }
 }

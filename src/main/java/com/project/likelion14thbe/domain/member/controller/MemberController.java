@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,47 +24,57 @@ public class MemberController {
 
     @PostMapping("/auth/signup")
     @Operation(summary = "회원가입", description = "회원가입을 합니다")
-    public ResponseEntity<MemberResDTO.MemberCreateRes> createMember(
+    public CustomResponse<MemberResDTO.MemberCreateRes> createMember(
             @RequestBody MemberReqDTO.MemberCreateReq MemberCreateReq
     ){
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(memberCommandService.createMember(MemberCreateReq));
+        return CustomResponse
+                .onSuccess(memberCommandService.createMember(MemberCreateReq));
     }
 
     @PostMapping("/auth/login")
     @Operation(summary = "로그인", description = "로그인을 합니다")
-    public ResponseEntity<MemberResDTO.MemberLoginRes> login(
+    public CustomResponse<MemberResDTO.MemberLoginRes> login(
             @RequestBody MemberReqDTO.MemberLoginReq MemberLoginReq
     ){
-        return ResponseEntity.ok(MemberResDTO.MemberLoginRes.builder().build());
+        return CustomResponse
+                .onSuccess(MemberResDTO.MemberLoginRes.builder().build());
     }
 
-    @DeleteMapping("/users/{userId}/deleteuser")
+    @DeleteMapping("/members/{memberId}/deletemember")
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 합니다")
-    public ResponseEntity<String> deleteUser(
-            @PathVariable int userId
+    public CustomResponse<String> deleteMember(
+            @PathVariable Long memberId
     ){
-        return ResponseEntity.ok("회원 탈퇴 성공");
+        memberCommandService.deleteMember(memberId);
+        return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 
     @GetMapping("/users/{userId}/getprofile")
     @Operation(summary = "프로필 조회", description = "프로필 조회를 합니다")
-    public ResponseEntity<MemberResDTO.MemberGetRes> getProfile(
+    public CustomResponse<MemberResDTO.MemberGetRes> getProfile(
             @PathVariable long userId
     ){
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(memberQueryService.getProfile(userId));
+        return CustomResponse
+                .onSuccess(memberQueryService.getProfile(userId));
     }
 
     @PatchMapping("/users/{userId}/fixprofile")
     @Operation(summary = "프로필 수정", description = "프로필 수정을 합니다")
-    public ResponseEntity<String> fixProfile(
-            @PathVariable int userId,
+    public CustomResponse<String> fixProfile(
+            @PathVariable Long userId,
             @RequestBody MemberReqDTO.MemberFixReq MemberFixReq
     ){
-        return ResponseEntity.ok("프로필 수정 성공");
+        return CustomResponse
+                .onSuccess("프로필 수정 성공");
     }
 
+    @PatchMapping("/members/{memberId}/password")
+    @Operation(summary = "비밀번호 변경", description = "id를 받아 비밀번호를 바꿉니다.")
+    public CustomResponse<String> resetPassword(
+            @PathVariable Long memberId,
+            @RequestBody MemberReqDTO.PasswordResetDTO request
+    ) {
+        memberCommandService.updatePassword(memberId, request);
+        return CustomResponse.onSuccess("비밀번호 변경 성공");
+    }
 }

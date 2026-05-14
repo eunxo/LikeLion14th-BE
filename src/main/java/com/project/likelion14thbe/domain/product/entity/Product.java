@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.product.entity;
 
+import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,4 +35,15 @@ public class Product extends BaseEntity {
     @Lob
     @Column(name = "product_description", columnDefinition = "TEXT")
     private String productDescription;
+
+    public void updateProduct(Integer newProductPrice, Integer newProductQuantity, String newProductName, String newProductDescription){
+        this.productPrice = newProductPrice;
+        this.productQuantity = newProductQuantity;
+        this.productName = newProductName;
+        this.productDescription = newProductDescription;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Member member;
 }

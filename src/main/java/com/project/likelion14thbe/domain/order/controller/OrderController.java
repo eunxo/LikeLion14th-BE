@@ -4,6 +4,7 @@ import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
 import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
+import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,30 +23,42 @@ public class OrderController {
 
     @GetMapping("/orders")
     @Operation(summary = "내 주문 목록 조회", description = "memberId 받아서 내 주문 목록 전체 조회")
-    public ResponseEntity<OrderResDTO.OrderGetListRes> getMyOrderList(){
+    public CustomResponse<OrderResDTO.OrderGetListRes> getMyOrderList(){
 
         Long memberId = 1L;
 
-        return ResponseEntity.ok(orderQueryService.getMyOrderList(memberId));
-    }
-
-    @GetMapping("/orders/{orderId}")
-    @Operation(summary = "주문 취소", description = "사용자의 주문 목록중 주문을 취소한다")
-    public ResponseEntity<String> deleteOrder(
-            @PathVariable Long orderId
-    ){
-        return ResponseEntity.ok("주문 취소 성공");
+        return CustomResponse
+                .onSuccess(orderQueryService.getMyOrderList(memberId));
     }
 
     @PostMapping("/orders/create")
     @Operation(summary = "주문 추가", description = "주문 상품을 추가한다")
-    public ResponseEntity<OrderResDTO.OrderCreateRes> createOrder(
+    public CustomResponse<OrderResDTO.OrderCreateRes> createOrder(
             @RequestBody OrderReqDTO.OrderCreateReq orderCreateReq) {
 
         Long memberId = 1L;
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(orderCommandService.createOrder(orderCreateReq, memberId));
+        return CustomResponse
+                .onSuccess(orderCommandService.createOrder(orderCreateReq, memberId));
+    }
+
+    @PatchMapping("/orders/{orderId}/status")
+    @Operation(summary = "배송 상태 변경", description = "각 주문의 주문상태를 변경합니다.")
+    public CustomResponse<String> changeStatus(
+            @PathVariable Long orderId,
+            @RequestBody OrderReqDTO.ChangeStatusDTO change,
+            @RequestParam Long memberId
+    ){
+        orderCommandService.changeStatus(orderId, memberId, change);
+        return CustomResponse.onSuccess("주문상태 변경 성공");
+    }
+
+    @DeleteMapping("/orders/{orderId}/delete")
+    public CustomResponse<String> deleteOrder(
+            @PathVariable Long orderId,
+            @RequestParam Long memberId
+    ){
+        orderCommandService.deleteOrder(orderId, memberId);
+        return CustomResponse.onSuccess("주문 내역 삭제 성공");
     }
 }

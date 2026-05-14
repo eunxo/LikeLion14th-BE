@@ -10,4 +10,13 @@ public class ProductReqDTO {
     ) {
 
     }
+
+    public record ProductChangeDTO(
+        Integer productPrice,
+        Integer productQuantity,
+        String productName,
+        String description
+    ){
+
+    }
 }
