@@ -33,7 +33,9 @@ public class SecurityConfig {
     // 인증 없이 접근 허용할 URL
     private final String[] allowUrl = {
             "/api/v1/login",                 // CustomLoginFilter 처리
+            "/swagger-ui.html",
             "/swagger-ui/**",
+            "/v3/api-docs",
             "/v3/api-docs/**",
             "/swagger-resources/**",
             "/webjars/**"
