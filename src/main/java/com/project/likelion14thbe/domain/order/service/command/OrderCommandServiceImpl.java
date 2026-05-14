@@ -1,6 +1,8 @@
 package com.project.likelion14thbe.domain.order.service.command;
 
 import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
@@ -12,6 +14,8 @@ import com.project.likelion14thbe.domain.order.execption.OrderException;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
 import com.project.likelion14thbe.domain.order.repository.ProductOrderRepository;
 import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
+import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +31,8 @@ public class OrderCommandServiceImpl implements OrderCommandService{
     private final ProductOrderRepository productOrderRepository;
 
     public OrderResDTO.OrderCreateRes createOrder(OrderReqDTO.OrderCreateReq orderCreateReq, Long memberId){
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Order order = OrderConverter.toOrder(member);
 
@@ -36,8 +40,8 @@ public class OrderCommandServiceImpl implements OrderCommandService{
 
         int totalPrice = 0;
         for (OrderReqDTO.OrderCreateReq.OrderItemReq itemReq : orderCreateReq.orderItems()){
-            Product product = productRepository.findById(itemReq.productId())
-                    .orElseThrow(() -> new IllegalArgumentException("상품 없음" + itemReq.productId()));
+            Product product = productRepository.findByAndNotDeleted(itemReq.productId())
+                    .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
             ProductOrder productOrder = OrderConverter.toProductOrder(order, product, itemReq.quantity());
             productOrderRepository.save(productOrder);
