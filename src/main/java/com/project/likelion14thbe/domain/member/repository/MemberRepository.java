@@ -19,4 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 
     List<Member> findDeletedMembersBefore(LocalDateTime oneMonthAgo);
+
+    Optional<Member> findByEmail(String email);
 }
