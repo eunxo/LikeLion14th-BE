@@ -34,14 +34,13 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResDTO.LoginRes toLoginRes(Member member, String token) {
+    public static MemberResDTO.LoginRes toLoginRes(Member member, String accessToken, String refreshToken) {
         return MemberResDTO.LoginRes.builder()
                 .memberId(member.getId())
                 .email(member.getEmail())
-                .accessToken(token)
+                .name(member.getName())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
-
-
-
 }
