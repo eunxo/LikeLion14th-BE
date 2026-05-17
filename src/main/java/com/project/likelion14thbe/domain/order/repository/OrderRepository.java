@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<Order> findAllByMemberId(Long memberId);
+    List<Order> findAllByMemberEmail(String email);
 
     @Query("SELECT m FROM Order m WHERE m.id = :id AND m.deletedAt IS NULL")
     Optional<Order> findByIdAndNotDeleted(@Param("id") Long id);
