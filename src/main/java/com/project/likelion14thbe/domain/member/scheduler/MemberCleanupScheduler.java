@@ -25,14 +25,12 @@ public class MemberCleanupScheduler {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
         // 한 달 전 이전에 소프트 딜리트된 회원 조회
-        List<Member> membersToDelete = memberRepository.findDeletedMembersBefore(oneMonthAgo);
+        List<Member> membersToDelete = memberRepository.findByDeletedAtBefore(oneMonthAgo);
 
         if (membersToDelete.isEmpty()) {
             log.info("No members to delete.");
         }
 
-        for (Member member : membersToDelete) {
-            memberRepository.delete(member);
-        }
+        memberRepository.deleteAll(membersToDelete);
     }
 }
