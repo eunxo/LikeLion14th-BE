@@ -30,6 +30,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public ReviewResDTO.ReviewCreateRes createReview(ReviewReqDTO.ReviewCreateReq reviewCreateReq, Long productId, String email) {
@@ -39,6 +40,16 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
         Product product = productRepository.findByAndNotDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        // 사용자가 실제 구매했는지 확인
+        boolean isRealBuy = orderRepository.existsByMemberIdAndProductIdAndStatus(
+                member.getId(),
+                product.getId(),
+                "배송완료"
+        );
+        if (!isRealBuy){
+            throw new ReviewException(ReviewErrorCode.REVIEW_NOT_BUY);
+        }
 
         Review review = ReviewConverter.toReview(reviewCreateReq, member, product);
 
