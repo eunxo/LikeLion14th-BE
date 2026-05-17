@@ -45,7 +45,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void deleteMember(Long memberId) {
+    public void deleteMember(CustomUserDetails customUserDetails) {
+        Long memberId = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND)).getId();
+
         Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 

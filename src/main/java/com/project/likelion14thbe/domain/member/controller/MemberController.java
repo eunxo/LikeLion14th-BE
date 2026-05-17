@@ -41,10 +41,12 @@ public class MemberController {
         return CustomResponse.onSuccess("비밀번호 변경 성공");
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/users")
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴")
-    public CustomResponse<String> deleteMember (Long memberId) {
-        memberCommandService.deleteMember(memberId);
+    public CustomResponse<String> deleteMember (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        memberCommandService.deleteMember(customUserDetails);
         return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 }

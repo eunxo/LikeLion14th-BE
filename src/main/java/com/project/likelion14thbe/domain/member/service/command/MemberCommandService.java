@@ -10,5 +10,5 @@ public interface MemberCommandService {
 
     void updatePassword(CustomUserDetails customUserDetails, MemberReqDTO.PasswordResetDTO dto);
 
-    void deleteMember(Long memberId);
+    void deleteMember(CustomUserDetails customUserDetails);
 }
