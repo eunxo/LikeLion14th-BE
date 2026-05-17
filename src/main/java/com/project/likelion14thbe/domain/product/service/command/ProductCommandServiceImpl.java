@@ -36,11 +36,19 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
-    public void updateProduct(Long productId, ProductReqDTO.CreateProductReq updateProductReqDTO){
+    public void updateProduct(CustomUserDetails customUserDetails, Long productId, ProductReqDTO.UpdateProductReq updateProductReqDTO){
         Product product = productRepository.findByIdAndNotDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        product.updateProduct(updateProductReqDTO);
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if (product.getMember().getId().equals(member.getId())) {
+            product.updateProduct(updateProductReqDTO);
+        }
+        else {
+            throw new ProductException(ProductErrorCode.PRODUCT_UNAUTHORIZED);
+        }
     }
 
     @Override

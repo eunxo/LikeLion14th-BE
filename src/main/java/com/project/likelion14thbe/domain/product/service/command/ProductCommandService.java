@@ -7,7 +7,7 @@ public interface ProductCommandService {
 
      String createProduct(ProductReqDTO.CreateProductReq createProductReqDTO, CustomUserDetails customUserDetails);
 
-     void updateProduct(Long productId, ProductReqDTO.CreateProductReq updateProductReqDTO);
+     void updateProduct(CustomUserDetails customUserDetails, Long productId, ProductReqDTO.UpdateProductReq updateProductReqDTO);
 
      void deleteProduct(Long productId);
 }

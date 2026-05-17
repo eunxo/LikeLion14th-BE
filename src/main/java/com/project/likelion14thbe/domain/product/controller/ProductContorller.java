@@ -36,11 +36,11 @@ public class ProductContorller {
     @PutMapping("/products/{productId}")
     @Operation(summary = "상품 수정", description = "상품을 수정합니다.")
     public CustomResponse<String> updateProduct (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long productId,
-            // 어느부분을 수정할지 몰라서 전체 수정 할 수 있도록 PutMapping 하고 CreateProductReq 재사용했는데 이렇게 해도 괜찮은가요?
-            @RequestBody ProductReqDTO.CreateProductReq updateProductReq
+            @RequestBody ProductReqDTO.UpdateProductReq updateProductReq
     ){
-        productCommandService.updateProduct(productId, updateProductReq);
+        productCommandService.updateProduct(customUserDetails, productId, updateProductReq);
         return CustomResponse.onSuccess("상품 수정 성공");
     }
 

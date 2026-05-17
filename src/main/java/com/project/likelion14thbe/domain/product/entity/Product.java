@@ -70,7 +70,7 @@ public class Product extends BaseEntity {
     }
 
     // 상품 수정 메서드
-    public void updateProduct(ProductReqDTO.CreateProductReq dto) {
+    public void updateProduct(ProductReqDTO.UpdateProductReq dto) {
         this.name = dto.name();
         this.description = dto.description();
         this.price = dto.price();
