@@ -7,7 +7,7 @@ import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 
 public interface OrderQueryService {
 
-    OrderResDTO.OrderDeatilRes getOrder(Long orderId);
+    OrderResDTO.OrderDeatilRes getOrder(CustomUserDetails customUserDetails, Long orderId);
 
     List<OrderResDTO.OrderDeatilRes> getOrderList(CustomUserDetails customUserDetails);
 }

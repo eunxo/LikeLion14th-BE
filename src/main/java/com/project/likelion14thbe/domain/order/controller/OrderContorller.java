@@ -45,8 +45,9 @@ public class OrderContorller {
     @GetMapping("/orders/{orderId}")
     @Operation(summary = "주문 상세 조회", description = "주문 상세 내역을 조회합니다.")
     public CustomResponse<OrderResDTO.OrderDeatilRes> getOrderDetail(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long orderId) {
-        return CustomResponse.onSuccess(orderQueryService.getOrder(orderId));
+        return CustomResponse.onSuccess(orderQueryService.getOrder(customUserDetails, orderId));
     }
 
     @DeleteMapping("/orders/{orderId}")
