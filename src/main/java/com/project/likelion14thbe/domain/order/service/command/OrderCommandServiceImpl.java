@@ -9,8 +9,8 @@ import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.entity.Order;
 import com.project.likelion14thbe.domain.order.entity.ProductOrder;
-import com.project.likelion14thbe.domain.order.execption.OrderErrorCode;
-import com.project.likelion14thbe.domain.order.execption.OrderException;
+import com.project.likelion14thbe.domain.order.exception.OrderErrorCode;
+import com.project.likelion14thbe.domain.order.exception.OrderException;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
 import com.project.likelion14thbe.domain.order.repository.ProductOrderRepository;
 import com.project.likelion14thbe.domain.product.entity.Product;
@@ -30,8 +30,8 @@ public class OrderCommandServiceImpl implements OrderCommandService{
     private final ProductRepository productRepository;
     private final ProductOrderRepository productOrderRepository;
 
-    public OrderResDTO.OrderCreateRes createOrder(OrderReqDTO.OrderCreateReq orderCreateReq, Long memberId){
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public OrderResDTO.OrderCreateRes createOrder(OrderReqDTO.OrderCreateReq orderCreateReq, String email){
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Order order = OrderConverter.toOrder(member);
@@ -53,12 +53,12 @@ public class OrderCommandServiceImpl implements OrderCommandService{
     }
 
     @Override
-    public void changeStatus(Long orderId, Long memberId, OrderReqDTO.ChangeStatusDTO dto){
+    public void changeStatus(Long orderId, String email, OrderReqDTO.ChangeStatusDTO dto){
         // 주문정보 조회
         Order order = orderRepository.findByIdAndNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
-        if (!order.getMember().getId().equals(memberId)){
+        if (!order.getMember().getEmail().equals(email)){
             throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
         }
 
@@ -66,13 +66,13 @@ public class OrderCommandServiceImpl implements OrderCommandService{
     }
 
     @Override
-    public void deleteOrder(Long orderId, Long memberId){
+    public void deleteOrder(Long orderId, String email){
         // 주문 정보 조회
         Order order = orderRepository.findByIdAndNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
         // 주문 정보 접근 권한 확인
-        if (!order.getMember().getId().equals(memberId)) {
+        if (!order.getMember().getEmail().equals(email)) {
             throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
         }
 

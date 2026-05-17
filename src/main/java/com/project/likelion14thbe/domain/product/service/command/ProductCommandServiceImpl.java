@@ -1,7 +1,11 @@
 package com.project.likelion14thbe.domain.product.service.command;
 
-import com.project.likelion14thbe.domain.order.execption.OrderErrorCode;
-import com.project.likelion14thbe.domain.order.execption.OrderException;
+import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
+import com.project.likelion14thbe.domain.member.repository.MemberRepository;
+import com.project.likelion14thbe.domain.order.exception.OrderErrorCode;
+import com.project.likelion14thbe.domain.order.exception.OrderException;
 import com.project.likelion14thbe.domain.product.converter.ProductConverter;
 import com.project.likelion14thbe.domain.product.dto.request.ProductReqDTO;
 import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
@@ -19,9 +23,13 @@ import org.springframework.stereotype.Service;
 public class ProductCommandServiceImpl implements ProductCommandService {
 
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
 
     @Override
-    public ProductResDTO.ProductCreateRes createProduct(ProductReqDTO.ProductCreateReq productCreateReq) {
+    public ProductResDTO.ProductCreateRes createProduct(ProductReqDTO.ProductCreateReq productCreateReq, String email) {
+
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Product product = ProductConverter.toProduct(productCreateReq);
 
@@ -31,13 +39,13 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
-    public void updateProduct(Long productId, Long memberId, ProductReqDTO.ProductChangeDTO dto){
+    public void updateProduct(Long productId, String email, ProductReqDTO.ProductChangeDTO dto){
         // 상품 정보 조회
         Product product = productRepository.findByAndNotDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         // 상품 정보 접근 권한 확인
-        if (!product.getMember().getId().equals(memberId)) {
+        if (!product.getMember().getEmail().equals(email)) {
             throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
         }
 
@@ -45,13 +53,13 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
-    public void deleteProduct(Long productId, Long memberId){
+    public void deleteProduct(Long productId, String email){
         //상품 정보 조회
         Product product = productRepository.findByAndNotDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         // 리뷰 접근 권한 확인
-        if (!product.getMember().getId().equals(memberId)) {
+        if (!product.getMember().getEmail().equals(email)) {
             throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
         }
 
