@@ -16,36 +16,36 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Transactional
 public class MemberCommandServiceImpl implements MemberCommandService {
+
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Override
     public MemberResDTO.ProfileRes signUp(MemberReqDTO.SignupReq signupReq) {
         Member member = MemberConverter.toMember(signupReq, passwordEncoder);
-
         memberRepository.save(member);
-
         return MemberConverter.toMemberResDTO(member);
     }
 
     @Override
-    public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public void updatePassword(String email, MemberReqDTO.PasswordResetDTO dto) {
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        member.updatePassword(dto.getPassword());
+        member.updatePassword(passwordEncoder.encode(dto.getPassword()));
     }
 
     @Override
-    public void deleteMember(Long memberId) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public void deleteMember(String email) {
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         member.delete();
     }
 
     @Override
-    public void updateMember(Long memberId, MemberReqDTO.UpdateReq updateReq) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public void updateMember(String email, MemberReqDTO.UpdateReq updateReq) {
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         member.updateMember(updateReq.getName(), updateReq.getProfileImage());

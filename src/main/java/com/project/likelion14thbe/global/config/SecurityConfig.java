@@ -36,19 +36,26 @@ public class SecurityConfig {
             "/api/v1/login/kakao",
             "/auth/reissue", // 토큰 재발급은 인증이 필요하지 않음
             "/auth/**",
+            "/api/v1/home",
+            "/api/v1/products",
+            "/api/v1/products/*/reviews",
             "/api/usage",
             "/swagger-ui/**",   // swagger 관련 URL
             "/v3/api-docs/**",
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CustomLoginFilter loginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(allowUrl).permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/home").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/products").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/products/*/reviews").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/reviews/*").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
