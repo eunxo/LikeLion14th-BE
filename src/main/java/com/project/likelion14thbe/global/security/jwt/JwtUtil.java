@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.SignatureException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -125,7 +124,7 @@ public class JwtUtil {
     }
 
     // 제공된 리프레시 토큰을 기반으로 JwtDto 쌍을 다시 발급
-    public JwtDTO reissueToken(String refreshToken) throws SignatureException {
+    public JwtDTO reissueToken(String refreshToken) {
 
         // refreshToken 에서 user 정보를 가져와서 새로운 토큰을 발급 (발급 시간, 유효 시간(reset)만 새로 적용)
         CustomUserDetails userDetails = new CustomUserDetails(
