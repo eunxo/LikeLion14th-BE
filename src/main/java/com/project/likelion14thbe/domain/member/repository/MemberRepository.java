@@ -16,4 +16,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmailAndNotDeleted(@Param("email") String email);
 
     void deleteByDeletedAtBefore(LocalDateTime threshold);
+
+    Optional<Member> findByEmail(String email);
+
+    String email(String email);
 }
