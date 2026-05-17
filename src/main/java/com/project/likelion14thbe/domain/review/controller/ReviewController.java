@@ -72,10 +72,11 @@ public class ReviewController {
                 return ResponseEntity.ok(reviewList);
         }
 
-        @GetMapping("/reviews/me/{userId}")
+        @GetMapping("/reviews/my")
         @Operation(summary = "내 리뷰 목록 조회", description = "내가 작성한 모든 리뷰 목록을 조회합니다.")
         public CustomResponse<List<ReviewResDTO.ReviewDetailRes>> getMyReviews(
-                        @PathVariable Long userId) {
-                return CustomResponse.onSuccess(reviewQueryService.getMyReviews(userId));
+                        @AuthenticationPrincipal CustomUserDetails customUserDetails
+        ) {
+                return CustomResponse.onSuccess(reviewQueryService.getMyReviews(customUserDetails));
         }
 }
