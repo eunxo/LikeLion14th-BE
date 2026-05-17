@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,23 +26,22 @@ public class OrderController {
 
     @GetMapping("/orders")
     @Operation(summary = "내 주문 목록 조회", description = "memberId 받아서 내 주문 목록 전체 조회")
-    public CustomResponse<OrderResDTO.OrderGetListRes> getMyOrderList(){
-
-        Long memberId = 1L;
-
+    public CustomResponse<OrderResDTO.OrderGetListRes> getMyOrderList(
+            @AuthenticationPrincipal UserDetails userDetails
+    ){
         return CustomResponse
-                .onSuccess(orderQueryService.getMyOrderList(memberId));
+                .onSuccess(orderQueryService.getMyOrderList(userDetails.getUsername()));
     }
 
     @PostMapping("/orders/create")
     @Operation(summary = "주문 추가", description = "주문 상품을 추가한다")
     public CustomResponse<OrderResDTO.OrderCreateRes> createOrder(
-            @RequestBody OrderReqDTO.OrderCreateReq orderCreateReq) {
-
-        Long memberId = 1L;
+            @RequestBody OrderReqDTO.OrderCreateReq orderCreateReq,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
 
         return CustomResponse
-                .onSuccess(orderCommandService.createOrder(orderCreateReq, memberId));
+                .onSuccess(orderCommandService.createOrder(orderCreateReq, userDetails.getUsername()));
     }
 
     @PatchMapping("/orders/{orderId}/status")
@@ -47,18 +49,18 @@ public class OrderController {
     public CustomResponse<String> changeStatus(
             @PathVariable Long orderId,
             @RequestBody OrderReqDTO.ChangeStatusDTO change,
-            @RequestParam Long memberId
+            @AuthenticationPrincipal UserDetails userDetails
     ){
-        orderCommandService.changeStatus(orderId, memberId, change);
+        orderCommandService.changeStatus(orderId, userDetails.getUsername(), change);
         return CustomResponse.onSuccess("주문상태 변경 성공");
     }
 
-    @DeleteMapping("/orders/{orderId}/delete")
+    @DeleteMapping("/orders/{orderId}/me")
     public CustomResponse<String> deleteOrder(
             @PathVariable Long orderId,
-            @RequestParam Long memberId
-    ){
-        orderCommandService.deleteOrder(orderId, memberId);
+            @AuthenticationPrincipal UserDetails userDetails
+            ){
+        orderCommandService.deleteOrder(orderId, userDetails.getUsername());
         return CustomResponse.onSuccess("주문 내역 삭제 성공");
     }
 }

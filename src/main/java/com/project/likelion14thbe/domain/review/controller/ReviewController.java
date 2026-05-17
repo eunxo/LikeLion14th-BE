@@ -8,8 +8,8 @@ import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,12 +25,11 @@ public class ReviewController {
     @Operation(summary = "리뷰 생성", description = "리뷰를 생성합니다.")
     public CustomResponse<ReviewResDTO.ReviewCreateRes> createReview(
             @PathVariable Long productId,
-            @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq
+            @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq,
+            @AuthenticationPrincipal UserDetails userDetails
     ){
-        Long memberId = 1L;
-
         return CustomResponse
-                .onSuccess(reviewCommandService.createReview(reviewCreateReq, productId, memberId));
+                .onSuccess(reviewCommandService.createReview(reviewCreateReq, productId, userDetails.getUsername()));
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -56,9 +55,9 @@ public class ReviewController {
     public CustomResponse<String> updateReview(
             @PathVariable Long reviewId,
             @RequestBody ReviewReqDTO.ReviewChangeReq update,
-            @RequestParam Long memberId
-    ){
-        reviewCommandService.updateReview(reviewId, memberId, update);
+            @AuthenticationPrincipal UserDetails userDetails
+            ){
+        reviewCommandService.updateReview(reviewId, userDetails.getUsername(), update);
         return CustomResponse.onSuccess("리뷰 수정 성공");
     }
 
@@ -66,9 +65,9 @@ public class ReviewController {
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
     public CustomResponse<String> deleteReview(
             @PathVariable Long reviewId,
-            @RequestParam Long memberId
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        reviewCommandService.deleteReview(reviewId, memberId);
+        reviewCommandService.deleteReview(reviewId, userDetails.getUsername());
         return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 }

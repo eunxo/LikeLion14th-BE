@@ -8,8 +8,8 @@ import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,41 +40,45 @@ public class MemberController {
                 .onSuccess(MemberResDTO.MemberLoginRes.builder().build());
     }
 
-    @DeleteMapping("/members/{memberId}/deletemember")
+    @DeleteMapping("/members/me/out")
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 합니다")
     public CustomResponse<String> deleteMember(
-            @PathVariable Long memberId
+            @AuthenticationPrincipal UserDetails userDetails
     ){
-        memberCommandService.deleteMember(memberId);
+        memberCommandService.deleteMember(userDetails.getUsername());
         return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 
-    @GetMapping("/users/{userId}/getprofile")
+    @GetMapping("/users/me")
     @Operation(summary = "프로필 조회", description = "프로필 조회를 합니다")
     public CustomResponse<MemberResDTO.MemberGetRes> getProfile(
-            @PathVariable long userId
-    ){
+            @AuthenticationPrincipal UserDetails userDetails
+            ){
         return CustomResponse
-                .onSuccess(memberQueryService.getProfile(userId));
+                .onSuccess(memberQueryService.getProfile(userDetails.getUsername()));
     }
 
-    @PatchMapping("/users/{userId}/fixprofile")
+    @PatchMapping("/users/me/profile")
     @Operation(summary = "프로필 수정", description = "프로필 수정을 합니다")
     public CustomResponse<String> fixProfile(
-            @PathVariable Long userId,
-            @RequestBody MemberReqDTO.MemberFixReq MemberFixReq
+            @RequestBody MemberReqDTO.MemberFixReq memberFixReq,
+            @AuthenticationPrincipal UserDetails userDetails
     ){
+        memberCommandService.updateProfile(userDetails.getUsername(), memberFixReq);
         return CustomResponse
                 .onSuccess("프로필 수정 성공");
     }
 
-    @PatchMapping("/members/{memberId}/password")
+    @PatchMapping("/members/me/password")
     @Operation(summary = "비밀번호 변경", description = "id를 받아 비밀번호를 바꿉니다.")
     public CustomResponse<String> resetPassword(
-            @PathVariable Long memberId,
-            @RequestBody MemberReqDTO.PasswordResetDTO request
-    ) {
-        memberCommandService.updatePassword(memberId, request);
+            @RequestBody MemberReqDTO.PasswordResetDTO request,
+            @AuthenticationPrincipal UserDetails userDetails
+            ) {
+        memberCommandService.updatePassword(userDetails.getUsername(), request);
         return CustomResponse.onSuccess("비밀번호 변경 성공");
     }
+
+
+
 }

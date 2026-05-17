@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,14 +23,14 @@ public class ProductController {
     private final ProductCommandService productCommandService;
     private final ProductQueryService productQueryService;
 
-    @GetMapping("/products/get")
+    @GetMapping("/products/list")
     @Operation(summary = "상품 목록 조회", description = "상품 전체 목록을 조회합니다")
     public CustomResponse<ProductResDTO.ProductGetRes> getProducts(){
         return CustomResponse
                 .onSuccess(productQueryService.getProducts());
     }
 
-    @GetMapping("/products/{productId}")
+    @GetMapping("/products/{productId}/detail")
     @Operation(summary = "상품 상세 조회", description = "상품 하나의 정보를 자세하게 보여줍니다.")
     public CustomResponse<ProductResDTO.ProductGetDetailRes> getProduct(
             @PathVariable Long productId
@@ -40,10 +42,11 @@ public class ProductController {
     @PostMapping("/products")
     @Operation(summary = "상품 추가", description = "새로운 상품을 등록한다")
     public CustomResponse<ProductResDTO.ProductCreateRes> createProduct(
-            @RequestBody ProductReqDTO.ProductCreateReq productCreateReq
+            @RequestBody ProductReqDTO.ProductCreateReq productCreateReq,
+            @AuthenticationPrincipal UserDetails userDetails
     ){
         return CustomResponse
-                .onSuccess(productCommandService.createProduct(productCreateReq));
+                .onSuccess(productCommandService.createProduct(productCreateReq, userDetails.getUsername()));
     }
 
     @PatchMapping("/products/{productId}")
@@ -51,19 +54,19 @@ public class ProductController {
     public CustomResponse<String> updateProduct(
             @PathVariable Long productId,
             @RequestBody ProductReqDTO.ProductChangeDTO update,
-            @RequestParam Long memberId
-    ){
-        productCommandService.updateProduct(productId, memberId, update);
+            @AuthenticationPrincipal UserDetails userDetails
+            ){
+        productCommandService.updateProduct(productId, userDetails.getUsername(), update);
         return CustomResponse.onSuccess("상품 정보 변경 성공");
     }
 
-    @DeleteMapping("/product/{productId}/delete")
+    @DeleteMapping("/products/{productId}/delete")
     @Operation(summary = "상품 삭제", description = "상품을 삭제합니다.")
     public CustomResponse<String> deleteProduct(
             @PathVariable Long productId,
-            @RequestParam Long memberId
+            @AuthenticationPrincipal UserDetails userDetails
     ){
-        productCommandService.deleteProduct(productId, memberId);
+        productCommandService.deleteProduct(productId, userDetails.getUsername());
         return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 }
