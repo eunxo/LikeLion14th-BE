@@ -1,4 +1,4 @@
-package com.project.likelion14thbe.domain.order.execption;
+package com.project.likelion14thbe.domain.order.exception;
 
 import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import lombok.Getter;
