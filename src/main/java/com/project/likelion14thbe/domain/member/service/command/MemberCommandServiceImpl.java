@@ -9,17 +9,23 @@ import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MemberCommandServiceImpl implements MemberCommandService {
+
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public MemberResDTO.MemberSignupResDTO signup(MemberReqDTO.MemberSignupReqDTO memberSignupReqDTO) {
-        Member member = MemberConverter.toMember(memberSignupReqDTO);
+
+        String encodePassword = passwordEncoder.encode(memberSignupReqDTO.password());
+
+        Member member = MemberConverter.toMember(memberSignupReqDTO, encodePassword);
 
         memberRepository.save(member);
 
