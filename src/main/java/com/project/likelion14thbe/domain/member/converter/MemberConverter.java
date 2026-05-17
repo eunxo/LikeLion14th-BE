@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-//생성자 접근 비허용
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberConverter {
 
@@ -31,7 +30,8 @@ public class MemberConverter {
                 .profileImage(member.getProfileImage())
                 .name(member.getName())
                 .email(member.getEmail())
+                .orderCount(0)
+                .reviewCount(0)
                 .build();
     }
-
 }

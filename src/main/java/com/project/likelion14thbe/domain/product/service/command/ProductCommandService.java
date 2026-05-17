@@ -6,5 +6,5 @@ public interface ProductCommandService {
     void createProduct(ProductReqDTO.CreateReq req);
     void updateProduct(Long productId, ProductReqDTO.CreateReq req);
     void deleteProduct(Long productId);
-    void addBookmark(Long memberId, Long productId);
+    void addBookmark(Long memberId, Long productId, String email);
 }

@@ -25,7 +25,15 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role.name()));
+
+        String roleName = role.name();
+
+        // ⭐️ 만약 DB에서 "USER"로 넘어왔다면 앞에 "ROLE_"를 강제로 붙여주는 안전장치!
+        if (!roleName.startsWith("ROLE_")) {
+            roleName = "ROLE_" + roleName;
+        }
+
+        authorities.add(new SimpleGrantedAuthority(roleName));
         return authorities;
     }
 

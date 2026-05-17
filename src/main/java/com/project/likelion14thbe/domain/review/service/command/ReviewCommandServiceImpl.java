@@ -1,4 +1,5 @@
 package com.project.likelion14thbe.domain.review.service.command;
+
 import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import com.project.likelion14thbe.domain.product.entity.Product;
@@ -17,13 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class ReviewCommandServiceImpl implements ReviewCommandService {
+
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
 
     @Override
-    public void createReview(Long productId, Long memberId, ReviewReqDTO.ReviewCreateReq req) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public void createReview(Long productId, String email, ReviewReqDTO.ReviewCreateReq req) {
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("MEMBER_NOT_FOUND"));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("PRODUCT_NOT_FOUND"));
@@ -31,20 +33,22 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     }
 
     @Override
-    public void updateReview(Long reviewId, Long memberId, ReviewReqDTO.ReviewUpdateReq req) {
+    public void updateReview(Long reviewId, String email, ReviewReqDTO.ReviewUpdateReq req) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
-        if (!review.getMember().getId().equals(memberId)) {
+
+        if (!review.getMember().getEmail().equals(email)) {
             throw new ReviewException(ReviewErrorCode.REVIEW_FORBIDDEN);
         }
         review.update(req.getContent(), req.getRating());
     }
 
     @Override
-    public void deleteReview(Long reviewId, Long memberId) {
+    public void deleteReview(Long reviewId, String email) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
-        if (!review.getMember().getId().equals(memberId)) {
+
+        if (!review.getMember().getEmail().equals(email)) {
             throw new ReviewException(ReviewErrorCode.REVIEW_FORBIDDEN);
         }
         reviewRepository.delete(review);

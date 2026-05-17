@@ -1,8 +1,13 @@
 package com.project.likelion14thbe.domain.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.likelion14thbe.domain.review.entity.Review;
 import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,6 +33,9 @@ public class Product extends BaseEntity {
 
     private String description;
 
+    @Column(nullable = false)
+    private Integer stock;
+
     public void update(String name, Integer price, String category, String imageUrl, String description) {
         this.name = name;
         this.price = price;
@@ -35,4 +43,8 @@ public class Product extends BaseEntity {
         this.imageUrl = imageUrl;
         this.description = description;
     }
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<Review> reviews = new ArrayList<>();
 }

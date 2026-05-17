@@ -17,6 +17,7 @@ public class ProductConverter {
                 .price(req.getPrice())
                 .category(req.getCategory())
                 .imageUrl(req.getImageUrl())
+                .stock(req.getStock())
                 .description(req.getDescription())
                 .build();
     }

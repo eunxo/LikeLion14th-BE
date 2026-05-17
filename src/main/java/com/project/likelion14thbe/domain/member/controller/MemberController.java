@@ -29,9 +29,17 @@ public class MemberController {
         return CustomResponse.onSuccess(memberCommandService.signUp(signupReq));
     }
 
+    @PostMapping("/auth/login")
+    @Operation(summary = "로그인", description = "JWT 토큰을 발급받습니다.")
+    public CustomResponse<String> login(
+            @RequestBody MemberReqDTO.LoginReq loginReq
+    ) {
+        return CustomResponse.onSuccess("로그인 성공");
+    }
+
     @GetMapping("/members/me")
     @Operation(summary = "내 정보 조회", description = "토큰을 기반으로 본인의 프로필을 조회합니다.")
-    public CustomResponse<MemberResDTO.ProfileRes> getMember(
+    public CustomResponse<MemberResDTO.ProfileRes> getMemberByEmail(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return CustomResponse.onSuccess(memberQueryService.getMemberByEmail(customUserDetails.getUsername()));

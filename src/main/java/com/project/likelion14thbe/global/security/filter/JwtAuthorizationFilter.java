@@ -56,7 +56,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("Access Token 이 만료되었습니다.");
+            return;
+        } catch (Exception e) {
+            log.error("========================================================");
+            log.error("[🚨시큐리티 대폭발 발생 범인 검거]: ", e);
+            log.error("========================================================");
+
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("Security Error: " + e.getMessage());
+            return; // ⭐️ 컨트롤러로 못 가게 여기서 꽉 붙잡음
         }
+        filterChain.doFilter(request, response);
     }
 
     // Access Token을 바탕으로 인증 객체 생성 및 SecurityContext에 저장

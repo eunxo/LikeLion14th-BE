@@ -1,6 +1,5 @@
 package com.project.likelion14thbe.global.config;
 
-
 import com.project.likelion14thbe.global.security.exception.JwtAccessDeniedHandler;
 import com.project.likelion14thbe.global.security.exception.JwtAuthenticationEntryPoint;
 import com.project.likelion14thbe.global.security.filter.CustomLoginFilter;
@@ -13,13 +12,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-@Configuration // 빈 등록
-@EnableWebSecurity // 필터 체인 관리 시작 어노테이션
+
+@Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -28,20 +29,19 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-
-    //인증이 필요하지 않은 url
     private final String[] allowUrl = {
-            "/api/v1/auth/login", //로그인 은 인증이 필요하지 않음
-            "/api/v1/auth/signup", // 회원가입은 인증이 필요하지 않음
+            "/api/v1/auth/login",
+            "/api/v1/auth/signup",
             "/api/v1/login/kakao",
-            "/auth/reissue", // 토큰 재발급은 인증이 필요하지 않음
+            "/auth/reissue",
             "/auth/**",
             "/api/v1/home",
             "/api/v1/products",
             "/api/v1/products/*/reviews",
             "/api/usage",
-            "/swagger-ui/**",   // swagger 관련 URL
+            "/swagger-ui/**",
             "/v3/api-docs/**",
+            "/api/v1/members/*/orders"
     };
 
     @Bean
@@ -59,6 +59,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
+
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -75,7 +79,8 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();}
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

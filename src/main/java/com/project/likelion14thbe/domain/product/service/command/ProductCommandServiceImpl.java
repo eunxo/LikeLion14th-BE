@@ -12,14 +12,15 @@ import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
 import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.BookmarkRepository;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ProductCommandServiceImpl implements ProductCommandService {
+
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     private final BookmarkRepository bookmarkRepository;
@@ -44,11 +45,17 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
-    public void addBookmark(Long memberId, Long productId) {
+    public void addBookmark(Long memberId, Long productId, String email) {
         Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if (!member.getEmail().equals(email)) {
+            throw new MemberException(MemberErrorCode.MEMBER_FORBIDDEN);
+        }
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
         if (bookmarkRepository.existsByMemberIdAndProductId(memberId, productId)) {
             return;
         }
