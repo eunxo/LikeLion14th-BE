@@ -1,8 +1,10 @@
 package com.project.likelion14thbe.global.security.filter;
 
+import com.project.likelion14thbe.domain.auth.exception.AuthErrorCode;
 import com.project.likelion14thbe.domain.member.enums.Role;
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
 import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
+import com.project.likelion14thbe.global.security.utils.HttpResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,14 +49,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         } catch (ExpiredJwtException e) {
             logger.warn("[ JwtAuthorizationFilter ] accessToken 이 만료되었습니다.");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("Access Token 이 만료되었습니다.");
+            HttpResponseUtil.setErrorResponse(response, AuthErrorCode.EXPIRED_TOKEN);
         } catch (SecurityException e) {
             logger.warn("[ JwtAuthorizationFilter ] 잘못된 토큰입니다.");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("잘못된 토큰입니다.");
+            HttpResponseUtil.setErrorResponse(response, AuthErrorCode.INVALID_TOKEN);
         }
     }
 
