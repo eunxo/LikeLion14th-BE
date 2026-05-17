@@ -5,7 +5,6 @@ import java.util.List;
 public class OrderReqDTO {
     
     public record CreateOrderReqDTO(
-            Long memberId,
             List<OrderItemReq> orderItems
     ) {
     }

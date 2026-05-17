@@ -27,9 +27,10 @@ public class OrderContorller {
     @PostMapping("/orders")
     @Operation(summary = "주문 생성", description = "주문 내역을 생성합니다")
     public CustomResponse<String> createOrder(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody OrderReqDTO.CreateOrderReqDTO createOrderReqDTO
     ){
-        return CustomResponse.onSuccess(HttpStatus.CREATED, orderCommandService.createOrder(createOrderReqDTO));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, orderCommandService.createOrder(customUserDetails, createOrderReqDTO));
     }
 
     @GetMapping("/orders/list")
