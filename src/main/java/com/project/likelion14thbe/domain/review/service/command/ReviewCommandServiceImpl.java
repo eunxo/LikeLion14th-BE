@@ -26,16 +26,16 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     @Override
     public ReviewResDTO.CreateReviewResDTO createReview(
-            Long memberId,
+            String email,
             Long productId,
             ReviewReqDTO.CreateReviewReqDTO request
     ) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_PRODUCT_NOT_FOUND));
 
-        if (reviewRepository.existsByMember_IdAndProduct_Id(memberId, productId)) {
+        if (reviewRepository.existsByMember_IdAndProduct_Id(member.getId(), productId)) {
             throw new ReviewException(ReviewErrorCode.REVIEW_ALREADY_EXISTS);
         }
 
@@ -46,15 +46,13 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     @Override
     public ReviewResDTO.UpdateReviewResDTO updateReview(
-            Long memberId,
+            String email,
             Long productId,
             Long reviewId,
             ReviewReqDTO.UpdateReviewReqDTO request
     ) {
-        // 작성자 회원 검증 (탈퇴 회원은 수정 불가)
-        if (memberRepository.findByIdAndNotDeleted(memberId).isEmpty()) {
-            throw new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND);
-        }
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND));
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
@@ -64,8 +62,8 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
             throw new ReviewException(ReviewErrorCode.REVIEW_NOT_BELONG_TO_PRODUCT);
         }
 
-        // 본인 리뷰 검증 (시큐리티 미적용으로 임시)
-        if (!review.getMember().getId().equals(memberId)) {
+        // 본인 리뷰 검증 — 인증 사용자(email로 조회) 기준
+        if (!review.getMember().getId().equals(member.getId())) {
             throw new ReviewException(ReviewErrorCode.REVIEW_FORBIDDEN);
         }
 
@@ -74,10 +72,9 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     }
 
     @Override
-    public void deleteReview(Long memberId, Long productId, Long reviewId) {
-        if (memberRepository.findByIdAndNotDeleted(memberId).isEmpty()) {
-            throw new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND);
-        }
+    public void deleteReview(String email, Long productId, Long reviewId) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND));
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
@@ -86,7 +83,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
             throw new ReviewException(ReviewErrorCode.REVIEW_NOT_BELONG_TO_PRODUCT);
         }
 
-        if (!review.getMember().getId().equals(memberId)) {
+        if (!review.getMember().getId().equals(member.getId())) {
             throw new ReviewException(ReviewErrorCode.REVIEW_FORBIDDEN);
         }
 

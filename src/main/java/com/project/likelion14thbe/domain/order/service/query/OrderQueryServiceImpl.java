@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.order.service.query;
 
+import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
@@ -23,12 +24,11 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     private final MemberRepository memberRepository;
 
     @Override
-    public OrderResDTO.MyOrderListResDTO getMyOrders(Long memberId, Integer page, Integer size) {
-        if (memberRepository.findByIdAndNotDeleted(memberId).isEmpty()) {
-            throw new OrderException(OrderErrorCode.ORDER_MEMBER_NOT_FOUND);
-        }
+    public OrderResDTO.MyOrderListResDTO getMyOrders(String email, Integer page, Integer size) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_MEMBER_NOT_FOUND));
         Pageable pageable = PageRequest.of(page, size);
-        Page<Order> orders = orderRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId, pageable);
+        Page<Order> orders = orderRepository.findAllByMember_IdOrderByCreatedAtDesc(member.getId(), pageable);
         return OrderConverter.toMyOrderListResDTO(orders);
     }
 }

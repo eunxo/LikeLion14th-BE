@@ -4,5 +4,5 @@ import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 
 public interface OrderQueryService {
 
-    OrderResDTO.MyOrderListResDTO getMyOrders(Long memberId, Integer page, Integer size);
+    OrderResDTO.MyOrderListResDTO getMyOrders(String email, Integer page, Integer size);
 }

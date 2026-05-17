@@ -25,8 +25,8 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     private final ProductRepository productRepository;
 
     @Override
-    public OrderResDTO.CreateOrderResDTO createOrder(Long memberId, OrderReqDTO.CreateOrderReqDTO request) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public OrderResDTO.CreateOrderResDTO createOrder(String email, OrderReqDTO.CreateOrderReqDTO request) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_MEMBER_NOT_FOUND));
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_PRODUCT_NOT_FOUND));
@@ -38,12 +38,15 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     }
 
     @Override
-    public void cancelOrder(Long orderId, Long memberId) {
+    public void cancelOrder(Long orderId, String email) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_MEMBER_NOT_FOUND));
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
-        // 본인 주문 검증 (시큐리티 미적용으로 임시)
-        if (!order.getMember().getId().equals(memberId)) {
+        // 본인 주문 검증 — 인증 사용자(email로 조회) 기준
+        if (!order.getMember().getId().equals(member.getId())) {
             throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
         }
 

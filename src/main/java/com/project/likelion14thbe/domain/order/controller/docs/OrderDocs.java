@@ -3,6 +3,7 @@ package com.project.likelion14thbe.domain.order.controller.docs;
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +20,7 @@ public interface OrderDocs {
 
     @Operation(
             summary = "주문 생성",
-            description = "현재 로그인한 회원이 특정 상품을 주문한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+            description = "현재 로그인한 회원이 특정 상품을 주문한다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "주문 생성 성공",
@@ -58,13 +59,13 @@ public interface OrderDocs {
                             }))
     })
     CustomResponse<OrderResDTO.CreateOrderResDTO> createOrder(
-            @Parameter(description = "주문자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
+            CustomUserDetails user,
             OrderReqDTO.CreateOrderReqDTO request
     );
 
     @Operation(
             summary = "내 주문 목록 조회",
-            description = "현재 로그인한 회원의 모든 주문을 페이징 조회한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+            description = "현재 로그인한 회원의 모든 주문을 페이징 조회한다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 주문 목록 조회 성공",
@@ -81,14 +82,14 @@ public interface OrderDocs {
                                     """)))
     })
     CustomResponse<OrderResDTO.MyOrderListResDTO> getMyOrders(
-            @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
+            CustomUserDetails user,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size
     );
 
     @Operation(
             summary = "주문 취소",
-            description = "본인의 주문을 취소(hard delete)한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+            description = "본인의 주문을 취소(hard delete)한다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 취소 성공",
@@ -124,6 +125,6 @@ public interface OrderDocs {
     })
     CustomResponse<String> cancelOrder(
             @Parameter(description = "취소할 주문 ID", example = "1") Long orderId,
-            @Parameter(description = "요청 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId
+            CustomUserDetails user
     );
 }
