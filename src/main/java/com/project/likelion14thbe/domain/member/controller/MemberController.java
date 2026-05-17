@@ -5,11 +5,13 @@ import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,8 +26,9 @@ public class MemberController {
     @GetMapping("/users")
     @Operation(summary = "유저 정보 조회", description = "유저 정보를 조회합니다.")
     public CustomResponse<MemberResDTO.MemberPreviewResDTO> getUsers (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        return CustomResponse.onSuccess(memberQueryService.getMember());
+        return CustomResponse.onSuccess(memberQueryService.getMember(customUserDetails.getUsername()));
     }
 
     @PatchMapping("/users/{userId}/password")

@@ -49,6 +49,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             // 3. Access Token을 이용한 인증 처리
             authenticateAccessToken(accessToken);
             log.info("[ JwtAuthorizationFilter ] 종료. 다음 필터로 넘어갑니다.");
+            filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
             // 4. 토큰 만료 시 401 응답 처리
