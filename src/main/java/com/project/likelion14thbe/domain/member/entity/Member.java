@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.member.entity;
 
+import com.project.likelion14thbe.domain.member.enums.Role;
 import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,19 @@ public class Member extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "photo")
+    private String photo;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     public void updatePassword(String newPassword){
         this.password = newPassword;
+    }
+
+    public void updateProfile(String newName, String newEmail, String newPhoto){
+        this.name = newName;
+        this.email = newEmail;
+        this.photo = newPhoto;
     }
 }
