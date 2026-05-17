@@ -7,5 +7,5 @@ public interface OrderCommandService {
 
     String createOrder(CustomUserDetails customUserDetails, OrderReqDTO.CreateOrderReqDTO createOrderReqDTO);
 
-    void deleteOrder(Long orderId);
+    void deleteOrder(CustomUserDetails customUserDetails, Long orderId);
 }

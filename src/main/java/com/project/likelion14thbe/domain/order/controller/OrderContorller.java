@@ -53,9 +53,10 @@ public class OrderContorller {
     @DeleteMapping("/orders/{orderId}")
     @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
     public CustomResponse<String> deleteOrder(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long orderId
     ){
-        orderCommandService.deleteOrder(orderId);
+        orderCommandService.deleteOrder(customUserDetails, orderId);
         return CustomResponse.onSuccess("주문 취소 성공");
     }
 }

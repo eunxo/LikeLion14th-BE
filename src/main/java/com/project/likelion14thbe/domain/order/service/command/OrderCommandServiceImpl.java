@@ -77,21 +77,29 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     }
 
     @Override
-    public void deleteOrder(Long orderId){
+    public void deleteOrder(CustomUserDetails customUserDetails, Long orderId){
+        // 멤버 조회
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
         // 주문 조회
         Order order = orderRepository.findByIdAndNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
-        // 재고 복구
-        for (OrderItem orderItem : order.getOrderItems()) {
-            // 해당 제품 조회
-            Product product = orderItem.getProduct();
+        // 자신의 주문을 취소하는것인지 확인
+        if (member.getId().equals(order.getMember().getId())) {
+            // 재고 복구
+            for (OrderItem orderItem : order.getOrderItems()) {
+                // 해당 제품 조회
+                Product product = orderItem.getProduct();
 
-            // 제품 재고 복구
-            product.increaseQuantity(orderItem.getQuantity());
+                // 제품 재고 복구
+                product.increaseQuantity(orderItem.getQuantity());
+            }
+
+            // Order soft delete 처리
+            order.deleteOrder();
         }
-
-        // Order soft delete 처리
-        order.deleteOrder();
+        else throw new OrderException(OrderErrorCode.ORDER_UNAUTHORIZED);
     }
 }
