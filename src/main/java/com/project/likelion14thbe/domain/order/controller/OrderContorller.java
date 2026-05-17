@@ -5,10 +5,12 @@ import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
 import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,11 +32,11 @@ public class OrderContorller {
         return CustomResponse.onSuccess(HttpStatus.CREATED, orderCommandService.createOrder(createOrderReqDTO));
     }
 
-    @GetMapping("/orders/list/{memberId}")
+    @GetMapping("/orders/list")
     @Operation(summary = "내 주문 목록 조회", description = "내 주문 목록을 조회합니다.")
     public CustomResponse<List<OrderResDTO.OrderDeatilRes>> getMyOrders(
-            @PathVariable Long memberId) {
-        List<OrderResDTO.OrderDeatilRes> orderList = orderQueryService.getOrderList(memberId);
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<OrderResDTO.OrderDeatilRes> orderList = orderQueryService.getOrderList(customUserDetails);
 
         return CustomResponse.onSuccess(orderList);
     }
