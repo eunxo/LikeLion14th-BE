@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("api/v1/auth")
 @Tag(name = "토큰 발급 API", description = "토큰 발급 API입니다.")
 public class AuthController {
 
     private final AuthService authService;
+    private final MemberCommandService memberCommandService;
 
-    //토큰 재발급 API
     @Operation(method = "POST", summary = "토큰 재발급", description = "토큰 재발급. accessToken과 refreshToken을 body에 담아서 전송합니다.")
     @PostMapping("/reissue")
     public CustomResponse<?> reissue(@RequestBody JwtDTO jwtDto) {
@@ -35,12 +36,29 @@ public class AuthController {
         return CustomResponse.onSuccess(authService.reissueToken(jwtDto));
     }
 
-    // 로그인 API
+    @PostMapping("/signup")
+    @Operation(summary = "회원 가입", description = "유저가 회원 가입을 합니다.")
+    public CustomResponse<MemberResDTO.MemberSignupResDTO> signup (
+            @RequestBody MemberReqDTO.MemberSignupReqDTO memberSignupReqDTO
+    ){
+        return CustomResponse.onSuccess(HttpStatus.CREATED, memberCommandService.signup(memberSignupReqDTO));
+    }
+
     @PostMapping("/login")
     @Operation(summary = "로컬 로그인", description = "유저가 로컬 로그인을 합니다.")
     public CustomResponse<String> login (
             @RequestBody MemberReqDTO.LoginReq loginReq
     ){
         return CustomResponse.onSuccess("로그인 성공");
+    }
+
+    @PostMapping("/login/kakao")
+    @Operation(summary = "카카오 로그인", description = "유저가 카카오 소셜 로그인을 합니다.")
+    public ResponseEntity<MemberResDTO.UserTokenRes> loginKakao (
+            @RequestBody MemberReqDTO.UserLoginKakaoReq userLoginKakaoReq
+    ){
+        // 소셜 로그인 로직~~~
+        return ResponseEntity.ok(
+                MemberResDTO.UserTokenRes.builder().build());
     }
 }
