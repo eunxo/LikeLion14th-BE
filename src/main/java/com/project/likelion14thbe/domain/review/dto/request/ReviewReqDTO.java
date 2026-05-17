@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 public class ReviewReqDTO {
     public record ReviewCreateReq(
-            Long memberId,
             Double rating,
             String content
     ) {

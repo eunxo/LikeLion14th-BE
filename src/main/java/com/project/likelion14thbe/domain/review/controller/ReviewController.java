@@ -5,10 +5,12 @@ import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +31,13 @@ public class ReviewController {
                 return CustomResponse.onSuccess(reviewQueryService.getReview(reviewId));
         }
 
-        @PostMapping("/products/{productId}/reviews")
+        @PostMapping("/reviews/{productId}")
         @Operation(summary = "리뷰 생성", description = "리뷰를 생성합니다.")
         public CustomResponse<String> createReview(
+                        @AuthenticationPrincipal CustomUserDetails customUserDetails,
                         @PathVariable Long productId,
                         @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq) {
-                return CustomResponse.onSuccess(reviewCommandService.createReview(productId, reviewCreateReq));
+                return CustomResponse.onSuccess(reviewCommandService.createReview(customUserDetails, productId, reviewCreateReq));
         }
 
         @DeleteMapping("/reviews/{reviewId}")
