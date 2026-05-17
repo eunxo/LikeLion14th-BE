@@ -7,6 +7,7 @@ import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
 import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +34,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto) {
+    public void updatePassword(CustomUserDetails customUserDetails, MemberReqDTO.PasswordResetDTO dto) {
+        Long memberId = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND)).getId();
+
         Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 

@@ -31,13 +31,13 @@ public class MemberController {
         return CustomResponse.onSuccess(memberQueryService.getMember(customUserDetails.getUsername()));
     }
 
-    @PatchMapping("/users/{userId}/password")
+    @PatchMapping("/users/password")
     @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
     public CustomResponse<String> changePassword (
-            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody MemberReqDTO.PasswordResetDTO request
     ){
-        memberCommandService.updatePassword(userId, request);
+        memberCommandService.updatePassword(customUserDetails, request);
         return CustomResponse.onSuccess("비밀번호 변경 성공");
     }
 
