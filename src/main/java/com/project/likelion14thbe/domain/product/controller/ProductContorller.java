@@ -9,7 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,9 +27,10 @@ public class ProductContorller {
     @PostMapping("/products")
     @Operation(summary = "상품 등록", description = "상품을 등록합니다.")
     public CustomResponse<String> createProduct (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ProductReqDTO.CreateProductReq createProductReq
     ){
-        return CustomResponse.onSuccess(HttpStatus.CREATED, productCommandService.createProduct(createProductReq));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, productCommandService.createProduct(createProductReq, customUserDetails));
     }
 
     @PutMapping("/products/{productId}")
