@@ -48,6 +48,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     @Override
     public void updateReview(CustomUserDetails customUserDetails, Long reviewId, ReviewReqDTO.ReviewUpdateReq reviewUpdateReq){
+
         Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
@@ -61,11 +62,17 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     }
 
     @Override
-    public void deleteReview(Long reviewId){
+    public void deleteReview(CustomUserDetails customUserDetails, Long reviewId){
 
         Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
-        review.deleteReview();
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if(review.getMember().getId().equals(member.getId())) {
+            review.deleteReview();
+        }
+        else throw new ReviewException(ReviewErrorCode.REVIEW_UNAUTHORIZED);
     }
 }

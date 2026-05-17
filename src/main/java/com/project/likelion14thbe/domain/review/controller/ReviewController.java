@@ -43,9 +43,10 @@ public class ReviewController {
         @DeleteMapping("/reviews/{reviewId}")
         @Operation(summary = "리뷰 삭제", description = "리뷰 id를 입력하여 리뷰를 삭제합니다.")
         public CustomResponse<String> deleteReview(
+                        @AuthenticationPrincipal CustomUserDetails customUserDetails,
                         @PathVariable Long reviewId
         ){
-                reviewCommandService.deleteReview(reviewId);
+                reviewCommandService.deleteReview(customUserDetails, reviewId);
                 return CustomResponse.onSuccess("리뷰 삭제 완료");
         }
 

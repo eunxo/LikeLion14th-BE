@@ -9,5 +9,5 @@ public interface ReviewCommandService {
 
     void updateReview(CustomUserDetails customUserDetails, Long reviewId, ReviewReqDTO.ReviewUpdateReq reviewUpdateReq);
 
-    void deleteReview(Long reviewId);
+    void deleteReview(CustomUserDetails customUserDetails, Long reviewId);
 }
