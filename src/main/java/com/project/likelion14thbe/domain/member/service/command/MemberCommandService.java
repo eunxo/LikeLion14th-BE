@@ -7,6 +7,8 @@ public interface MemberCommandService {
 
     MemberResDTO.SignUpRes signUp(MemberReqDTO.SignUpReq req);
 
+    MemberResDTO.UpdateRes updateMyInfo(String email, MemberReqDTO.UpdateReq req);
+
     void deleteMember(Long memberId);
     void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto);
     long purgeExpiredDeletedMembers();

@@ -27,5 +27,11 @@ public class MemberQueryServiceImpl implements MemberQueryService{
         return MemberConverter.toMemberPreviewResponseDTO(member);
     }
 
-
+    @Override
+    public MemberResDTO.MyInfoRes getMyInfo(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .filter(m -> m.getDeletedAt() == null)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        return MemberConverter.toMyInfoRes(member);
+    }
 }

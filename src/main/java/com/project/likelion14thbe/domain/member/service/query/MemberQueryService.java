@@ -6,6 +6,5 @@ public interface MemberQueryService {
 
     MemberResDTO.MemberPreviewResDTO getMember(Long id);
 
-
-
+    MemberResDTO.MyInfoRes getMyInfo(String email);
 }

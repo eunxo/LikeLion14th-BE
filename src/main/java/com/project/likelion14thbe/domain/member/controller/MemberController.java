@@ -5,9 +5,14 @@ import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.handler.CustomLogoutHandler;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +21,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +36,7 @@ public class MemberController {
 
     private final MemberQueryService memberQueryService;
     private final MemberCommandService memberCommandService;
+    private final CustomLogoutHandler customLogoutHandler;
 
     @PostMapping("/auth/signup")
     @Operation(summary = "회원가입", description = "이름, 이메일, 비밀번호를 입력하여 회원가입을 진행합니다.")
@@ -106,14 +115,22 @@ public class MemberController {
     }
 
     @PostMapping("/auth/logout")
-    @Operation(summary = "로그아웃", description = "현재 로그인한 사용자의 로그아웃을 진행합니다.")
+    @SecurityRequirement(name = "JWT TOKEN")
+    @Operation(summary = "로그아웃", description = "Authorization 헤더에 Bearer accessToken을 넣고 호출합니다. CustomLogoutHandler가 refreshToken을 삭제합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그아웃 성공",
                     content = @Content(schema = @Schema(implementation = MemberResDTO.LogoutRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 내부 오류")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    public ResponseEntity<MemberResDTO.LogoutRes> logout() {
+    public ResponseEntity<MemberResDTO.LogoutRes> logout(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+    ) {
+        customLogoutHandler.logout(request, response, authentication);
+        SecurityContextHolder.clearContext();
+
         return ResponseEntity.ok(
                 MemberResDTO.LogoutRes.builder()
                         .isSuccess(true)
@@ -124,25 +141,23 @@ public class MemberController {
     }
 
     @GetMapping("/users/me")
-    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
+    @SecurityRequirement(name = "JWT TOKEN")
+    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다. Authorization 헤더에 Bearer accessToken이 필요합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내 정보 조회 성공",
                     content = @Content(schema = @Schema(implementation = MemberResDTO.MyInfoRes.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "사용자 없음")
     })
-    public ResponseEntity<MemberResDTO.MyInfoRes> getMyInfo() {
-        return ResponseEntity.ok(
-                MemberResDTO.MyInfoRes.builder()
-                        .memberId(1L)
-                        .name("홍길동")
-                        .email("test@test.com")
-                        .build()
-        );
+    public ResponseEntity<MemberResDTO.MyInfoRes> getMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(memberQueryService.getMyInfo(userDetails.getUsername()));
     }
 
     @PatchMapping("/users/me")
-    @Operation(summary = "회원 정보 수정", description = "현재 로그인한 사용자의 정보를 수정합니다.")
+    @SecurityRequirement(name = "JWT TOKEN")
+    @Operation(summary = "회원 정보 수정", description = "현재 로그인한 사용자의 정보를 수정합니다. Authorization 헤더에 Bearer accessToken이 필요합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 성공",
                     content = @Content(schema = @Schema(implementation = MemberResDTO.UpdateRes.class))),
@@ -150,14 +165,10 @@ public class MemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패")
     })
     public ResponseEntity<MemberResDTO.UpdateRes> updateMember(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody(required = true) MemberReqDTO.UpdateReq request
     ) {
-        return ResponseEntity.ok(
-                MemberResDTO.UpdateRes.builder()
-                        .memberId(1L)
-                        .name(request.getName())
-                        .build()
-        );
+        return ResponseEntity.ok(memberCommandService.updateMyInfo(userDetails.getUsername(), request));
     }
 
     @PatchMapping("/members/{memberId}/password")
