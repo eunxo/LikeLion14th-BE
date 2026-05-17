@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum OrderErrorCode implements BaseErrorCode {
 
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER404_1", "주문을 찾을 수 없습니다."),
-    ORDER_UNAUTHORIZED(HttpStatus.FORBIDDEN, "ORDER403_1", "주문 정보를 수정/삭제할 권한이 없습니다.");
+    ORDER_UNAUTHORIZED(HttpStatus.FORBIDDEN, "ORDER403_1", "주문 정보를 조회/수정/삭제할 권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
