@@ -32,8 +32,8 @@ public class SecurityConfig {
 
     //인증이 필요하지 않은 url
     private final String[] allowUrl = {
-            "/api/v1/login", //로그인 은 인증이 필요하지 않음
-            "/api/v1/auth", // 회원가입은 인증이 필요하지 않음
+            "/auth/login", //로그인 은 인증이 필요하지 않음
+            "/api/v1/auth/signup", // 회원가입은 인증이 필요하지 않음
             "/api/v1/login/kakao",
             "/auth/reissue", // 토큰 재발급은 인증이 필요하지 않음
             "/auth/**",
@@ -45,7 +45,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         CustomLoginFilter loginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
-        loginFilter.setFilterProcessesUrl("/api/v1/login");
+        loginFilter.setFilterProcessesUrl("/auth/login");
 
         http
                 .authorizeHttpRequests(request -> request
