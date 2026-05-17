@@ -16,4 +16,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT m FROM Order m WHERE m.id = :id AND m.deletedAt IS NULL")
     Optional<Order> findByIdAndNotDeleted(@Param("id") Long id);
+
+    @Query("SELECT COUNT(o) > 0 FROM Order o JOIN o.product po " +
+            "WHERE o.member.id = :memberId " +
+            "AND po.product.id = :productId " +
+            "AND o.status = :status")
+    boolean existsByMemberIdAndProductIdAndStatus(
+            @Param("memberId") Long memberId,
+            @Param("productId") Long productId,
+            @Param("status") String status
+    );
 }
