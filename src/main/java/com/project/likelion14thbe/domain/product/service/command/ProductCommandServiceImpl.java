@@ -52,11 +52,19 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
-    public void deleteProduct(Long productId){
+    public void deleteProduct(CustomUserDetails customUserDetails, Long productId){
         Product product = productRepository.findByIdAndNotDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        // soft delete 처리
-        product.delete();
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if (product.getMember().getId().equals(member.getId())) {
+            // soft delete 처리
+            product.delete();
+        }
+        else {
+            throw new ProductException(ProductErrorCode.PRODUCT_UNAUTHORIZED);
+        }
     }
 }

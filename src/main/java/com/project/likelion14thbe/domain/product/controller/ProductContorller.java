@@ -47,9 +47,10 @@ public class ProductContorller {
     @DeleteMapping("/products/{productId}")
     @Operation(summary = "상품 삭제", description = "상품을 삭제합니다.")
     public CustomResponse<String> deleteProduct (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long productId
     ){
-        productCommandService.deleteProduct(productId);
+        productCommandService.deleteProduct(customUserDetails, productId);
         return CustomResponse.onSuccess("상품 삭제 완료");
     }
 
