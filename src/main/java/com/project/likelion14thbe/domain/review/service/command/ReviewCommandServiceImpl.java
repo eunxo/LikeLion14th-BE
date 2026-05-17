@@ -47,12 +47,17 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     }
 
     @Override
-    public void updateReview(Long reviewId, ReviewReqDTO.ReviewUpdateReq reviewUpdateReq){
-
+    public void updateReview(CustomUserDetails customUserDetails, Long reviewId, ReviewReqDTO.ReviewUpdateReq reviewUpdateReq){
         Review review = reviewRepository.findByIdAndNotDeleted(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
-        review.updateReview(reviewUpdateReq);
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                        .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if (review.getMember().getId().equals(member.getId())) {
+            review.updateReview(reviewUpdateReq);
+        }
+        else throw new ReviewException(ReviewErrorCode.REVIEW_UNAUTHORIZED);
     }
 
     @Override

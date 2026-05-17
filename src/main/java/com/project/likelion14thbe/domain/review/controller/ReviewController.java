@@ -52,10 +52,11 @@ public class ReviewController {
         @PutMapping("/reviews/{reviewId}")
         @Operation(summary = "리뷰 수정", description = "리뷰 id를 입력하여 리뷰를 수정합니다.")
         public CustomResponse<String> updateReview(
+                        @AuthenticationPrincipal CustomUserDetails customUserDetails,
                         @PathVariable Long reviewId,
                         @RequestBody ReviewReqDTO.ReviewUpdateReq reviewUpdateReq
         ) {
-                reviewCommandService.updateReview(reviewId, reviewUpdateReq);
+                reviewCommandService.updateReview(customUserDetails, reviewId, reviewUpdateReq);
                 return CustomResponse.onSuccess("리뷰 수정 완료");
         }
 

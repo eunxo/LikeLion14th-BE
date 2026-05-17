@@ -7,7 +7,7 @@ public interface ReviewCommandService {
 
     String createReview(CustomUserDetails customUserDetails, Long productId, ReviewReqDTO.ReviewCreateReq reviewCreateReq);
 
-    void updateReview(Long reviewId, ReviewReqDTO.ReviewUpdateReq reviewUpdateReq);
+    void updateReview(CustomUserDetails customUserDetails, Long reviewId, ReviewReqDTO.ReviewUpdateReq reviewUpdateReq);
 
     void deleteReview(Long reviewId);
 }
