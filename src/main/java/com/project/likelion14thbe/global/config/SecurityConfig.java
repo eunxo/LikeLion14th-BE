@@ -34,7 +34,10 @@ public class SecurityConfig {
     private final String[] allowUrl = {
             "/api/v1/auth/login",
             "/api/v1/auth/signup",
-            "/api/v1/login/kakao",
+            "/api/v1/auth/kakao",
+            "/api/v1/kakao/callback",
+            "/api/v1/auth/naver",
+            "/api/v1/naver/callback",
             "/auth/reissue",
             "/auth/**",
             "/api/usage",
