@@ -22,9 +22,9 @@ public class MemberQueryServiceImpl implements MemberQueryService{
 
     private final MemberRepository memberRepository;
     @Override
-    public MemberResDTO.MemberGetRes getProfile(Long userId) {
+    public MemberResDTO.MemberGetRes getProfile(String email) {
 
-        Member member = memberRepository.findById(userId).get();
+        Member member = memberRepository.findByEmail(email).get();
 
         return MemberConverter.toMemberGetRes(member);
     }

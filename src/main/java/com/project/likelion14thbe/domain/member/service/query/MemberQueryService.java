@@ -4,5 +4,5 @@ import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 
 public interface MemberQueryService {
 
-    MemberResDTO.MemberGetRes getProfile(Long userId);
+    MemberResDTO.MemberGetRes getProfile(String email);
 }

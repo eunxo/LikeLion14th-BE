@@ -12,8 +12,12 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    @Query("SELECT m FROM Member m WHERE m.id = :id AND m.deletedAt IS NULL")
-    Optional<Member> findByIdAndNotDeleted(@Param("id") Long id);
+    @Query("SELECT m FROM Member m WHERE m.email = :email AND m.deletedAt IS NULL")
+    Optional<Member> findByEmailAndNotDeleted(@Param("email") String email);
 
     void deleteByDeletedAtBefore(LocalDateTime threshold);
+
+    Optional<Member> findByEmail(String email);
+
+    String email(String email);
 }

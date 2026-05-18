@@ -18,9 +18,9 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     private final OrderRepository orderRepository;
 
     @Override
-    public OrderResDTO.OrderGetListRes getMyOrderList(Long memberId) {
+    public OrderResDTO.OrderGetListRes getMyOrderList(String email) {
 
-        List<Order> orderList = orderRepository.findAllByMemberId(memberId);
+        List<Order> orderList = orderRepository.findAllByMemberEmail(email);
 
         List<OrderResDTO.OrderGetListRes.OrderInfo> orderInfos = orderList.stream()
                 .map(OrderConverter::orderInfo)

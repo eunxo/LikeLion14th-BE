@@ -5,9 +5,9 @@ import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 
 public interface ReviewCommandService {
 
-    ReviewResDTO.ReviewCreateRes createReview(ReviewReqDTO.ReviewCreateReq reviewCreateReq, Long productId, Long memberId);
+    ReviewResDTO.ReviewCreateRes createReview(ReviewReqDTO.ReviewCreateReq reviewCreateReq, Long productId, String email);
 
-    void updateReview(Long reviewId, Long memberId, ReviewReqDTO.ReviewChangeReq dto);
+    void updateReview(Long reviewId, String email, ReviewReqDTO.ReviewChangeReq dto);
 
-    void deleteReview(Long reviewId, Long memberId);
+    void deleteReview(Long reviewId, String email);
 }
