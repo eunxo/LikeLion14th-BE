@@ -35,33 +35,42 @@ public class ProductController {
 
     @PostMapping("/products")
     @Operation(summary = "상품 등록")
-    public CustomResponse<String> createProduct(@RequestBody ProductReqDTO.CreateReq req) {
-        productCommandService.createProduct(req);
+    public CustomResponse<String> createProduct(
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ProductReqDTO.CreateReq req
+    ) {
+        productCommandService.createProduct(req, customUserDetails.getUsername());
         return CustomResponse.onSuccess("상품 등록 완료");
     }
 
-    @PatchMapping("/products/{productId}")
+    @PutMapping("/products/{productId}")
     @Operation(summary = "상품 수정")
-    public CustomResponse<String> updateProduct(@PathVariable Long productId, @RequestBody ProductReqDTO.CreateReq req) {
-        productCommandService.updateProduct(productId, req);
+    public CustomResponse<String> updateProduct(
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ProductReqDTO.CreateReq req
+    ) {
+        productCommandService.updateProduct(productId, req, customUserDetails.getUsername());
         return CustomResponse.onSuccess("상품 수정 완료");
     }
 
     @DeleteMapping("/products/{productId}")
     @Operation(summary = "상품 삭제")
-    public CustomResponse<String> deleteProduct(@PathVariable Long productId) {
-        productCommandService.deleteProduct(productId);
+    public CustomResponse<String> deleteProduct(
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
+    ) {
+        productCommandService.deleteProduct(productId, customUserDetails.getUsername());
         return CustomResponse.onSuccess("상품 삭제 완료");
     }
 
-    @PostMapping("/members/{memberId}/bookmarks/{productId}")
+    @PostMapping("/bookmarks/{productId}")
     @Operation(summary = "관심 상품 추가")
     public CustomResponse<String> addBookmark(
-            @PathVariable Long memberId,
-            @PathVariable Long productId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
     ) {
-        productCommandService.addBookmark(memberId, productId, customUserDetails.getUsername());
+        productCommandService.addBookmark(productId, customUserDetails.getUsername());
         return CustomResponse.onSuccess("북마크 등록 완료");
     }
 }

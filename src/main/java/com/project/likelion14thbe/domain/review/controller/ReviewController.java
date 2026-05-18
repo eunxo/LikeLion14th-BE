@@ -24,9 +24,9 @@ public class ReviewController {
     @PostMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 생성")
     public CustomResponse<String> createReview(
-            @PathVariable Long productId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody ReviewReqDTO.ReviewCreateReq req
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ReviewReqDTO.ReviewCreateReq req
     ) {
         reviewCommandService.createReview(productId, customUserDetails.getUsername(), req);
         return CustomResponse.onSuccess("리뷰 생성 완료");
@@ -35,9 +35,9 @@ public class ReviewController {
     @PutMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 수정")
     public CustomResponse<String> updateReview(
-            @PathVariable Long reviewId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody ReviewReqDTO.ReviewUpdateReq req
+            @PathVariable final Long reviewId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ReviewReqDTO.ReviewUpdateReq req
     ) {
         reviewCommandService.updateReview(reviewId, customUserDetails.getUsername(), req);
         return CustomResponse.onSuccess("리뷰 수정 완료");
@@ -46,8 +46,8 @@ public class ReviewController {
     @DeleteMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 삭제")
     public CustomResponse<String> deleteReview(
-            @PathVariable Long reviewId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @PathVariable final Long reviewId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
     ) {
         reviewCommandService.deleteReview(reviewId, customUserDetails.getUsername());
         return CustomResponse.onSuccess("리뷰 삭제 완료");
@@ -55,13 +55,13 @@ public class ReviewController {
 
     @GetMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 단일 조회")
-    public CustomResponse<ReviewResDTO.ReviewDetailRes> getReview(@PathVariable Long reviewId) {
+    public CustomResponse<ReviewResDTO.ReviewDetailRes> getReview(@PathVariable final Long reviewId) {
         return CustomResponse.onSuccess(reviewQueryService.getReview(reviewId));
     }
 
     @GetMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 목록 조회")
-    public CustomResponse<ReviewResDTO.ReviewListRes> getReviewList(@PathVariable Long productId) {
+    public CustomResponse<ReviewResDTO.ReviewListRes> getReviewList(@PathVariable final Long productId) {
         return CustomResponse.onSuccess(reviewQueryService.getReviewsByProduct(productId));
     }
 }

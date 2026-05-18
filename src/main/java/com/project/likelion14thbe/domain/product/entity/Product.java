@@ -1,6 +1,7 @@
 package com.project.likelion14thbe.domain.product.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.review.entity.Review;
 import com.project.likelion14thbe.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -47,4 +48,8 @@ public class Product extends BaseEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<Review> reviews = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 }
