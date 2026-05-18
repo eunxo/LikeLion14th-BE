@@ -79,21 +79,4 @@ public class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();}
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // ... 다른 인증/인가 설정들
-                .logout(logout -> logout
-                        .logoutUrl("/api/v1/orders/logout") // 로그아웃을 요청할 API URL 지정
-                        .addLogoutHandler(customLogoutHandler) // 위에서 만든 커스텀 핸들러 등록
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        })
-                        .invalidateHttpSession(true) // 세션 만료 설정
-                        .deleteCookies("JSESSIONID") // 로그아웃 시 쿠키 삭제
-                );
-
-        return http.build();
-    }
 }
