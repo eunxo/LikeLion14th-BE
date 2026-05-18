@@ -4,12 +4,14 @@ import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
 import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
+import com.project.likelion14thbe.global.apiPayload.exception.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,79 +26,54 @@ public class OrderController {
     private final OrderQueryService orderQueryService;
 
     @PostMapping("")
-    @Operation(summary = "주문 생성", description = "상품 리스트와 배송 정보를 받아 새로운 주문을 생성합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "주문 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "재고 부족 또는 잘못된 요청"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
-    })
-    public ResponseEntity<OrderResDTO.OrderCreateResDto> createOrder(
+    @Operation(summary = "주문 생성")
+    public CustomResponse<OrderResDTO.OrderCreateResDto> createOrder(
             @RequestBody OrderReqDTO.CreateOrderReq request,
-            @RequestHeader("memberId") Long memberId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        OrderResDTO.OrderCreateResDto response = orderCommandService.createOrder(request,memberId);
-        return ResponseEntity.ok(response);
+        OrderResDTO.OrderCreateResDto response = orderCommandService.createOrder(request, userDetails.getMemberId());
+        return CustomResponse.onSuccess(HttpStatus.CREATED,response);
     }
+
     @GetMapping("/me")
-    @Operation(summary = "내 주문 목록 조회", description = "현재 로그인한 사용자의 과거 주문 내역을 모두 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "주문 내역 조회 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
-    public ResponseEntity<List<OrderResDTO.OrderHistoryRes>> getMyOrders(
-            @RequestHeader("memberId") Long memberId
+    @Operation(summary = "내 주문 목록 조회")
+    public CustomResponse<List<OrderResDTO.OrderHistoryRes>> getMyOrders(
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        List<OrderResDTO.OrderHistoryRes> response = orderQueryService.getMyOrders(memberId);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(orderQueryService.getMyOrders(userDetails.getMemberId()));
     }
+
     @GetMapping("/{orderId}")
-    @Operation(summary = "내 주문 상세 조회", description = "로그인한 사용자의 주문 ID를 이용해 특정 주문의 상세 정보를 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없음")
-    })
-    public ResponseEntity<OrderResDTO.OrderDetailResDto> getMyOrderDetail(
-            @PathVariable Long orderId
-    ) {
-        return ResponseEntity.ok(orderQueryService.getOrder(orderId));
+    @Operation(summary = "내 주문 상세 조회")
+    public CustomResponse<OrderResDTO.OrderDetailResDto> getMyOrderDetail(@PathVariable Long orderId) {
+        return CustomResponse.onSuccess(orderQueryService.getOrder(orderId));
     }
 
     @PatchMapping("/{orderId}/status")
-    @Operation(summary = "주문 상태 변경", description = "주문의 상태를 변경합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "상태 변경 성공"),
-            @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음")
-    })
-    public ResponseEntity<String> updateOrderStatus(
+    @Operation(summary = "주문 상태 변경")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CustomResponse<String> updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody OrderReqDTO.UpdateOrderStatusReq request   // DTO로 변경
+            @RequestBody OrderReqDTO.UpdateOrderStatusReq request
     ) {
         orderCommandService.updateOrderStatus(orderId, request.getStatus());
-        return ResponseEntity.ok("주문 상태가 변경되었습니다.");
+        return CustomResponse.onSuccess("주문상태가 변경되었습니다.");
     }
 
     @DeleteMapping("/{orderId}")
-    @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "주문 취소 성공"),
-            @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음"),
-            @ApiResponse(responseCode = "403", description = "취소 권한 없음")
-    })
-    public ResponseEntity<String> cancelOrder(
+    @Operation(summary = "주문 취소")
+    public CustomResponse<String> cancelOrder(
             @PathVariable Long orderId,
-            @RequestHeader("memberId") Long memberId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        orderCommandService.cancelOrder(orderId, memberId);
-        return ResponseEntity.ok("주문이 취소되었습니다.");
+        orderCommandService.cancelOrder(orderId, userDetails.getMemberId());
+        return CustomResponse.onSuccess("주문이 취소되었습니다.");
     }
+
     @GetMapping("")
-    @Operation(summary = "전체 주문 목록 조회", description = "시스템의 전체 주문 목록을 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "전체 주문 목록 조회 성공"),
-            @ApiResponse(responseCode = "500", description = "서버 에러")
-    })
-    public ResponseEntity<List<OrderResDTO.OrderHistoryRes>> getOrders() {
-        List<OrderResDTO.OrderHistoryRes> response = orderQueryService.getOrderList();
-        return ResponseEntity.ok(response);
+    @Operation(summary = "전체 주문 목록 조회")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CustomResponse<List<OrderResDTO.OrderHistoryRes>> getOrders() {
+        return CustomResponse.onSuccess(orderQueryService.getOrderList());
     }
 }

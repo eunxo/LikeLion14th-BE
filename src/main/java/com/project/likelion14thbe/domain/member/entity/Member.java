@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.member.entity;
 
+import com.project.likelion14thbe.domain.member.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member extends BaseEntity {
@@ -26,11 +27,15 @@ public class Member extends BaseEntity {
     @Column(name = "photo_img", nullable = true)
     private String photoImg;
 
-    @Column(name = "email",nullable = false)
+    @Column(name = "email",nullable = false,unique = true)
     private String email;
 
     @Column(name = "age",nullable = false)
     private Integer age;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
