@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,15 +49,5 @@ public class AuthController {
             @RequestBody MemberReqDTO.LoginReq loginReq
     ){
         return CustomResponse.onSuccess("로그인 성공");
-    }
-
-    @PostMapping("/login/kakao")
-    @Operation(summary = "카카오 로그인", description = "유저가 카카오 소셜 로그인을 합니다.")
-    public ResponseEntity<MemberResDTO.UserTokenRes> loginKakao (
-            @RequestBody MemberReqDTO.UserLoginKakaoReq userLoginKakaoReq
-    ){
-        // 소셜 로그인 로직~~~
-        return ResponseEntity.ok(
-                MemberResDTO.UserTokenRes.builder().build());
     }
 }

@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.member.converter;
 
+import com.project.likelion14thbe.domain.auth.dto.response.KakaoUserInfoResponseDTO;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.entity.Member;
@@ -31,6 +32,16 @@ public class MemberConverter {
                 .id(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())
+                .build();
+    }
+
+    public static Member kakaoToMember(KakaoUserInfoResponseDTO userInfo) {
+        return Member.builder()
+                .email(userInfo.kakaoAccount().email())
+                .name(userInfo.kakaoAccount().profile().nickName())
+                .profileImage(userInfo.kakaoAccount().profile().profileImageUrl())
+                .socialProvider(Boolean.TRUE)
+                .role(Role.ROLE_USER)
                 .build();
     }
 }

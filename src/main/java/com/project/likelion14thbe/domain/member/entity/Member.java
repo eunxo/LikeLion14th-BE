@@ -28,14 +28,14 @@ public class Member extends BaseEntity {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(name = "social_provider")
-    private String socialProvider;
+    private Boolean socialProvider;
 
     @Column(name = "social_id")
     private String socialId;

@@ -13,7 +13,11 @@ public enum AuthErrorCode implements BaseErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "접근이 금지되었습니다."),
     _NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404", "요청한 자원을 찾을 수 없습니다."),
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404_1", "토큰을 찾을 수 없습니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "COMMON401_1", "이상한 토큰입니다.");
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "COMMON401_1", "이상한 토큰입니다."),
+    INVALID_OAUTH_REQUEST(HttpStatus.BAD_REQUEST, "AUTH400", "잘못된 OAuth 요청"),
+    KAKAO_INVALID_STATE(HttpStatus.BAD_REQUEST, "KAKAO_001", "유효하지 않은 요청입니다."),
+    KAKAO_TOKEN_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "KAKAO_002", "카카오 소셜 로그인 토큰 발급에 실패했습니다."),
+    KAKAO_USER_INFO_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "KAKAO_003", "카카오 소셜 로그인 사용자 정보 조회에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
