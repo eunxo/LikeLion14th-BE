@@ -5,9 +5,11 @@ import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,50 +22,46 @@ public class ReviewController {
     private final ReviewQueryService reviewQueryService;
 
     @PostMapping("/products/{productId}/reviews")
-    @Operation(summary = "리뷰 생성", description = "특정 상품에 대한 리뷰를 작성합니다.")
+    @Operation(summary = "리뷰 생성")
     public CustomResponse<String> createReview(
-            @PathVariable Long productId,
-            @RequestParam Long memberId, // userId -> memberId로 변경
-            @RequestBody ReviewReqDTO.ReviewCreateReq req
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ReviewReqDTO.ReviewCreateReq req
     ) {
-        reviewCommandService.createReview(productId, memberId, req);
-        return CustomResponse.onSuccess("리뷰 작성 완료");
-    }
-
-    @GetMapping("/reviews/{reviewId}")
-    @Operation(summary = "리뷰 단일 조회", description = "리뷰 ID를 통해 상세 내용을 조회합니다.")
-    public CustomResponse<ReviewResDTO.ReviewDetailRes> getReview(
-            @PathVariable Long reviewId
-    ) {
-        return CustomResponse.onSuccess(reviewQueryService.getReview(reviewId));
+        reviewCommandService.createReview(productId, customUserDetails.getUsername(), req);
+        return CustomResponse.onSuccess("리뷰 생성 완료");
     }
 
     @PutMapping("/reviews/{reviewId}")
-    @Operation(summary = "리뷰 수정", description = "작성한 리뷰의 내용이나 별점을 수정합니다.")
+    @Operation(summary = "리뷰 수정")
     public CustomResponse<String> updateReview(
-            @PathVariable Long reviewId,
-            @RequestParam Long memberId,
-            @RequestBody ReviewReqDTO.ReviewUpdateReq req
+            @PathVariable final Long reviewId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ReviewReqDTO.ReviewUpdateReq req
     ) {
-        reviewCommandService.updateReview(reviewId, memberId, req);
+        reviewCommandService.updateReview(reviewId, customUserDetails.getUsername(), req);
         return CustomResponse.onSuccess("리뷰 수정 완료");
     }
 
     @DeleteMapping("/reviews/{reviewId}")
-    @Operation(summary = "리뷰 삭제", description = "리뷰 ID를 통해 리뷰를 삭제합니다.")
+    @Operation(summary = "리뷰 삭제")
     public CustomResponse<String> deleteReview(
-            @PathVariable Long reviewId,
-            @RequestParam Long memberId
+            @PathVariable final Long reviewId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
     ) {
-        reviewCommandService.deleteReview(reviewId, memberId);
+        reviewCommandService.deleteReview(reviewId, customUserDetails.getUsername());
         return CustomResponse.onSuccess("리뷰 삭제 완료");
     }
 
+    @GetMapping("/reviews/{reviewId}")
+    @Operation(summary = "리뷰 단일 조회")
+    public CustomResponse<ReviewResDTO.ReviewDetailRes> getReview(@PathVariable final Long reviewId) {
+        return CustomResponse.onSuccess(reviewQueryService.getReview(reviewId));
+    }
+
     @GetMapping("/products/{productId}/reviews")
-    @Operation(summary = "리뷰 목록 조회", description = "해당 상품에 달린 리뷰 목록을 조회합니다.")
-    public CustomResponse<ReviewResDTO.ReviewListRes> getReviewList(
-            @PathVariable Long productId
-    ) {
+    @Operation(summary = "리뷰 목록 조회")
+    public CustomResponse<ReviewResDTO.ReviewListRes> getReviewList(@PathVariable final Long productId) {
         return CustomResponse.onSuccess(reviewQueryService.getReviewsByProduct(productId));
     }
 }

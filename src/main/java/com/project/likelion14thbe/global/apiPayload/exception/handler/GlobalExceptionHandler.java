@@ -13,14 +13,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //애플리케이션에서 발생하는 커스텀 예외를 처리
+    // 애플리케이션에서 발생하는 커스텀 예외를 처리
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CustomResponse<Void>> handleCustomException(CustomException ex) {
-        //예외가 발생하면 로그 기록
         log.warn("[ CustomException ]: {}", ex.getCode().getMessage());
-        //커스텀 예외에 정의된 에러 코드와 메시지를 포함한 응답 제공
-        return ResponseEntity.status(ex.getCode().getHttpStatus())
-                .body(ex.getCode().getErrorResponse());
+        CustomResponse<Void> errorResponse = CustomResponse.onFailure(
+                ex.getCode().getCode(),
+                ex.getCode().getMessage(),
+                null
+        );
+
+        return ResponseEntity
+                .status(ex.getCode().getHttpStatus())
+                .body(errorResponse);
     }
 
     // 그 외의 정의되지 않은 모든 예외 처리

@@ -34,4 +34,5 @@ public class MemberReqDTO {
     public static class PasswordResetDTO {
         private String password;
     }
+
 }

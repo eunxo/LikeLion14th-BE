@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.order.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.global.entity.BaseEntity;
@@ -20,6 +21,7 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -38,4 +40,5 @@ public class Order extends BaseEntity {
     public void cancel() {
         this.deletedAt = LocalDateTime.now();
     }
+
 }

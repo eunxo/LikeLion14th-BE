@@ -5,14 +5,16 @@ import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.service.command.ProductCommandService;
 import com.project.likelion14thbe.domain.product.service.query.ProductQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "상품 API", description = "상품 조회 및 등록 관련 API")
+@Tag(name = "상품 API")
 @RequestMapping("/api/v1")
 public class ProductController {
 
@@ -33,29 +35,42 @@ public class ProductController {
 
     @PostMapping("/products")
     @Operation(summary = "상품 등록")
-    public CustomResponse<String> createProduct(@RequestBody ProductReqDTO.CreateReq req) {
-        productCommandService.createProduct(req);
+    public CustomResponse<String> createProduct(
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ProductReqDTO.CreateReq req
+    ) {
+        productCommandService.createProduct(req, customUserDetails.getUsername());
         return CustomResponse.onSuccess("상품 등록 완료");
     }
 
-    @PatchMapping("/products/{productId}")
+    @PutMapping("/products/{productId}")
     @Operation(summary = "상품 수정")
-    public CustomResponse<String> updateProduct(@PathVariable Long productId, @RequestBody ProductReqDTO.CreateReq req) {
-        productCommandService.updateProduct(productId, req);
+    public CustomResponse<String> updateProduct(
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
+            @RequestBody final ProductReqDTO.CreateReq req
+    ) {
+        productCommandService.updateProduct(productId, req, customUserDetails.getUsername());
         return CustomResponse.onSuccess("상품 수정 완료");
     }
 
     @DeleteMapping("/products/{productId}")
     @Operation(summary = "상품 삭제")
-    public CustomResponse<String> deleteProduct(@PathVariable Long productId) {
-        productCommandService.deleteProduct(productId);
+    public CustomResponse<String> deleteProduct(
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
+    ) {
+        productCommandService.deleteProduct(productId, customUserDetails.getUsername());
         return CustomResponse.onSuccess("상품 삭제 완료");
     }
 
-    @PostMapping("/members/{memberId}/bookmarks/{productId}") // userId -> memberId 변경
+    @PostMapping("/bookmarks/{productId}")
     @Operation(summary = "관심 상품 추가")
-    public CustomResponse<String> addBookmark(@PathVariable Long memberId, @PathVariable Long productId) {
-        productCommandService.addBookmark(memberId, productId);
+    public CustomResponse<String> addBookmark(
+            @PathVariable final Long productId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
+    ) {
+        productCommandService.addBookmark(productId, customUserDetails.getUsername());
         return CustomResponse.onSuccess("북마크 등록 완료");
     }
 }

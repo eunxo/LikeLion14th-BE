@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReviewConverter {
-    public static Review toReview(ReviewReqDTO.ReviewCreateReq req, Member member, Product product) {
+    public static Review toReview(final ReviewReqDTO.ReviewCreateReq req, final Member member, final Product product) {
         return Review.builder()
                 .content(req.getContent())
                 .rating(req.getRating())
