@@ -27,7 +27,7 @@ public class Member extends BaseEntity {
     @Column(name = "photo_img", nullable = true)
     private String photoImg;
 
-    @Column(name = "email",nullable = false)
+    @Column(name = "email",nullable = false,unique = true)
     private String email;
 
     @Column(name = "age",nullable = false)
