@@ -31,7 +31,7 @@ public class ReviewController {
                 return CustomResponse.onSuccess(reviewQueryService.getReview(reviewId));
         }
 
-        @PostMapping("/reviews/{productId}")
+        @PostMapping("/product/{productId}/reviews")
         @Operation(summary = "리뷰 생성", description = "리뷰를 생성합니다.")
         public CustomResponse<String> createReview(
                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
