@@ -46,7 +46,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
         // 상품 정보 접근 권한 확인
         if (!product.getMember().getEmail().equals(email)) {
-            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+            throw new ProductException(ProductErrorCode.PRODUCT_FORBIDDEN);
         }
 
         product.updateProduct(dto.productPrice(), dto.productQuantity(), dto.productName(), dto.description());
@@ -60,7 +60,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
         // 리뷰 접근 권한 확인
         if (!product.getMember().getEmail().equals(email)) {
-            throw new OrderException(OrderErrorCode.ORDER_FORBIDDEN);
+            throw new ProductException(ProductErrorCode.PRODUCT_FORBIDDEN);
         }
 
         product.delete();
