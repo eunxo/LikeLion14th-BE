@@ -7,13 +7,10 @@ import com.project.likelion14thbe.domain.member.service.query.MemberQueryService
 import com.project.likelion14thbe.global.apiPayload.exception.CustomResponse;
 import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,23 +25,20 @@ public class MemberController {
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "새로운 회원을 등록합니다.")
-    public ResponseEntity<MemberResDTO.MemberCreateResDTO> signUp(@Valid @RequestBody MemberReqDTO.MemberCreateReqDTO request) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(memberCommandService.createMember(request));
+    public CustomResponse<MemberResDTO.MemberCreateResDTO> signUp(@Valid @RequestBody MemberReqDTO.MemberCreateReqDTO request) {
+         return CustomResponse.onSuccess(HttpStatus.CREATED, memberCommandService.createMember(request));
     }
 
     @PostMapping("/login")
-    @Operation(summary = "일반 로그인", description = "이메일과 비밀번호로 로그인합니다.")
-    public ResponseEntity<CustomResponse<MemberResDTO.LoginRes>> login(@Valid @RequestBody MemberReqDTO.LoginReq request) {
-        MemberResDTO.LoginRes loginResult = memberCommandService.login(request);
-        return ResponseEntity.ok(CustomResponse.onSuccess(loginResult));
+    @Operation(summary = "일반 로그인", description = "이메일과 비밀번호로 로그인합니다. (실제 처리는 SecurityFilter에서 수행됨)")
+    public CustomResponse<MemberResDTO.LoginRes> login(@Valid @RequestBody MemberReqDTO.LoginReq request) {
+        return CustomResponse.onSuccess(null);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "회원 정보 조회", description = "특정 회원의 정보를 조회합니다.")
-    public ResponseEntity<MemberResDTO.MemberPreviewResDTO> getMember(@PathVariable Long id) {
-        return ResponseEntity.ok(memberQueryService.getMember(id));
+    public CustomResponse<MemberResDTO.MemberPreviewResDTO> getMember(@PathVariable Long id) {
+        return CustomResponse.onSuccess(memberQueryService.getMyInfo(id));
     }
 
     @PatchMapping("/password")
@@ -66,10 +60,10 @@ public class MemberController {
 
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 회원의 정보를 조회합니다.")
-    public ResponseEntity<CustomResponse<MemberResDTO.MemberPreviewResDTO>> getMyInfo(
+    public CustomResponse<MemberResDTO.MemberPreviewResDTO> getMyInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         MemberResDTO.MemberPreviewResDTO myInfo = memberQueryService.getMyInfo(userDetails.getMemberId());
-        return ResponseEntity.ok(CustomResponse.onSuccess(myInfo));
+        return CustomResponse.onSuccess(myInfo);
     }
 }

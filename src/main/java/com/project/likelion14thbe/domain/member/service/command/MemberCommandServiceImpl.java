@@ -27,12 +27,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Override
     public MemberResDTO.MemberCreateResDTO createMember(MemberReqDTO.MemberCreateReqDTO memberCreateReqDTO) {
         Member member = MemberConverter.toMember(memberCreateReqDTO);
-        // 비밀번호 암호화 후 저장
         member.updatePassword(passwordEncoder.encode(memberCreateReqDTO.getPassword()));
-        // 기본 role 부여
-        if (member.getRole() == null) {
-            member = member.toBuilder().role(Role.ROLE_USER).build();
-        }
         memberRepository.save(member);
         return MemberConverter.toMemberCreateResDTO(member);
     }

@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,49 +27,49 @@ public class ReviewController {
 
     @PostMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 작성")
-    public ResponseEntity<CustomResponse<ReviewResDTO.ReviewCreateResDto>> createReview(
+    public CustomResponse<ReviewResDTO.ReviewCreateResDto> createReview(
             @PathVariable("productId") Long productId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody ReviewReqDTO.ReviewCreateReq request
     ) {
         request.setProductId(productId);
         ReviewResDTO.ReviewCreateResDto response = reviewCommandService.createReview(userDetails.getMemberId(), request);
-        return ResponseEntity.ok(CustomResponse.onSuccess(response));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, response);
     }
 
     @GetMapping("/products/{productId}/reviews")
     @Operation(summary = "리뷰 목록 조회")
-    public ResponseEntity<List<ReviewResDTO.ReviewListRes>> getReviews(@PathVariable Long productId) {
-        return ResponseEntity.ok(reviewQueryService.getReviews(productId));
+    public CustomResponse<List<ReviewResDTO.ReviewListRes>> getReviews(@PathVariable Long productId) {
+        return CustomResponse.onSuccess(reviewQueryService.getReviews(productId));
     }
 
     @GetMapping("/products/{productId}/reviews/{reviewId}")
     @Operation(summary = "단일 리뷰 조회")
-    public ResponseEntity<ReviewResDTO.ReviewDetailRes> getReviewDetail(
+    public CustomResponse<ReviewResDTO.ReviewDetailRes> getReviewDetail(
             @PathVariable Long productId,
             @PathVariable Long reviewId
     ) {
-        return ResponseEntity.ok(reviewQueryService.getReviewDetail(productId, reviewId));
+        return CustomResponse.onSuccess(reviewQueryService.getReviewDetail(productId,reviewId));
     }
 
     @PatchMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 수정")
-    public ResponseEntity<ReviewResDTO.ReviewDetailRes> updateReview(
+    public CustomResponse<ReviewResDTO.ReviewDetailRes> updateReview(
             @PathVariable Long reviewId,
             @RequestBody ReviewReqDTO.ReviewUpdateReq request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         ReviewResDTO.ReviewDetailRes response = reviewCommandService.updateReview(reviewId, request, userDetails.getMemberId());
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @DeleteMapping("/reviews/{reviewId}")
     @Operation(summary = "리뷰 삭제")
-    public ResponseEntity<Void> deleteReview(
+    public CustomResponse<String> deleteReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         reviewCommandService.deleteReview(reviewId, userDetails.getMemberId());
-        return ResponseEntity.noContent().build();
+        return CustomResponse.onSuccess("리뷰가 삭제되었습니다.");
     }
 }
