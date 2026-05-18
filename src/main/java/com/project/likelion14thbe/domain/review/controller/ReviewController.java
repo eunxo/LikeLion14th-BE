@@ -5,6 +5,7 @@ import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class ReviewController {
     public CustomResponse<ReviewResDTO.ReviewCreateRes> createReview(
             @PathVariable Long productId,
             @RequestBody ReviewReqDTO.ReviewCreateReq reviewCreateReq,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         return CustomResponse
                 .onSuccess(reviewCommandService.createReview(reviewCreateReq, productId, userDetails.getUsername()));
@@ -55,7 +56,7 @@ public class ReviewController {
     public CustomResponse<String> updateReview(
             @PathVariable Long reviewId,
             @RequestBody ReviewReqDTO.ReviewChangeReq update,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
             ){
         reviewCommandService.updateReview(reviewId, userDetails.getUsername(), update);
         return CustomResponse.onSuccess("리뷰 수정 성공");
@@ -65,7 +66,7 @@ public class ReviewController {
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다")
     public CustomResponse<String> deleteReview(
             @PathVariable Long reviewId,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         reviewCommandService.deleteReview(reviewId, userDetails.getUsername());
         return CustomResponse.onSuccess("리뷰 삭제 성공");

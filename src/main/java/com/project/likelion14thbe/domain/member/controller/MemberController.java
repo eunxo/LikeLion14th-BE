@@ -5,6 +5,7 @@ import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class MemberController {
     @DeleteMapping("/members/me/out")
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 합니다")
     public CustomResponse<String> deleteMember(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         memberCommandService.deleteMember(userDetails.getUsername());
         return CustomResponse.onSuccess("회원 탈퇴 성공");
@@ -52,7 +53,7 @@ public class MemberController {
     @GetMapping("/users/me")
     @Operation(summary = "프로필 조회", description = "프로필 조회를 합니다")
     public CustomResponse<MemberResDTO.MemberGetRes> getProfile(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
             ){
         return CustomResponse
                 .onSuccess(memberQueryService.getProfile(userDetails.getUsername()));
@@ -62,7 +63,7 @@ public class MemberController {
     @Operation(summary = "프로필 수정", description = "프로필 수정을 합니다")
     public CustomResponse<String> fixProfile(
             @RequestBody MemberReqDTO.MemberFixReq memberFixReq,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         memberCommandService.updateProfile(userDetails.getUsername(), memberFixReq);
         return CustomResponse
@@ -73,7 +74,7 @@ public class MemberController {
     @Operation(summary = "비밀번호 변경", description = "id를 받아 비밀번호를 바꿉니다.")
     public CustomResponse<String> resetPassword(
             @RequestBody MemberReqDTO.PasswordResetDTO request,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
             ) {
         memberCommandService.updatePassword(userDetails.getUsername(), request);
         return CustomResponse.onSuccess("비밀번호 변경 성공");

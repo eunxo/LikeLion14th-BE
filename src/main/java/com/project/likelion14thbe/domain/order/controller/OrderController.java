@@ -5,6 +5,7 @@ import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
 import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class OrderController {
     @GetMapping("/orders")
     @Operation(summary = "내 주문 목록 조회", description = "memberId 받아서 내 주문 목록 전체 조회")
     public CustomResponse<OrderResDTO.OrderGetListRes> getMyOrderList(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         return CustomResponse
                 .onSuccess(orderQueryService.getMyOrderList(userDetails.getUsername()));
@@ -37,7 +38,7 @@ public class OrderController {
     @Operation(summary = "주문 추가", description = "주문 상품을 추가한다")
     public CustomResponse<OrderResDTO.OrderCreateRes> createOrder(
             @RequestBody OrderReqDTO.OrderCreateReq orderCreateReq,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
 
         return CustomResponse
@@ -49,7 +50,7 @@ public class OrderController {
     public CustomResponse<String> changeStatus(
             @PathVariable Long orderId,
             @RequestBody OrderReqDTO.ChangeStatusDTO change,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         orderCommandService.changeStatus(orderId, userDetails.getUsername(), change);
         return CustomResponse.onSuccess("주문상태 변경 성공");
@@ -58,7 +59,7 @@ public class OrderController {
     @DeleteMapping("/orders/{orderId}/me")
     public CustomResponse<String> deleteOrder(
             @PathVariable Long orderId,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
             ){
         orderCommandService.deleteOrder(orderId, userDetails.getUsername());
         return CustomResponse.onSuccess("주문 내역 삭제 성공");

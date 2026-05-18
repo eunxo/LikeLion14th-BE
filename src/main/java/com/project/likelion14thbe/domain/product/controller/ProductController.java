@@ -5,6 +5,7 @@ import com.project.likelion14thbe.domain.product.dto.response.ProductResDTO;
 import com.project.likelion14thbe.domain.product.service.command.ProductCommandService;
 import com.project.likelion14thbe.domain.product.service.query.ProductQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class ProductController {
     @Operation(summary = "상품 추가", description = "새로운 상품을 등록한다")
     public CustomResponse<ProductResDTO.ProductCreateRes> createProduct(
             @RequestBody ProductReqDTO.ProductCreateReq productCreateReq,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         return CustomResponse
                 .onSuccess(productCommandService.createProduct(productCreateReq, userDetails.getUsername()));
@@ -54,7 +55,7 @@ public class ProductController {
     public CustomResponse<String> updateProduct(
             @PathVariable Long productId,
             @RequestBody ProductReqDTO.ProductChangeDTO update,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
             ){
         productCommandService.updateProduct(productId, userDetails.getUsername(), update);
         return CustomResponse.onSuccess("상품 정보 변경 성공");
@@ -64,7 +65,7 @@ public class ProductController {
     @Operation(summary = "상품 삭제", description = "상품을 삭제합니다.")
     public CustomResponse<String> deleteProduct(
             @PathVariable Long productId,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         productCommandService.deleteProduct(productId, userDetails.getUsername());
         return CustomResponse.onSuccess("회원 탈퇴 성공");
