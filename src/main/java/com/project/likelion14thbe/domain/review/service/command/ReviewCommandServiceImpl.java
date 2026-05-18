@@ -32,11 +32,10 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public ReviewResDTO.ReviewCreateResult createReview(Long productId, ReviewReqDTO.ReviewCreateReq request) {
+    public ReviewResDTO.ReviewCreateResult createReview(String email, Long productId, ReviewReqDTO.ReviewCreateReq request) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
-        Member member = memberRepository.findFirstByDeletedAtIsNullOrderByUserIdAsc()
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = findActiveMemberByEmail(email);
         OrderItem orderItem = orderItemRepository.findById(request.getOrderItemId())
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_ORDER_ITEM_NOT_FOUND));
         if (!orderItem.getProduct().getProductId().equals(productId)) {
@@ -46,5 +45,33 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
         Review review = ReviewConverter.toReview(request, product, member, orderItem);
         reviewRepository.save(review);
         return ReviewConverter.toCreateResult(review);
+    }
+
+    @Override
+    public ReviewResDTO.ReviewUpdateResult updateReview(String email, Long reviewId, ReviewReqDTO.ReviewUpdateReq request) {
+        Review review = findOwnedReview(email, reviewId);
+        review.update(request.getContent(), request.getRating());
+        return ReviewConverter.toUpdateResult(review);
+    }
+
+    @Override
+    public void deleteReview(String email, Long reviewId) {
+        Review review = findOwnedReview(email, reviewId);
+        reviewRepository.delete(review);
+    }
+
+    private Review findOwnedReview(String email, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+        if (!review.getMember().getEmail().equals(email)) {
+            throw new ReviewException(ReviewErrorCode.REVIEW_FORBIDDEN);
+        }
+        return review;
+    }
+
+    private Member findActiveMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .filter(member -> member.getDeletedAt() == null)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }

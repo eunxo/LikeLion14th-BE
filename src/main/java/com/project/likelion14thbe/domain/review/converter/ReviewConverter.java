@@ -42,6 +42,14 @@ public class ReviewConverter {
                 .build();
     }
 
+    public static ReviewResDTO.ReviewUpdateResult toUpdateResult(Review review) {
+        return ReviewResDTO.ReviewUpdateResult.builder()
+                .reviewId(review.getReviewId())
+                .content(review.getContent())
+                .rating(review.getRating())
+                .build();
+    }
+
     public static ReviewResDTO.ReviewDetailResult toDetail(Review review) {
         return ReviewResDTO.ReviewDetailResult.builder()
                 .reviewId(review.getReviewId())

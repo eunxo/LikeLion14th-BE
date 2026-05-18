@@ -42,4 +42,9 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_item_id")
     private OrderItem orderItem;
+
+    public void update(String content, Integer rating) {
+        this.content = content;
+        this.rating = rating;
+    }
 }

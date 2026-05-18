@@ -11,6 +11,7 @@ import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public MemberResDTO.SignUpRes signUp(MemberReqDTO.SignUpReq req) {
@@ -30,13 +32,24 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new MemberException(MemberErrorCode.MEMBER_EMAIL_DUPLICATE);
         }
 
-        Member member = MemberConverter.toMember(req);
+        Member member = MemberConverter.toMember(req, passwordEncoder.encode(req.getPassword()));
 
         memberRepository.save(member);
 
         return MemberConverter.toMemberResponseDTO(member);
     }
 
+    @Override
+    public MemberResDTO.UpdateRes updateMyInfo(String email, MemberReqDTO.UpdateReq req) {
+        Member member = memberRepository.findByEmail(email)
+                .filter(m -> m.getDeletedAt() == null)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        member.updateName(req.getName());
+        member.updatePassword(passwordEncoder.encode(req.getPassword()));
+
+        return MemberConverter.toUpdateRes(member);
+    }
 
     @Override
     public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto){
@@ -46,7 +59,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 비밀번호 변경
-        member.updatePassword(dto.password());
+        member.updatePassword(passwordEncoder.encode(dto.password()));
 
     }
 

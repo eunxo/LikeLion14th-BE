@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.member.entity;
 
+import com.project.likelion14thbe.domain.member.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,12 +43,21 @@ public class Member {
     @Column(name="deleted_at")
     private LocalDateTime deletedAt;
 
-    public void updatePassword(String newPassword){this.password=newPassword;}
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 
 
     public void delete() {
         this.deletedAt = LocalDateTime.now();
         this.status = "deleted";
     }
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 }
