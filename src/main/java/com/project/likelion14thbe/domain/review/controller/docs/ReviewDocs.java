@@ -3,6 +3,7 @@ package com.project.likelion14thbe.domain.review.controller.docs;
 import com.project.likelion14thbe.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +20,7 @@ public interface ReviewDocs {
 
     @Operation(
             summary = "리뷰 생성",
-            description = "특정 상품에 대해 새로운 리뷰를 생성한다. 동일 상품에 1인 1회 작성 제한. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+            description = "특정 상품에 대해 새로운 리뷰를 생성한다. 동일 상품에 1인 1회 작성 제한."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "리뷰 생성 성공",
@@ -70,7 +71,7 @@ public interface ReviewDocs {
     })
     CustomResponse<ReviewResDTO.CreateReviewResDTO> createReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
-            @Parameter(description = "작성자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
+            CustomUserDetails user,
             ReviewReqDTO.CreateReviewReqDTO request
     );
 
@@ -135,7 +136,7 @@ public interface ReviewDocs {
 
     @Operation(
             summary = "리뷰 수정",
-            description = "본인이 작성한 리뷰의 별점/내용을 부분 수정한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+            description = "본인이 작성한 리뷰의 별점/내용을 부분 수정한다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 수정 성공",
@@ -208,13 +209,13 @@ public interface ReviewDocs {
     CustomResponse<ReviewResDTO.UpdateReviewResDTO> updateReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
             @Parameter(description = "리뷰 아이디", example = "123") Long reviewId,
-            @Parameter(description = "작성자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
+            CustomUserDetails user,
             ReviewReqDTO.UpdateReviewReqDTO request
     );
 
     @Operation(
             summary = "리뷰 삭제",
-            description = "본인이 작성한 리뷰를 hard delete 한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+            description = "본인이 작성한 리뷰를 hard delete 한다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공",
@@ -269,12 +270,12 @@ public interface ReviewDocs {
     CustomResponse<String> deleteReview(
             @Parameter(description = "상품 아이디", example = "5") Long productId,
             @Parameter(description = "리뷰 아이디", example = "123") Long reviewId,
-            @Parameter(description = "작성자 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId
+            CustomUserDetails user
     );
 
     @Operation(
             summary = "내 리뷰 조회",
-            description = "현재 로그인한 회원이 작성한 모든 리뷰를 페이징 조회한다. (JWT 적용 전까지 memberId는 임시 query 파라미터)"
+            description = "현재 로그인한 회원이 작성한 모든 리뷰를 페이징 조회한다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 리뷰 조회 성공",
@@ -291,7 +292,7 @@ public interface ReviewDocs {
                                     """)))
     })
     CustomResponse<ReviewResDTO.MyReviewListResDTO> getMyReviews(
-            @Parameter(description = "조회 회원 ID (JWT 적용 전 임시)", example = "1") Long memberId,
+            CustomUserDetails user,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") Integer page,
             @Parameter(description = "페이지당 개수", example = "10") Integer size
     );

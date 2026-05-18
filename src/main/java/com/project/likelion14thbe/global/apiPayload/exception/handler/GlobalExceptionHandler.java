@@ -7,6 +7,7 @@ import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,6 +101,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomResponse<Void>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         log.warn("[ HttpRequestMethodNotSupportedException ]: {}", ex.getMessage());
         BaseErrorCode errorCode = GeneralErrorCode.METHOD_NOT_ALLOWED_405;
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), null));
+    }
+
+    // 메서드 보안(@PreAuthorize) 거부 — 권한 없음(403)으로 변환. 필터 단계 거부는 JwtAccessDeniedHandler가 처리하고,
+    // 컨트롤러 메서드 단계 거부는 여기로 올라오므로 500으로 새지 않도록 분리한다.
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CustomResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("[ AccessDeniedException ]: {}", ex.getMessage());
+        BaseErrorCode errorCode = GeneralErrorCode.FORBIDDEN_403;
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), null));
     }

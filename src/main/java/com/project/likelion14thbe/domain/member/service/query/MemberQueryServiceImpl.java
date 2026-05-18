@@ -18,8 +18,8 @@ public class MemberQueryServiceImpl implements MemberQueryService {
     private final MemberRepository memberRepository;
 
     @Override
-    public MemberResDTO.MyInfoResDTO getMyInfo(Long memberId) {
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+    public MemberResDTO.MyInfoResDTO getMyInfo(String email) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         return MemberConverter.toMyInfoResDTO(member);
     }

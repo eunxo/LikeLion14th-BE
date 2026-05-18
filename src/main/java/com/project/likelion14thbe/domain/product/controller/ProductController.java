@@ -9,6 +9,7 @@ import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,6 +48,7 @@ public class ProductController implements ProductDocs {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public CustomResponse<ProductResDTO.CreateProductResDTO> createProduct(
             @Valid @RequestBody ProductReqDTO.CreateProductReqDTO request
@@ -56,6 +58,7 @@ public class ProductController implements ProductDocs {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{productId}")
     public CustomResponse<ProductResDTO.UpdateProductResDTO> updateProduct(
             @PathVariable Long productId,
@@ -65,6 +68,7 @@ public class ProductController implements ProductDocs {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{productId}")
     public CustomResponse<String> deleteProduct(
             @PathVariable Long productId

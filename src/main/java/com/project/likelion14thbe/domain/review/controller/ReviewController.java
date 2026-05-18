@@ -6,9 +6,11 @@ import com.project.likelion14thbe.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion14thbe.domain.review.service.command.ReviewCommandService;
 import com.project.likelion14thbe.domain.review.service.query.ReviewQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,11 +33,11 @@ public class ReviewController implements ReviewDocs {
     @PostMapping("/products/{productId}/reviews")
     public CustomResponse<ReviewResDTO.CreateReviewResDTO> createReview(
             @PathVariable Long productId,
-            @RequestParam Long memberId,
+            @AuthenticationPrincipal CustomUserDetails user,
             @Valid @RequestBody ReviewReqDTO.CreateReviewReqDTO request
     ) {
         ReviewResDTO.CreateReviewResDTO body =
-                reviewCommandService.createReview(memberId, productId, request);
+                reviewCommandService.createReview(user.getUsername(), productId, request);
         return CustomResponse.onSuccess(HttpStatus.CREATED, "리뷰 작성 성공", body);
     }
 
@@ -64,11 +66,11 @@ public class ReviewController implements ReviewDocs {
     public CustomResponse<ReviewResDTO.UpdateReviewResDTO> updateReview(
             @PathVariable Long productId,
             @PathVariable Long reviewId,
-            @RequestParam Long memberId,
+            @AuthenticationPrincipal CustomUserDetails user,
             @Valid @RequestBody ReviewReqDTO.UpdateReviewReqDTO request
     ) {
         return CustomResponse.onSuccess(
-                reviewCommandService.updateReview(memberId, productId, reviewId, request)
+                reviewCommandService.updateReview(user.getUsername(), productId, reviewId, request)
         );
     }
 
@@ -77,19 +79,19 @@ public class ReviewController implements ReviewDocs {
     public CustomResponse<String> deleteReview(
             @PathVariable Long productId,
             @PathVariable Long reviewId,
-            @RequestParam Long memberId
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        reviewCommandService.deleteReview(memberId, productId, reviewId);
+        reviewCommandService.deleteReview(user.getUsername(), productId, reviewId);
         return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 
     @Override
     @GetMapping("/members/me/reviews")
     public CustomResponse<ReviewResDTO.MyReviewListResDTO> getMyReviews(
-            @RequestParam Long memberId,
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return CustomResponse.onSuccess(HttpStatus.OK, "내 리뷰 목록 조회 성공", reviewQueryService.getMyReviews(memberId, page, size));
+        return CustomResponse.onSuccess(HttpStatus.OK, "내 리뷰 목록 조회 성공", reviewQueryService.getMyReviews(user.getUsername(), page, size));
     }
 }

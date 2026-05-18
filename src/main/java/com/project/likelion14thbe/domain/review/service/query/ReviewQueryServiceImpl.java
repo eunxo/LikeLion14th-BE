@@ -1,5 +1,6 @@
 package com.project.likelion14thbe.domain.review.service.query;
 
+import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
 import com.project.likelion14thbe.domain.review.converter.ReviewConverter;
@@ -49,12 +50,11 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     }
 
     @Override
-    public ReviewResDTO.MyReviewListResDTO getMyReviews(Long memberId, Integer page, Integer size) {
-        if (memberRepository.findByIdAndNotDeleted(memberId).isEmpty()) {
-            throw new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND);
-        }
+    public ReviewResDTO.MyReviewListResDTO getMyReviews(String email, Integer page, Integer size) {
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_MEMBER_NOT_FOUND));
         Pageable pageable = PageRequest.of(page, size);
-        Page<Review> reviews = reviewRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId, pageable);
+        Page<Review> reviews = reviewRepository.findAllByMember_IdOrderByCreatedAtDesc(member.getId(), pageable);
         return ReviewConverter.toMyReviewListResDTO(reviews);
     }
 }

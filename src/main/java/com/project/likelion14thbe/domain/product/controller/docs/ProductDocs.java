@@ -54,8 +54,8 @@ public interface ProductDocs {
     );
 
     @Operation(
-            summary = "상품 추가",
-            description = "신규 상품을 등록한다. (6주차 시큐리티 도입 후 관리자 권한 검증 추가 예정)"
+            summary = "상품 추가 (ADMIN 전용)",
+            description = "신규 상품을 등록한다. ADMIN 권한이 필요합니다."
     )
     @SecurityRequirement(name = "JWT TOKEN")
     @ApiResponses({
@@ -80,9 +80,10 @@ public interface ProductDocs {
     );
 
     @Operation(
-            summary = "상품 수정",
+            summary = "상품 수정 (ADMIN 전용)",
             description = "특정 상품의 정보를 부분 수정한다. null 필드는 변경하지 않는다."
     )
+    @SecurityRequirement(name = "JWT TOKEN")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "상품 수정 성공",
                     content = @Content(schema = @Schema(implementation = CustomResponse.class),
@@ -128,8 +129,8 @@ public interface ProductDocs {
     );
 
     @Operation(
-            summary = "상품 삭제",
-            description = "특정 상품을 hard delete 한다. (6주차 시큐리티 도입 후 관리자 권한 검증 추가 예정)"
+            summary = "상품 삭제 (ADMIN 전용)",
+            description = "특정 상품을 hard delete 한다. ADMIN 권한이 필요합니다."
     )
     @SecurityRequirement(name = "JWT TOKEN")
     @ApiResponses({

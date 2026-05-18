@@ -6,9 +6,11 @@ import com.project.likelion14thbe.domain.order.dto.response.OrderResDTO;
 import com.project.likelion14thbe.domain.order.service.command.OrderCommandService;
 import com.project.likelion14thbe.domain.order.service.query.OrderQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,30 +31,30 @@ public class OrderController implements OrderDocs {
     @Override
     @PostMapping("/orders")
     public CustomResponse<OrderResDTO.CreateOrderResDTO> createOrder(
-            @RequestParam Long memberId,
+            @AuthenticationPrincipal CustomUserDetails user,
             @Valid @RequestBody OrderReqDTO.CreateOrderReqDTO request
     ) {
-        OrderResDTO.CreateOrderResDTO body = orderCommandService.createOrder(memberId, request);
+        OrderResDTO.CreateOrderResDTO body = orderCommandService.createOrder(user.getUsername(), request);
         return CustomResponse.onSuccess(HttpStatus.CREATED, "주문 생성 성공", body);
     }
 
     @Override
     @GetMapping("/members/me/orders")
     public CustomResponse<OrderResDTO.MyOrderListResDTO> getMyOrders(
-            @RequestParam Long memberId,
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return CustomResponse.onSuccess(HttpStatus.OK, "내 주문 목록 조회 성공", orderQueryService.getMyOrders(memberId, page, size));
+        return CustomResponse.onSuccess(HttpStatus.OK, "내 주문 목록 조회 성공", orderQueryService.getMyOrders(user.getUsername(), page, size));
     }
 
     @Override
     @DeleteMapping("/orders/{orderId}")
     public CustomResponse<String> cancelOrder(
             @PathVariable Long orderId,
-            @RequestParam Long memberId
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        orderCommandService.cancelOrder(orderId, memberId);
+        orderCommandService.cancelOrder(orderId, user.getUsername());
         return CustomResponse.onSuccess("주문 취소 성공");
     }
 }
