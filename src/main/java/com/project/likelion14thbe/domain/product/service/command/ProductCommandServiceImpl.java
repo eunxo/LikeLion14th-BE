@@ -6,6 +6,11 @@ import com.project.likelion14thbe.domain.product.entity.Product;
 import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
 import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
+import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
+import com.project.likelion14thbe.domain.member.repository.MemberRepository;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductCommandServiceImpl implements ProductCommandService {
 
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
 
     @Override
-    public String createProduct(ProductReqDTO.CreateProductReq createProductReqDTO){
-        Product product = ProductConverter.toProduct(createProductReqDTO);
+    public String createProduct(ProductReqDTO.CreateProductReq createProductReqDTO, CustomUserDetails customUserDetails){
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        Product product = ProductConverter.toProduct(createProductReqDTO, member);
 
         productRepository.save(product);
 
@@ -27,19 +36,35 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
-    public void updateProduct(Long productId, ProductReqDTO.CreateProductReq updateProductReqDTO){
+    public void updateProduct(CustomUserDetails customUserDetails, Long productId, ProductReqDTO.UpdateProductReq updateProductReqDTO){
         Product product = productRepository.findByIdAndNotDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        product.updateProduct(updateProductReqDTO);
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if (product.getMember().getId().equals(member.getId())) {
+            product.updateProduct(updateProductReqDTO);
+        }
+        else {
+            throw new ProductException(ProductErrorCode.PRODUCT_UNAUTHORIZED);
+        }
     }
 
     @Override
-    public void deleteProduct(Long productId){
+    public void deleteProduct(CustomUserDetails customUserDetails, Long productId){
         Product product = productRepository.findByIdAndNotDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        // soft delete 처리
-        product.delete();
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if (product.getMember().getId().equals(member.getId())) {
+            // soft delete 처리
+            product.delete();
+        }
+        else {
+            throw new ProductException(ProductErrorCode.PRODUCT_UNAUTHORIZED);
+        }
     }
 }

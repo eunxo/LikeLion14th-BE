@@ -9,7 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,28 +27,30 @@ public class ProductContorller {
     @PostMapping("/products")
     @Operation(summary = "상품 등록", description = "상품을 등록합니다.")
     public CustomResponse<String> createProduct (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ProductReqDTO.CreateProductReq createProductReq
     ){
-        return CustomResponse.onSuccess(HttpStatus.CREATED, productCommandService.createProduct(createProductReq));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, productCommandService.createProduct(createProductReq, customUserDetails));
     }
 
     @PutMapping("/products/{productId}")
     @Operation(summary = "상품 수정", description = "상품을 수정합니다.")
     public CustomResponse<String> updateProduct (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long productId,
-            // 어느부분을 수정할지 몰라서 전체 수정 할 수 있도록 PutMapping 하고 CreateProductReq 재사용했는데 이렇게 해도 괜찮은가요?
-            @RequestBody ProductReqDTO.CreateProductReq updateProductReq
+            @RequestBody ProductReqDTO.UpdateProductReq updateProductReq
     ){
-        productCommandService.updateProduct(productId, updateProductReq);
+        productCommandService.updateProduct(customUserDetails, productId, updateProductReq);
         return CustomResponse.onSuccess("상품 수정 성공");
     }
 
     @DeleteMapping("/products/{productId}")
     @Operation(summary = "상품 삭제", description = "상품을 삭제합니다.")
     public CustomResponse<String> deleteProduct (
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long productId
     ){
-        productCommandService.deleteProduct(productId);
+        productCommandService.deleteProduct(customUserDetails, productId);
         return CustomResponse.onSuccess("상품 삭제 완료");
     }
 

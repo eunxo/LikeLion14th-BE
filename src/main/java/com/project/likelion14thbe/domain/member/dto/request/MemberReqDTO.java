@@ -1,5 +1,7 @@
 package com.project.likelion14thbe.domain.member.dto.request;
 
+import lombok.Builder;
+
 public class MemberReqDTO {
     public record MemberSignupReqDTO(
             String name,
@@ -8,10 +10,11 @@ public class MemberReqDTO {
     ) {
     }
 
-    public record UserLoginReq(
+    @Builder
+    public record LoginReq (
             String email,
             String password
-    ) {
+    ){
     }
 
     public record UserLoginKakaoReq(

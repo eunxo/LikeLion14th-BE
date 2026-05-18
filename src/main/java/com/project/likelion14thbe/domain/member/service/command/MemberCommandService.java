@@ -2,12 +2,13 @@ package com.project.likelion14thbe.domain.member.service.command;
 
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 
 public interface MemberCommandService {
 
     MemberResDTO.MemberSignupResDTO signup(MemberReqDTO.MemberSignupReqDTO memberSignupReqDTO);
 
-    void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto);
+    void updatePassword(CustomUserDetails customUserDetails, MemberReqDTO.PasswordResetDTO dto);
 
-    void deleteMember(Long memberId);
+    void deleteMember(CustomUserDetails customUserDetails);
 }

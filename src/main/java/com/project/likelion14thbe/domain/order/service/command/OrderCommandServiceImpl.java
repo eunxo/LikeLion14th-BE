@@ -1,6 +1,8 @@
 package com.project.likelion14thbe.domain.order.service.command;
 
 import com.project.likelion14thbe.domain.member.entity.Member;
+import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
+import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
 import com.project.likelion14thbe.domain.order.converter.OrderConverter;
 import com.project.likelion14thbe.domain.order.dto.request.OrderReqDTO;
@@ -10,7 +12,10 @@ import com.project.likelion14thbe.domain.order.exception.OrderErrorCode;
 import com.project.likelion14thbe.domain.order.exception.OrderException;
 import com.project.likelion14thbe.domain.order.repository.OrderRepository;
 import com.project.likelion14thbe.domain.product.entity.Product;
+import com.project.likelion14thbe.domain.product.exception.ProductErrorCode;
+import com.project.likelion14thbe.domain.product.exception.ProductException;
 import com.project.likelion14thbe.domain.product.repository.ProductRepository;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +32,11 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     private final OrderRepository orderRepository;
 
     @Override
-    public String createOrder(OrderReqDTO.CreateOrderReqDTO createOrderReqDTO) {
+    public String createOrder(CustomUserDetails customUserDetails, OrderReqDTO.CreateOrderReqDTO createOrderReqDTO) {
 
         // 1. 회원 조회
-        Member member = memberRepository.findById(createOrderReqDTO.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 2. 재고 확인 및 총 가격, 총 수량 사전 계산
         double totalPrice = 0.0;
@@ -39,7 +44,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
         for (OrderReqDTO.OrderItemReq orderItemReq : createOrderReqDTO.orderItems()) {
             Product product = productRepository.findById(orderItemReq.productId())
-                    .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
             if (product.getQuantity() < orderItemReq.quantity()) {
                 throw new IllegalArgumentException("상품의 재고가 부족합니다.");
@@ -53,7 +58,8 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
         // 4. 상품의 재고 차감 및 OrderItem 생성 후 Order에 연결
         for (OrderReqDTO.OrderItemReq orderItemReq : createOrderReqDTO.orderItems()) {
-            Product product = productRepository.findById(orderItemReq.productId()).get();
+            Product product = productRepository.findById(orderItemReq.productId())
+                    .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
             // 엔티티에 만들어둔 메서드로 재고 차감
             product.decreaseQuantity(orderItemReq.quantity());
@@ -71,21 +77,29 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     }
 
     @Override
-    public void deleteOrder(Long orderId){
+    public void deleteOrder(CustomUserDetails customUserDetails, Long orderId){
+        // 멤버 조회
+        Member member = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
         // 주문 조회
         Order order = orderRepository.findByIdAndNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
-        // 재고 복구
-        for (OrderItem orderItem : order.getOrderItems()) {
-            // 해당 제품 조회
-            Product product = orderItem.getProduct();
+        // 자신의 주문을 취소하는것인지 확인
+        if (member.getId().equals(order.getMember().getId())) {
+            // 재고 복구
+            for (OrderItem orderItem : order.getOrderItems()) {
+                // 해당 제품 조회
+                Product product = orderItem.getProduct();
 
-            // 제품 재고 복구
-            product.increaseQuantity(orderItem.getQuantity());
+                // 제품 재고 복구
+                product.increaseQuantity(orderItem.getQuantity());
+            }
+
+            // Order soft delete 처리
+            order.deleteOrder();
         }
-
-        // Order soft delete 처리
-        order.deleteOrder();
+        else throw new OrderException(OrderErrorCode.ORDER_UNAUTHORIZED);
     }
 }

@@ -11,6 +11,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.project.likelion14thbe.domain.member.entity.Member;
 
 @Entity
 @Getter
@@ -45,6 +46,10 @@ public class Product extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -65,7 +70,7 @@ public class Product extends BaseEntity {
     }
 
     // 상품 수정 메서드
-    public void updateProduct(ProductReqDTO.CreateProductReq dto) {
+    public void updateProduct(ProductReqDTO.UpdateProductReq dto) {
         this.name = dto.name();
         this.description = dto.description();
         this.price = dto.price();

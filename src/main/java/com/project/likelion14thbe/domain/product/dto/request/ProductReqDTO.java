@@ -10,4 +10,14 @@ public class ProductReqDTO {
             Long quantity
     ) {
     }
+
+    public record UpdateProductReq(
+            String name,
+            String description,
+            Double price,
+            String category,
+            String productImage,
+            Long quantity
+    ) {
+    }
 }

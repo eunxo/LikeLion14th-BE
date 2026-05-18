@@ -7,19 +7,26 @@ import com.project.likelion14thbe.domain.member.entity.Member;
 import com.project.likelion14thbe.domain.member.exception.MemberErrorCode;
 import com.project.likelion14thbe.domain.member.exception.MemberException;
 import com.project.likelion14thbe.domain.member.repository.MemberRepository;
+import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MemberCommandServiceImpl implements MemberCommandService {
+
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public MemberResDTO.MemberSignupResDTO signup(MemberReqDTO.MemberSignupReqDTO memberSignupReqDTO) {
-        Member member = MemberConverter.toMember(memberSignupReqDTO);
+
+        String encodePassword = passwordEncoder.encode(memberSignupReqDTO.password());
+
+        Member member = MemberConverter.toMember(memberSignupReqDTO, encodePassword);
 
         memberRepository.save(member);
 
@@ -27,7 +34,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto) {
+    public void updatePassword(CustomUserDetails customUserDetails, MemberReqDTO.PasswordResetDTO dto) {
+        Long memberId = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND)).getId();
+
         Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
@@ -35,7 +45,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void deleteMember(Long memberId) {
+    public void deleteMember(CustomUserDetails customUserDetails) {
+        Long memberId = memberRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND)).getId();
+
         Member member = memberRepository.findByIdAndNotDeleted(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 

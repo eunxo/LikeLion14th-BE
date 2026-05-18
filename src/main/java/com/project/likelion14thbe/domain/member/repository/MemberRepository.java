@@ -17,6 +17,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.id = :id AND m.deletedAt IS NULL")
     Optional<Member> findByIdAndNotDeleted(@Param("id") Long id);
 
+    List<Member> findByDeletedAtBefore(LocalDateTime oneMonthAgo);
 
-    List<Member> findDeletedMembersBefore(LocalDateTime oneMonthAgo);
+    Optional<Member> findByEmail(String email);
 }
