@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "주문 API", description = "주문 관련 API")
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class OrderContorller {
+public class OrderController {
 
     private final OrderQueryService orderQueryService;
     private final OrderCommandService orderCommandService;
