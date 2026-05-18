@@ -1,9 +1,10 @@
 package com.project.likelion14thbe.domain.auth.exception;
 
+import com.project.likelion14thbe.global.apiPayload.exception.CustomException;
 import lombok.Getter;
 
 @Getter
-public class AuthException extends RuntimeException {
+public class AuthException extends CustomException {
 
     private final AuthErrorCode errorCode;
 
