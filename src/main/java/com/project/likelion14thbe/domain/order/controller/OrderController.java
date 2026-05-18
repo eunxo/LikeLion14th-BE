@@ -24,11 +24,10 @@ public class OrderController {
     private final OrderCommandService orderCommandService;
     private final OrderQueryService orderQueryService;
 
-    @PostMapping("/members/{memberId}/orders")
+    @PostMapping("/orders")
     @Operation(summary = "주문하기")
     public CustomResponse<String> createOrder(
-            @PathVariable Long memberId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(
                             mediaType = "application/json",
@@ -39,16 +38,16 @@ public class OrderController {
                             )
                     )
             )
-            @RequestBody OrderReqDTO.CreateReq req
+            @RequestBody final OrderReqDTO.CreateReq req
     ) {
-        orderCommandService.createOrder(memberId, customUserDetails.getUsername(), req);
+        orderCommandService.createOrder(customUserDetails.getUsername(), req);
         return CustomResponse.onSuccess("주문 완료");
     }
 
     @GetMapping("/orders")
     @Operation(summary = "내 주문 목록 조회", description = "로그인한 유저의 주문 내역들을 조회합니다.")
     public CustomResponse<OrderResDTO.OrderListRes> getOrders(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
     ) {
         return CustomResponse.onSuccess(orderQueryService.getOrders(customUserDetails.getUsername()));
     }
@@ -56,8 +55,8 @@ public class OrderController {
     @DeleteMapping("/orders/{orderId}")
     @Operation(summary = "주문 취소")
     public CustomResponse<String> cancelOrder(
-            @PathVariable Long orderId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @PathVariable final Long orderId,
+            @AuthenticationPrincipal final CustomUserDetails customUserDetails
     ) {
         orderCommandService.deleteOrder(orderId, customUserDetails.getUsername());
         return CustomResponse.onSuccess("주문 취소 완료");
