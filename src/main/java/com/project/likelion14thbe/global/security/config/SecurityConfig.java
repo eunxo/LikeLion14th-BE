@@ -41,6 +41,10 @@ public class SecurityConfig {
     // 인증 없이 접근 허용할 URL
     private final String[] allowUrl = {
             "/api/v1/login",                 // CustomLoginFilter 처리
+            "/api/v1/auth/kakao",            // 카카오 인가 진입
+            "/api/v1/kakao/callback",        // 카카오 콜백
+            "/api/v1/auth/naver",            // 네이버 인가 진입
+            "/api/v1/naver/callback",        // 네이버 콜백
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs",
