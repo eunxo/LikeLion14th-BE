@@ -25,6 +25,12 @@ public enum ReviewErrorCode implements BaseErrorCode {
             HttpStatus.NOT_FOUND,
             "REVIEW404_2",
             "리뷰를 찾을 수 없습니다."
+    ),
+
+    REVIEW_FORBIDDEN(
+            HttpStatus.FORBIDDEN,
+            "REVIEW403_1",
+            "리뷰 작성자만 수정/삭제할 수 있습니다."
     );
 
     private final HttpStatus httpStatus;

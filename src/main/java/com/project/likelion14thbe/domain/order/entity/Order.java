@@ -34,4 +34,8 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private Member member;
+
+    public void cancel() {
+        this.status = "cancelled";
+    }
 }

@@ -25,9 +25,10 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     private final MemberRepository memberRepository;
 
     @Override
-    public ProductResDTO.ProductCreateResult createProduct(ProductReqDTO.ProductCreateReq request) {
+    public ProductResDTO.ProductCreateResult createProduct(String email, ProductReqDTO.ProductCreateReq request) {
         Category category = resolveCategory(request.getCategoryId());
-        Member seller = memberRepository.findFirstByDeletedAtIsNullOrderByUserIdAsc()
+        Member seller = memberRepository.findByEmail(email)
+                .filter(member -> member.getDeletedAt() == null)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Product product = ProductConverter.toProduct(request, category, seller);

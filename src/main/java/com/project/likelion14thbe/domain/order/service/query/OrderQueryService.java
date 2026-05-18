@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface OrderQueryService {
 
-    List<OrderResDTO.OrderSummaryRes> getOrders();
+    List<OrderResDTO.OrderSummaryRes> getOrders(String email);
 }

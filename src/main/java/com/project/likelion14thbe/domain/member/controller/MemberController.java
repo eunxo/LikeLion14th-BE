@@ -8,19 +8,18 @@ import com.project.likelion14thbe.global.apiPayload.CustomResponse;
 import com.project.likelion14thbe.global.security.handler.CustomLogoutHandler;
 import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,90 +38,72 @@ public class MemberController {
     private final CustomLogoutHandler customLogoutHandler;
 
     @PostMapping("/auth/signup")
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "회원가입", description = "이름, 이메일, 비밀번호를 입력하여 회원가입을 진행합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.SignUpRes.class))),
+            @ApiResponse(responseCode = "201", description = "회원가입 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청값"),
             @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일")
     })
-    public ResponseEntity<MemberResDTO.SignUpRes> signup(
+    public CustomResponse<MemberResDTO.SignUpRes> signup(
             @Valid @RequestBody MemberReqDTO.SignUpReq request
     ) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(memberCommandService.signUp(request));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, memberCommandService.signUp(request));
     }
 
     @GetMapping("/users/{memberId}")
     @Operation(summary = "회원 조회", description = "회원 ID로 회원의 기본 정보를 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원 조회 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.MemberPreviewResDTO.class))),
+            @ApiResponse(responseCode = "200", description = "회원 조회 성공"),
             @ApiResponse(responseCode = "404", description = "사용자 없음")
     })
-    public ResponseEntity<MemberResDTO.MemberPreviewResDTO> getMember(
+    public CustomResponse<MemberResDTO.MemberPreviewResDTO> getMember(
             @PathVariable @Min(value = 1, message = "memberId는 1 이상이어야 합니다.") Long memberId
     ) {
-        return ResponseEntity.ok(memberQueryService.getMember(memberId));
+        return CustomResponse.onSuccess(memberQueryService.getMember(memberId));
     }
 
     @PostMapping("/auth/login")
-    @Operation(summary = "로그인", description = "이메일과 비밀번호를 입력하여 로그인을 진행합니다.")
+    @Operation(summary = "로그인", description = "이메일과 비밀번호를 JSON body로 전송합니다. 실제 인증·토큰 발급은 CustomLoginFilter가 처리합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.LoginRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청값"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
+            @ApiResponse(responseCode = "200", description = "로그인 성공 (accessToken, refreshToken 반환)"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청값"),
+            @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
-    public ResponseEntity<MemberResDTO.LoginRes> login(
+    public CustomResponse<Void> login(
             @Valid @RequestBody(required = true) MemberReqDTO.LoginReq request
     ) {
-        return ResponseEntity.ok(
-                MemberResDTO.LoginRes.builder()
-                        .isSuccess(true)
-                        .code("USER200")
-                        .message("로그인 성공")
-                        .build()
-        );
+        // 실제 인증·토큰 발급은 CustomLoginFilter가 처리
+        return CustomResponse.onSuccess(null);
     }
 
     @PostMapping("/auth/kakao")
     @Operation(summary = "카카오 로그인", description = "카카오 액세스 토큰을 이용하여 로그인을 진행합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "카카오 로그인 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.KakaoLoginRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "필수 요청 값 누락"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "유효하지 않은 토큰")
+            @ApiResponse(responseCode = "200", description = "카카오 로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "필수 요청 값 누락"),
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰")
     })
-    public ResponseEntity<MemberResDTO.KakaoLoginRes> kakaoLogin(
+    public CustomResponse<MemberResDTO.KakaoLoginResult> kakaoLogin(
             @RequestBody(required = true) MemberReqDTO.KakaoLoginReq request
     ) {
-        return ResponseEntity.ok(
-                MemberResDTO.KakaoLoginRes.builder()
-                        .isSuccess(true)
-                        .code("USER200")
-                        .message("카카오 로그인 성공")
-                        .result(
-                                MemberResDTO.KakaoLoginResult.builder()
-                                        .userId(1L)
-                                        .name("홍길동")
-                                        .email("kakao@test.com")
-                                        .build()
-                        )
+        return CustomResponse.onSuccess(
+                MemberResDTO.KakaoLoginResult.builder()
+                        .userId(1L)
+                        .name("홍길동")
+                        .email("kakao@test.com")
                         .build()
         );
     }
 
     @PostMapping("/auth/logout")
     @SecurityRequirement(name = "JWT TOKEN")
-    @Operation(summary = "로그아웃", description = "Authorization 헤더에 Bearer accessToken을 넣고 호출합니다. CustomLogoutHandler가 refreshToken을 삭제합니다.")
+    @Operation(summary = "로그아웃", description = "Authorization 헤더에 Bearer accessToken을 넣고 호출합니다. refreshToken이 삭제됩니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그아웃 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.LogoutRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 또는 이미 로그아웃된 상태")
     })
-    public ResponseEntity<MemberResDTO.LogoutRes> logout(
+    public CustomResponse<String> logout(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             HttpServletRequest request,
             HttpServletResponse response,
@@ -130,45 +111,37 @@ public class MemberController {
     ) {
         customLogoutHandler.logout(request, response, authentication);
         SecurityContextHolder.clearContext();
-
-        return ResponseEntity.ok(
-                MemberResDTO.LogoutRes.builder()
-                        .isSuccess(true)
-                        .code("USER200")
-                        .message("로그아웃 성공")
-                        .build()
-        );
+        return CustomResponse.onSuccess("로그아웃 성공");
     }
 
     @GetMapping("/users/me")
     @SecurityRequirement(name = "JWT TOKEN")
-    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다. Authorization 헤더에 Bearer accessToken이 필요합니다.")
+    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내 정보 조회 성공",
+            @ApiResponse(responseCode = "200", description = "내 정보 조회 성공",
                     content = @Content(schema = @Schema(implementation = MemberResDTO.MyInfoRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "사용자 없음")
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "404", description = "사용자 없음")
     })
-    public ResponseEntity<MemberResDTO.MyInfoRes> getMyInfo(
+    public CustomResponse<MemberResDTO.MyInfoRes> getMyInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        return ResponseEntity.ok(memberQueryService.getMyInfo(userDetails.getUsername()));
+        return CustomResponse.onSuccess(memberQueryService.getMyInfo(userDetails.getUsername()));
     }
 
     @PatchMapping("/users/me")
     @SecurityRequirement(name = "JWT TOKEN")
-    @Operation(summary = "회원 정보 수정", description = "현재 로그인한 사용자의 정보를 수정합니다. Authorization 헤더에 Bearer accessToken이 필요합니다.")
+    @Operation(summary = "회원 정보 수정", description = "현재 로그인한 사용자의 정보를 수정합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 수정 성공",
-                    content = @Content(schema = @Schema(implementation = MemberResDTO.UpdateRes.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패")
+            @ApiResponse(responseCode = "200", description = "회원 정보 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "401", description = "인증 실패")
     })
-    public ResponseEntity<MemberResDTO.UpdateRes> updateMember(
+    public CustomResponse<MemberResDTO.UpdateRes> updateMember(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody(required = true) MemberReqDTO.UpdateReq request
     ) {
-        return ResponseEntity.ok(memberCommandService.updateMyInfo(userDetails.getUsername(), request));
+        return CustomResponse.onSuccess(memberCommandService.updateMyInfo(userDetails.getUsername(), request));
     }
 
     @PatchMapping("/members/{memberId}/password")
@@ -182,9 +155,7 @@ public class MemberController {
             @PathVariable @Min(value = 1, message = "memberId는 1 이상이어야 합니다.") Long memberId,
             @Valid @RequestBody MemberReqDTO.PasswordResetDTO request
     ) {
-
         memberCommandService.updatePassword(memberId, request);
-
         return CustomResponse.onSuccess("비밀번호 변경 성공");
     }
 
@@ -197,9 +168,7 @@ public class MemberController {
     public CustomResponse<String> deleteMember(
             @PathVariable @Min(value = 1, message = "memberId는 1 이상이어야 합니다.") Long memberId
     ) {
-
         memberCommandService.deleteMember(memberId);
-
         return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 }
