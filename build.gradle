@@ -59,6 +59,12 @@ dependencies {
 	// WebClient (OAuth 외부 호출)
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	// Redis (토큰 무효화 컷오프 저장)
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Testcontainers (통합 테스트용 실제 Redis)
+	testImplementation 'org.testcontainers:junit-jupiter'
+
 	// Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
