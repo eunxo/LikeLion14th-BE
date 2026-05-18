@@ -8,6 +8,7 @@ import com.project.likelion14thbe.global.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,19 +30,24 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+    // 무조건 전면 공개 URL
     private final String[] allowUrl = {
             "/api/v1/auth/login",
             "/api/v1/auth/signup",
             "/api/v1/login/kakao",
             "/auth/reissue",
             "/auth/**",
+            "/api/usage",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    };
+
+    // "GET(조회)" 메서드만 로그인 없이 허용할 URL
+    private final String[] allowGetUrl = {
             "/api/v1/home",
             "/api/v1/products",
             "/api/v1/products/*/reviews",
-            "/api/usage",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/api/v1/members/*/orders"
+            "/api/v1/reviews/*"
     };
 
     @Bean
@@ -51,12 +57,10 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(allowUrl).permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/home").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/products").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/products/*/reviews").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/reviews/*").permitAll()
+                        .requestMatchers(allowUrl).permitAll() // 여기에 속한 주소는 전면 프리패스
+                        .requestMatchers(HttpMethod.GET, allowGetUrl).permitAll()
                         .anyRequest().authenticated())
+
                 .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
 
