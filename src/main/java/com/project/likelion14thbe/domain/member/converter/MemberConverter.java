@@ -19,6 +19,16 @@ public class MemberConverter {
                 .build();
     }
 
+    public static Member toKakaoMember(String email, String name, String encodedPassword) {
+        return Member.builder()
+                .email(email)
+                .name(name)
+                .password(encodedPassword)
+                .provider("kakao")
+                .role(Role.ROLE_USER)
+                .build();
+    }
+
     public static MemberResDTO.SignUpRes toMemberResponseDTO(Member member) {
         return MemberResDTO.SignUpRes.builder()
                 .id(member.getUserId())
