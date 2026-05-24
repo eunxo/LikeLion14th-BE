@@ -56,6 +56,8 @@ dependencies {
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	//Webflux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
