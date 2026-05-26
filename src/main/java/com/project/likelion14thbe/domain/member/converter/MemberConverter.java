@@ -1,6 +1,7 @@
 package com.project.likelion14thbe.domain.member.converter;
 
 import com.project.likelion14thbe.domain.auth.dto.response.KakaoUserInfoResponseDTO;
+import com.project.likelion14thbe.domain.auth.dto.response.NaverUserInfoResponseDTO;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.entity.Member;
@@ -44,4 +45,15 @@ public class MemberConverter {
                 .role(Role.ROLE_USER)
                 .build();
     }
+
+    public static Member naverToMember(NaverUserInfoResponseDTO userInfo) {
+        return Member.builder()
+                .email(userInfo.response().email())
+                .name(userInfo.response().name())
+                .profileImage(userInfo.response().profileImage())
+                .socialProvider(Boolean.TRUE)
+                .role(Role.ROLE_USER)
+                .build();
+    }
+
 }

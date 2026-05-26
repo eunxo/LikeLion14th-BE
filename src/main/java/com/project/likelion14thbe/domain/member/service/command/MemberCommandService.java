@@ -1,6 +1,7 @@
 package com.project.likelion14thbe.domain.member.service.command;
 
 import com.project.likelion14thbe.domain.auth.dto.response.KakaoUserInfoResponseDTO;
+import com.project.likelion14thbe.domain.auth.dto.response.NaverUserInfoResponseDTO;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.entity.Member;
@@ -15,4 +16,6 @@ public interface MemberCommandService {
     void deleteMember(CustomUserDetails customUserDetails);
 
     Member kakaoSignup(KakaoUserInfoResponseDTO userInfo);
+
+    Member naverSignup(NaverUserInfoResponseDTO userInfo);
 }

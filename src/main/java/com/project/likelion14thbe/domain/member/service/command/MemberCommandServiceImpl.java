@@ -1,6 +1,7 @@
 package com.project.likelion14thbe.domain.member.service.command;
 
 import com.project.likelion14thbe.domain.auth.dto.response.KakaoUserInfoResponseDTO;
+import com.project.likelion14thbe.domain.auth.dto.response.NaverUserInfoResponseDTO;
 import com.project.likelion14thbe.domain.member.converter.MemberConverter;
 import com.project.likelion14thbe.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
@@ -59,6 +60,13 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Override
     public Member kakaoSignup(KakaoUserInfoResponseDTO userInfo) {
         Member member = MemberConverter.kakaoToMember(userInfo);
+        memberRepository.save(member);
+        return member;
+    }
+
+    @Override
+    public Member naverSignup(NaverUserInfoResponseDTO userInfo) {
+        Member member = MemberConverter.naverToMember(userInfo);
         memberRepository.save(member);
         return member;
     }

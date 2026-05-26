@@ -36,6 +36,8 @@ public class SecurityConfig {
             "/api/v1/auth/signup", // 회원가입은 인증이 필요하지 않음
             "/api/v1/auth/kakao",
             "/api/v1/kakao/callback",
+            "/api/v1/auth/naver",
+            "/api/v1/naver/callback",
             "/auth/reissue", // 토큰 재발급은 인증이 필요하지 않음
             "/auth/**",
             "/api/usage",
