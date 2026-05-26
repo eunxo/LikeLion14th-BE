@@ -46,7 +46,12 @@ public class SecurityConfig {
             "/api/v1/products/{productId}/detail", // 상품상세조회
             "/api/v1/products/list", // 상품 목록 조회
             "/api/v1/reviews/{reviewId}", // 리뷰 상세조회
-            "/api/v1/products/{productId}/reviews" //리뷰 목록 조회
+            "/api/v1/products/{productId}/reviews", //리뷰 목록 조회
+            "/api/v1/auth/kakao", // 카카오 로그인,
+            "/api/v1/kakao/callback",
+            "/api/v1/auth/naver",
+            "/api/v1/naver/callback",
+            "/api/v1/auth/logout" // 로그아웃
     };
 
     @Bean
