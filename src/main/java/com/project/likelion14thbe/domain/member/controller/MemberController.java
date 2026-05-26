@@ -37,6 +37,12 @@ public class MemberController {
         return CustomResponse.onSuccess("로그인 성공");
     }
 
+    @Operation(method = "POST", summary = "로그아웃", description = "로그아웃 API. 헤더에 Access Token(Bearer)을 실어서 요청하면 DB에서 Refresh Token을 삭제합니다.")
+    @PostMapping("/auth/logout")
+    public CustomResponse<String> logout() {
+        return CustomResponse.onSuccess("로그아웃 성공");
+    }
+
     @GetMapping("/members/me")
     @Operation(summary = "내 정보 조회", description = "토큰을 기반으로 본인의 프로필을 조회합니다.")
     public CustomResponse<MemberResDTO.ProfileRes> getMemberByEmail(
