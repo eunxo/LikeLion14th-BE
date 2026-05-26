@@ -5,6 +5,8 @@ import com.project.likelion14thbe.global.security.exception.JwtAccessDeniedHandl
 import com.project.likelion14thbe.global.security.exception.JwtAuthenticationEntryPoint;
 import com.project.likelion14thbe.global.security.filter.CustomLoginFilter;
 import com.project.likelion14thbe.global.security.filter.JwtAuthorizationFilter;
+import com.project.likelion14thbe.global.security.handler.CustomLogoutHandler;
+import com.project.likelion14thbe.global.security.handler.CustomLogoutSuccessHandler;
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +30,8 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomLogoutHandler customLogoutHandler;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
 
     //인증이 필요하지 않은 url
@@ -62,6 +66,11 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout") // 로그아웃을 요청할 API 주소 설정
+                        .addLogoutHandler(customLogoutHandler) // 비즈니스 로직(DB 삭제 등)을 처리할 핸들러 등록
+                        .logoutSuccessHandler(customLogoutSuccessHandler) // 로그아웃 성공 후 JSON 반환 핸들러 등록
+                )
         ;
 
         return http.build();
