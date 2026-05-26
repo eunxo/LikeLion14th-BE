@@ -71,6 +71,13 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout") // 로그아웃 URL
+                        .addLogoutHandler(customLogoutHandler) // 커스텀 로그아웃 핸들러
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK); // 200 OK 반환
+                        })
+                )
         ;
 
         return http.build();
