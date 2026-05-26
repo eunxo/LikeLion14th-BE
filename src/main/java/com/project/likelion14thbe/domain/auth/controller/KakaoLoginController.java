@@ -9,9 +9,10 @@ import com.project.likelion14thbe.global.security.jwt.JwtUtil;
 import com.project.likelion14thbe.global.security.jwt.dto.JwtDTO;
 import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import com.project.likelion14thbe.global.security.userdetails.service.CustomUserDetailsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.Optional;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping
+@Tag(name = "카카오 로그인 API", description = "카카오 로그인 API입니다.")
 public class KakaoLoginController {
 
     private final KakaoService kakaoService;
@@ -33,6 +34,7 @@ public class KakaoLoginController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("api/v1/auth/kakao")
+    @Operation(summary = "카카오 로그인/회원 가입", description = "유저가 카카오 소셜 로그인/회원 가입을 합니다.")
     public CustomResponse<String> redirectToKakao(
             HttpServletResponse response
     ) throws IOException {
@@ -42,6 +44,7 @@ public class KakaoLoginController {
     }
 
     @GetMapping("api/v1/kakao/callback")
+    @Operation(summary = "카카오 콜백", description = "카카오 콜백")
     public CustomResponse<JwtDTO> callback(
             @RequestParam("code") String code
     ) {
@@ -63,7 +66,6 @@ public class KakaoLoginController {
 
         Member findMember = member.orElseGet(() -> memberCommandService.kakaoSignup(userInfo));
 
-        log.info("Find member : {}", findMember);
         CustomUserDetails customUserDetails =
                 (CustomUserDetails) customUserDetailsService.loadUserByUsername(findMember.getEmail());
 
