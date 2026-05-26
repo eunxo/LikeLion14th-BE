@@ -20,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "orders")
 public class Order  {
 
     @Id // 기본키
@@ -56,7 +57,6 @@ public class Order  {
     public void cancel() {
         this.status = OrderStatus.CANCELLED;
     }
-
 }
 
 

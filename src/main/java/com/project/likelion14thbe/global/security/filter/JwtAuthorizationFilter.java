@@ -42,14 +42,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             // 2. Access Token이 없으면 다음 필터로 바로 진행
             if (accessToken == null) {
-                log.info("[ JwtAuthorizationFilter ] Access Token 없음, 다음 필터로 진행");
+                log.debug("[ JwtAuthorizationFilter ] Access Token 없음, 다음 필터로 진행");
                 filterChain.doFilter(request, response);
                 return;
             }
 
             // 3. Access Token을 이용한 인증 처리
             authenticateAccessToken(accessToken);
-            log.info("[ JwtAuthorizationFilter ] 종료. 다음 필터로 넘어갑니다.");
+            log.debug("[ JwtAuthorizationFilter ] 인증 완료. 다음 필터로 넘어갑니다.");
+
+            // ⭐ 정상 흐름에서도 반드시 다음 필터로 넘겨야 함
+            filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
             // 4. 토큰 만료 시 401 응답 처리
