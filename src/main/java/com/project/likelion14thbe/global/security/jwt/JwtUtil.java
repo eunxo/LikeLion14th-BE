@@ -190,4 +190,24 @@ public class JwtUtil {
             throw new ExpiredJwtException(null, null, "만료된 JWT 토큰입니다.");
         }
     }
+
+    // 토큰의 남은 만료 시간 계산
+    public Long getRemainingExpirationMs(final String token) {
+        log.info("[ JwtUtil ] 토큰의 남은 만료 시간을 계산합니다.");
+        try {
+            Date expiration = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+
+            long now = new Date().getTime();
+            long diff = expiration.getTime() - now;
+
+            return diff > 0 ? diff : 0L;
+        } catch (Exception e) {
+            throw new SecurityException("유효하지 않은 토큰이라 만료 시간을 계산할 수 없습니다.");
+        }
+    }
 }

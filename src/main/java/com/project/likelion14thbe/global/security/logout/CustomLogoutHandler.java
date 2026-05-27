@@ -12,6 +12,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -19,6 +22,21 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
+
+    private static final Map<String, Long> tokenBlacklist = new ConcurrentHashMap<>();
+
+    public static boolean isBlacklisted(String token) {
+        Long expirationTime = tokenBlacklist.get(token);
+        if (expirationTime == null) {
+            return false;
+        }
+
+        if (System.currentTimeMillis() > expirationTime) {
+            tokenBlacklist.remove(token);
+            return false;
+        }
+        return true;
+    }
 
     @Override
     @Transactional
@@ -43,8 +61,16 @@ public class CustomLogoutHandler implements LogoutHandler {
             tokenRepository.deleteByEmail(email);
             log.info("[ CustomLogoutHandler ] DB에서 Refresh Token 삭제 완료");
 
+            Long remainingTimeMs = jwtUtil.getRemainingExpirationMs(accessToken);
+
+            if (remainingTimeMs > 0) {
+                long expireAt = System.currentTimeMillis() + remainingTimeMs;
+                tokenBlacklist.put(accessToken, expireAt);
+                log.info("[ CustomLogoutHandler ] 자바 메모리에 Access Token 블랙리스트 등록 성공 (남은 시간: {}ms)", remainingTimeMs);
+            }
+
         } catch (Exception e) {
-            log.error("[ CustomLogoutHandler ] 토큰 검증 혹은 DB 삭제 중 오류 발생: {}", e.getMessage());
+            log.error("[ CustomLogoutHandler ] 로그아웃 처리 중 오류 발생: {}", e.getMessage());
             throw new InsufficientAuthenticationException("유효하지 않은 토큰입니다.", e);
         }
     }
