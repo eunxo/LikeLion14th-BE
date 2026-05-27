@@ -33,7 +33,7 @@ public class NaverLoginController {
             @RequestParam("code") final String code,
             @RequestParam("state") final String state
     ) {
-        String accessToken = naverService.getAccessTokenFromNaver(code);
+        String accessToken = naverService.getAccessTokenFromNaver(code, state);
         NaverUserInfoResponseDTO userInfo = naverService.getUserInfo(accessToken);
 
         JwtDTO jwtDTO = naverService.processNaverLoginOrSignup(userInfo);

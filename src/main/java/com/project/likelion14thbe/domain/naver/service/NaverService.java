@@ -22,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -53,26 +54,29 @@ public class NaverService {
     }
 
     public void redirectToNaver(final HttpServletResponse response) throws IOException {
+        String randomState = UUID.randomUUID().toString();
+        log.info("[ NaverService ] 생성된 Naver OAuth state: {}", randomState);
+
         String redirectUrl = UriComponentsBuilder
                 .fromUriString(authorizationURI)
                 .queryParam("response_type", "code")
                 .queryParam("client_id", clientId)
                 .queryParam("redirect_uri", redirectURI)
-                .queryParam("state", "naver_login_state_1234") // 네이버는 보안상 state 값이 필수야!
+                .queryParam("state", randomState )
                 .build()
                 .toUriString();
 
         response.sendRedirect(redirectUrl);
     }
 
-    public String getAccessTokenFromNaver(final String code) {
+    public String getAccessTokenFromNaver(final String code, final String state) {
         String targetUri = UriComponentsBuilder
                 .fromUriString(tokenURI)
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
                 .queryParam("code", code)
-                .queryParam("state", "naver_login_state_1234")
+                .queryParam("state", state )
                 .build()
                 .toUriString();
 
