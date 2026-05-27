@@ -31,7 +31,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        Product product = ProductConverter.toProduct(productCreateReq);
+        Product product = ProductConverter.toProduct(productCreateReq, member);
 
         productRepository.save(product);
 
