@@ -2,6 +2,7 @@ package com.project.likelion14thbe.global.security.handler;
 
 import com.project.likelion14thbe.domain.auth.repository.TokenRepository;
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
+import com.project.likelion14thbe.global.security.token.TokenInvalidationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
+    private final TokenInvalidationService tokenInvalidationService;
 
     @Override
     public void logout(
@@ -35,7 +37,8 @@ public class CustomLogoutHandler implements LogoutHandler {
         try {
             String email = jwtUtil.getEmail(accessToken);
             tokenRepository.deleteById(email);
-            log.info("[ Logout Handler ] Refresh Token 삭제 완료 : {}", email);
+            tokenInvalidationService.invalidateUser(email);
+            log.info("[ Logout Handler ] Refresh Token 삭제 및 무효화 컷오프 기록 완료 : {}", email);
         } catch (Exception e) {
             log.warn("[ Logout Handler ] Refresh Token 삭제 실패 : {}", e.getMessage());
         }
