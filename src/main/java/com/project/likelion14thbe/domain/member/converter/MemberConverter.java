@@ -19,7 +19,7 @@ public class MemberConverter {
                 .build();
     }
 
-    public static Member toKakaoMember(String email, String name, String encodedPassword) {
+    public static Member toSocialMember(String email, String name, String encodedPassword) {
         return Member.builder()
                 .email(email)
                 .name(name)

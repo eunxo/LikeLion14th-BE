@@ -1,4 +1,4 @@
-package com.project.likelion14thbe.domain.kakao;
+package com.project.likelion14thbe.domain.naver;
 
 import com.project.likelion14thbe.domain.member.converter.MemberConverter;
 import com.project.likelion14thbe.domain.member.entity.Member;
@@ -19,23 +19,20 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class KakaoAuthService {
+public class NaverAuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    /**
-     * case1: DB에 회원이 있으면 로그인
-     */
-    public JwtDTO loginOrRegister(KakaoUserInfoResponseDTO userInfo) {
+    public JwtDTO loginOrRegister(NaverUserInfoResponseDTO userInfo) {
         String email = resolveEmail(userInfo);
         String name = resolveName(userInfo);
 
         Member member = memberRepository.findByEmail(email)
                 .filter(m -> m.getDeletedAt() == null)
                 .orElseGet(() -> {
-                    log.info("[ KakaoAuthService ] 신규 카카오 회원 가입: {}", email);
+                    log.info("[ NaverAuthService ] 신규 네이버 회원 가입: {}", email);
                     Member newMember = MemberConverter.toSocialMember(
                             email,
                             name,
@@ -44,17 +41,13 @@ public class KakaoAuthService {
                     return memberRepository.save(newMember);
                 });
 
-        log.info("[ KakaoAuthService ] 카카오 로그인 성공: {}", member.getEmail());
+        log.info("[ NaverAuthService ] 네이버 로그인 성공: {}", member.getEmail());
         return issueToken(member);
     }
 
-
-
-
-    /**   case2: 없으면 회원가입 후 로그인 (기본 로그인과 동일한 JwtDTO 반환)*/
-
     private JwtDTO issueToken(Member member) {
         Role role = member.getRole() != null ? member.getRole() : Role.ROLE_USER;
+
         CustomUserDetails userDetails = new CustomUserDetails(
                 member.getEmail(),
                 member.getPassword(),
@@ -67,27 +60,21 @@ public class KakaoAuthService {
                 .build();
     }
 
-    private String resolveEmail(KakaoUserInfoResponseDTO userInfo) {
-        if (userInfo.kakaoAccount() != null
-                && userInfo.kakaoAccount().email() != null
-                && !userInfo.kakaoAccount().email().isBlank()) {
-            return userInfo.kakaoAccount().email();
+    private String resolveEmail(NaverUserInfoResponseDTO userInfo) {
+        if (userInfo.response() != null
+                && userInfo.response().email() != null
+                && !userInfo.response().email().isBlank()) {
+            return userInfo.response().email();
         }
-        return "kakao_" + userInfo.id() + "@kakao.user";
+        return "naver_" + userInfo.response().id() + "@naver.user";
     }
 
-    private String resolveName(KakaoUserInfoResponseDTO userInfo) {
-        if (userInfo.kakaoAccount() != null && userInfo.kakaoAccount().profile() != null) {
-            String nickName = userInfo.kakaoAccount().profile().nickName();
-            if (nickName != null && !nickName.isBlank()) {
-                return nickName;
-            }
+    private String resolveName(NaverUserInfoResponseDTO userInfo) {
+        if (userInfo.response() != null
+                && userInfo.response().name() != null
+                && !userInfo.response().name().isBlank()) {
+            return userInfo.response().name();
         }
-        if (userInfo.kakaoAccount() != null
-                && userInfo.kakaoAccount().name() != null
-                && !userInfo.kakaoAccount().name().isBlank()) {
-            return userInfo.kakaoAccount().name();
-        }
-        return "카카오사용자";
+        return "네이버사용자";
     }
 }

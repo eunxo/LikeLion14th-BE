@@ -29,8 +29,13 @@ public enum AuthErrorCode implements BaseErrorCode {
     KAKAO_INVALID_STATE(HttpStatus.BAD_REQUEST, "KAKAO_001", "유효하지 않은 요청입니다."),
     KAKAO_TOKEN_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "KAKAO_002", "카카오 소셜 로그인 토큰 발급에 실패했습니다."),
     KAKAO_USER_INFO_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "KAKAO_003", "카카오 소셜 로그인 사용자 정보 조회에 실패했습니다."),
-            ;
 
+
+
+    // NAVER
+    NAVER_TOKEN_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "NAVER_001", "네이버 소셜 로그인 토큰 발급에 실패했습니다."),
+    NAVER_USER_INFO_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, "NAVER_002", "네이버 소셜 로그인 사용자 정보 조회에 실패했습니다."),
+            ;
     private final HttpStatus httpStatus;
 
     private final String code;
