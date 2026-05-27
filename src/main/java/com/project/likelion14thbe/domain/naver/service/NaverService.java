@@ -85,13 +85,13 @@ public class NaverService {
                     .bodyToMono(NaverTokenResponseDTO.class)
                     .block();
         } catch (WebClientRequestException e) {
-            throw new AuthException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED);
+            throw new AuthException(AuthErrorCode.NAVER_TOKEN_REQUEST_FAILED);
         } catch (Exception e) {
             throw new AuthException(AuthErrorCode.INVALID_OAUTH_REQUEST);
         }
 
         if (naverTokenResponseDto == null || naverTokenResponseDto.accessToken() == null) {
-            throw new AuthException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED);
+            throw new AuthException(AuthErrorCode.NAVER_TOKEN_REQUEST_FAILED);
         }
 
         return naverTokenResponseDto.accessToken();
@@ -108,13 +108,13 @@ public class NaverService {
                     .bodyToMono(NaverUserInfoResponseDTO.class)
                     .block();
         } catch (WebClientRequestException e) {
-            throw new AuthException(AuthErrorCode.KAKAO_USER_INFO_REQUEST_FAILED);
+            throw new AuthException(AuthErrorCode.NAVER_USER_INFO_REQUEST_FAILED);
         } catch (Exception e) {
             throw new AuthException(AuthErrorCode.INVALID_OAUTH_REQUEST);
         }
 
         if (userInfo == null || userInfo.response() == null) {
-            throw new AuthException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED);
+            throw new AuthException(AuthErrorCode.NAVER_TOKEN_REQUEST_FAILED);
         }
 
         return userInfo;
