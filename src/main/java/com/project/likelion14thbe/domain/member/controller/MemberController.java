@@ -10,10 +10,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @Tag(name = "Member", description = "회원 및 마이페이지 관련 API")
 @RequestMapping("/api/v1/members")
@@ -35,10 +37,12 @@ public class MemberController {
         return CustomResponse.onSuccess(null);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/my")
     @Operation(summary = "회원 정보 조회", description = "특정 회원의 정보를 조회합니다.")
-    public CustomResponse<MemberResDTO.MemberPreviewResDTO> getMember(@PathVariable Long id) {
-        return CustomResponse.onSuccess(memberQueryService.getMyInfo(id));
+    public CustomResponse<MemberResDTO.MemberPreviewResDTO> getMember(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        log.info("dfdfdfdfdfdfdfdfdfdf{}", customUserDetails.getMemberId());
+        return CustomResponse.onSuccess(memberQueryService.getMyInfo(customUserDetails.getMemberId()));
     }
 
     @PatchMapping("/password")

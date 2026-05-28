@@ -158,15 +158,14 @@ public class JwtUtil {
 
     // HTTP 요청의 'Authorization' 헤더에서 JWT 액세스 토큰을 검색
     public String resolveAccessToken(HttpServletRequest request) {
-        log.info("[ JwtUtil ] 헤더에서 토큰을 추출합니다.");
         String tokenFromHeader = request.getHeader("Authorization");
 
         if (tokenFromHeader == null || !tokenFromHeader.startsWith("Bearer ")) {
-            log.warn("[ JwtUtil ] Request Header 에 토큰이 존재하지 않습니다.");
+            log.debug("[ JwtUtil ] Request Header 에 토큰이 존재하지 않습니다.");
             return null;
         }
 
-        log.info("[ JwtUtil ] 헤더에 토큰이 존재합니다.");
+        log.debug("[ JwtUtil ] 헤더에 토큰이 존재합니다.");
 
         return tokenFromHeader.split(" ")[1]; //Bearer 와 분리
     }
@@ -198,5 +197,15 @@ public class JwtUtil {
             //원하는 Exception throw
             throw new ExpiredJwtException(null, null, "만료된 JWT 토큰입니다.");
         }
+    }
+
+    public long getRemainingExpiration(String token) {
+        Date expiration = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration();
+        return expiration.getTime() - System.currentTimeMillis();
     }
 }

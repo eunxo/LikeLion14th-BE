@@ -28,6 +28,9 @@ dependencies {
 	// Spring Web
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
+    //Webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -56,9 +59,9 @@ dependencies {
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
