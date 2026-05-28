@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
-@Tag(name = "토큰 발급 API", description = "토큰 발급 API입니다.")
+@Tag(name = "Auth API", description = "Auth 관련 API입니다.")
 public class AuthController {
 
     private final AuthService authService;
@@ -49,5 +49,12 @@ public class AuthController {
             @RequestBody MemberReqDTO.LoginReq loginReq
     ){
         return CustomResponse.onSuccess("로그인 성공");
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "유저 로그아웃을 처리하고 액세스 토큰을 블랙리스트에 등록합니다.")
+    public CustomResponse<String> logout(
+    ) {
+        return CustomResponse.onSuccess("로그아웃 성공");
     }
 }
