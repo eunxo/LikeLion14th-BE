@@ -5,6 +5,7 @@ import com.project.likelion14thbe.domain.member.dto.response.MemberResDTO;
 import com.project.likelion14thbe.domain.member.service.command.MemberCommandService;
 import com.project.likelion14thbe.domain.member.service.query.MemberQueryService;
 import com.project.likelion14thbe.global.apiPayload.CustomResponse;
+import com.project.likelion14thbe.global.security.jwt.dto.JwtDTO;
 import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,6 +41,7 @@ public class MemberController {
         return CustomResponse
                 .onSuccess(MemberResDTO.MemberLoginRes.builder().build());
     }
+
 
     @DeleteMapping("/members/me/out")
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 합니다")
@@ -80,6 +82,9 @@ public class MemberController {
         return CustomResponse.onSuccess("비밀번호 변경 성공");
     }
 
-
-
+    @Operation(summary = "로그아웃", description = "발급받은 토큰으로 로그아웃을 진행합니다.")
+    @PostMapping("/logout")
+    public CustomResponse<String> logout() {
+        return CustomResponse.onSuccess("로그아웃 성공");
+    }
 }
