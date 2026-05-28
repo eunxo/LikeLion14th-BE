@@ -35,6 +35,10 @@ public class SecurityConfig {
             "/api/v1/auth/signup",
             "/api/v1/auth/login",
             "/api/v1/auth/kakao",
+            "/api/v1/auth/naver",
+            "/api/v1/naver/login",
+            "/api/v1/kakao/callback",
+            "/api/v1/naver/callback",
             "/auth/reissue",
             "/api/usage",
             "/swagger-ui/**",
@@ -57,7 +61,10 @@ public class SecurityConfig {
                                 "/api/v1/products",
                                 "/api/v1/products/*",
                                 "/api/v1/products/*/reviews",
-                                "/api/v1/reviews/*"
+                                "/api/v1/reviews/*",
+                                "/api/v1/auth/naver",
+                                "/api/v1/naver/login",
+                                "/api/v1/naver/callback"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
