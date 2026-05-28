@@ -105,8 +105,8 @@ public class JwtUtil {
 
     // principalDetails 객체에 대해 새로운 JWT 액세스 토큰을 생성
     public String createJwtAccessToken(CustomUserDetails customUserDetails) {
-        Instant expiration = Instant.now().plusMillis(accessExpMs);
-        return tokenProvider(customUserDetails, expiration);
+        Instant expiration = Instant.now().plusMillis(accessExpMs);  //accessExpMs <-- Yml에서 주입한 Access토큰 만료 시간
+        return tokenProvider(customUserDetails, expiration);  // expiration <-- 현재시간 + 토큰 만료 시간
     }
 
     // principalDetails 객체에 대해 새로운 JWT 리프레시 토큰을 생성
