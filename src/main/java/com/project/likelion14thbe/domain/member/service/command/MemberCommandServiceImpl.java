@@ -24,7 +24,7 @@ public class MemberCommandServiceImpl implements MemberCommandService{
         Member member = MemberConverter.toMember(memberCreateReq, passwordEncoder);
         memberRepository.save(member);
 
-        return MemberConverter.toMemberResponceDTO(member);
+        return MemberConverter.toMemberResponseDTO(member);
     }
 
     @Override
