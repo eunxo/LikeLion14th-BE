@@ -1,6 +1,8 @@
 package com.project.likelion14thbe.global.security.handler;
 
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
+import com.project.likelion14thbe.global.security.jwt.entity.BlacklistToken;
+import com.project.likelion14thbe.global.security.jwt.repository.BlacklistTokenRepository;
 import com.project.likelion14thbe.global.security.jwt.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -40,6 +45,13 @@ public class CustomLogoutHandler implements LogoutHandler {
                     log.info("[ CustomLogoutHandler ] RefreshToken 삭제 완료 - email: {}", email);
                 },
                 () -> log.warn("[ CustomLogoutHandler ] 해당 이메일의 RefreshToken이 존재하지 않습니다. - email: {}", email)
+        );
+
+        // 4. DB에 블랙리스트 추가
+        blacklistTokenRepository.save(BlacklistToken.builder()
+                .token(accessToken)
+                .expiredAt(LocalDateTime.now().plusHours(1))
+                .build()
         );
     }
 }
