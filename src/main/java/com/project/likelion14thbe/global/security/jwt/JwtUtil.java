@@ -198,4 +198,14 @@ public class JwtUtil {
             throw new ExpiredJwtException(null, null, "만료된 JWT 토큰입니다.");
         }
     }
+
+    public long getRemainingExpiration(String token) {
+        Date expiration = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration();
+        return expiration.getTime() - System.currentTimeMillis();
+    }
 }

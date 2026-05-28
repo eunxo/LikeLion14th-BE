@@ -7,6 +7,7 @@ import com.project.likelion14thbe.global.security.filter.JwtAuthorizationFilter;
 import com.project.likelion14thbe.global.security.handler.CustomLogoutHandler;
 import com.project.likelion14thbe.global.security.handler.CustomLogoutSuccessHandler;
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
+import com.project.likelion14thbe.global.security.jwt.service.TokenBlacklistService; // ✅ 추가
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomLogoutHandler customLogoutHandler;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final TokenBlacklistService tokenBlacklistService;
 
     private final String[] allowUrl = {
             "/api/v1/members/signup",
@@ -68,10 +70,11 @@ public class SecurityConfig {
                         .requestMatchers(allowUrl).permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                // 필터 생성자에 tokenBlacklistService 전달
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, tokenBlacklistService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
-                        .logoutUrl("/api/v1/members/logout")
+                        .logoutUrl("/auth/logout")  // ✅ AuthController 매핑에 맞게 변경
                         .addLogoutHandler(customLogoutHandler)
                         .logoutSuccessHandler(customLogoutSuccessHandler)
                 )
