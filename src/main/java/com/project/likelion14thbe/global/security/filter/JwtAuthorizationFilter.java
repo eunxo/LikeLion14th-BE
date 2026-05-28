@@ -59,7 +59,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         } catch (Exception e) {
             log.error("========================================================");
-            log.error("[🚨시큐리티 대폭발 발생 범인 검거]: ", e);
+            log.error("[시큐리티 에러 원인]: ", e);
             log.error("========================================================");
 
             response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -78,6 +78,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         jwtUtil.validateToken(accessToken);
 
         log.info("[ JwtAuthorizationFilter ] Access Token 유효성 검증 성공. ");
+
+        if (com.project.likelion14thbe.global.security.logout.CustomLogoutHandler.isBlacklisted(accessToken)) {
+            log.warn("[ JwtAuthorizationFilter ] 이미 로그아웃 처리되어 무효화된 토큰입니다.");
+            throw new SecurityException("이미 로그아웃된 토큰입니다. 다시 로그인해 주세요.");
+        }
 
         // 2. Access Token에서 사용자 정보 추출 후 CustomUserDetails 생성
         String email = jwtUtil.getEmail(accessToken);

@@ -5,6 +5,8 @@ import com.project.likelion14thbe.global.security.exception.JwtAuthenticationEnt
 import com.project.likelion14thbe.global.security.filter.CustomLoginFilter;
 import com.project.likelion14thbe.global.security.filter.JwtAuthorizationFilter;
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
+import com.project.likelion14thbe.global.security.logout.CustomLogoutHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,12 +31,16 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomLogoutHandler customLogoutHandler;
 
     // 무조건 전면 공개 URL
     private final String[] allowUrl = {
             "/api/v1/auth/login",
             "/api/v1/auth/signup",
-            "/api/v1/login/kakao",
+            "/api/v1/auth/kakao",
+            "/api/v1/kakao/callback",
+            "/api/v1/auth/naver",
+            "/api/v1/naver/callback",
             "/auth/reissue",
             "/auth/**",
             "/api/usage",
@@ -57,7 +63,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(allowUrl).permitAll() // 여기에 속한 주소는 전면 프리패스
+                        .requestMatchers(allowUrl).permitAll()
                         .requestMatchers(HttpMethod.GET, allowGetUrl).permitAll()
                         .anyRequest().authenticated())
 
@@ -73,6 +79,17 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler(customLogoutHandler)
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write("{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"로그아웃 성공\"}");
+                        })
+                )
         ;
 
         return http.build();
@@ -87,4 +104,6 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }
