@@ -184,4 +184,25 @@ public class JwtUtil {
             throw new ExpiredJwtException(null, null, "만료된 JWT 토큰입니다.");
         }
     }
+
+    // Jwt 토큰을 입력으로 받아 토큰의 만료 시간을 가져오는 메서드
+    public Date getExpirationDate(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+        } catch (Exception e) {
+            throw new SecurityException("잘못된 토큰입니다.");
+        }
+    }
+
+    // Jwt 토큰을 입력으로 받아 토큰의 남은 만료 시간(밀리초) 계산 메서드
+    public Long getExpirationTimeMillis(String token) {
+        Date expiration = getExpirationDate(token);
+        long now = System.currentTimeMillis();
+        return Math.max(0, expiration.getTime() - now);
+    }
 }
