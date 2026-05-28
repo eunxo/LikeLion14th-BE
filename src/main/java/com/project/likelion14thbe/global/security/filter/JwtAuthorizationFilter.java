@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // JWT 관련 유틸리티 클래스 주입
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     protected void doFilterInternal(
@@ -46,6 +48,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // [블랙리스트 검증 로직 추가]: Redis에 해당 Access Token이 존재하면 로그아웃된 토큰이므로 즉시 거부
+            if (redisTemplate.hasKey(accessToken)) {
+                log.warn("[JwtAuthorizationFilter] 로그아웃 처리된 Access Token의 접근입니다.");
+                throw new SecurityException("로그아웃된 토큰입니다.");
+            }
+
             // 3. Access Token을 이용한 인증 처리
             authenticateAccessToken(accessToken);
             log.info("[ JwtAuthorizationFilter ] 종료. 다음 필터로 넘어갑니다.");
@@ -57,6 +65,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("Access Token 이 만료되었습니다.");
+        } catch (SecurityException e) {
+            // 로그아웃된 토큰 또는 잘못된 토큰 시 예외 처리 및 401 응답 처리 추가
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("유효하지 않은 요청(로그아웃 등)입니다.");
         }
     }
 

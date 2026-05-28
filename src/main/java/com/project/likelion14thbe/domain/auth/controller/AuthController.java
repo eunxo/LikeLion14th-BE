@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
-@Tag(name = "토큰 발급 API", description = "토큰 발급 API입니다.")
+@Tag(name = "Auth API", description = "Auth 관련 API입니다.")
 public class AuthController {
 
     private final AuthService authService;
@@ -52,13 +51,10 @@ public class AuthController {
         return CustomResponse.onSuccess("로그인 성공");
     }
 
-    @PostMapping("/login/kakao")
-    @Operation(summary = "카카오 로그인", description = "유저가 카카오 소셜 로그인을 합니다.")
-    public ResponseEntity<MemberResDTO.UserTokenRes> loginKakao (
-            @RequestBody MemberReqDTO.UserLoginKakaoReq userLoginKakaoReq
-    ){
-        // 소셜 로그인 로직~~~
-        return ResponseEntity.ok(
-                MemberResDTO.UserTokenRes.builder().build());
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "유저 로그아웃을 처리하고 액세스 토큰을 블랙리스트에 등록합니다.")
+    public CustomResponse<String> logout(
+    ) {
+        return CustomResponse.onSuccess("로그아웃 성공");
     }
 }
