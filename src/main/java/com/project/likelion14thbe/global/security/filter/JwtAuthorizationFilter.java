@@ -2,6 +2,7 @@ package com.project.likelion14thbe.global.security.filter;
 
 import com.project.likelion14thbe.domain.member.enums.Role;
 import com.project.likelion14thbe.global.security.jwt.JwtUtil;
+import com.project.likelion14thbe.global.security.jwt.repository.BlacklistTokenRepository;
 import com.project.likelion14thbe.global.security.userdetails.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -25,6 +26,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // JWT 관련 유틸리티 클래스 주입
     private final JwtUtil jwtUtil;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -43,6 +45,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             if (accessToken == null) {
                 log.info("[ JwtAuthorizationFilter ] Access Token 없음, 다음 필터로 진행");
                 filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (blacklistTokenRepository.existsByToken(accessToken)) {
+                log.warn("[ JwtAuthorizationFilter ] 로그아웃된 토큰입니다.");
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("로그아웃된 토큰입니다.");
                 return;
             }
 
